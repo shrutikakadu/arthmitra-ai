@@ -3,5 +3,4 @@ __pycache__/
 *.pyc
 node_modules/
 .env
-dist/
-build/
+*.db
