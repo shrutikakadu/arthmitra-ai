@@ -1,0 +1,560 @@
+[
+    {
+        "name": "PM Kisan Samman Nidhi",
+        "category": "Farmer",
+        "benefit": "₹6000/year direct transfer",
+        "target": [
+            "farmer"
+        ]
+    },
+    {
+        "name": "PM Fasal Bima Yojana",
+        "category": "Farmer",
+        "benefit": "Crop insurance",
+        "target": [
+            "farmer"
+        ]
+    },
+    {
+        "name": "Kisan Credit Card",
+        "category": "Farmer",
+        "benefit": "Low interest farm credit",
+        "target": [
+            "farmer"
+        ]
+    },
+    {
+        "name": "PM Krishi Sinchai Yojana",
+        "category": "Farmer",
+        "benefit": "Irrigation support",
+        "target": [
+            "farmer"
+        ]
+    },
+    {
+        "name": "Soil Health Card Scheme",
+        "category": "Farmer",
+        "benefit": "Soil testing",
+        "target": [
+            "farmer"
+        ]
+    },
+    {
+        "name": "eNAM",
+        "category": "Farmer",
+        "benefit": "Online agriculture market",
+        "target": [
+            "farmer"
+        ]
+    },
+    {
+        "name": "Paramparagat Krishi Vikas Yojana",
+        "category": "Farmer",
+        "benefit": "Organic farming support",
+        "target": [
+            "farmer"
+        ]
+    },
+    {
+        "name": "PM Kisan Maandhan Yojana",
+        "category": "Farmer",
+        "benefit": "Farmer pension",
+        "target": [
+            "farmer"
+        ]
+    },
+    {
+        "name": "RKVY",
+        "category": "Farmer",
+        "benefit": "Agriculture infrastructure support",
+        "target": [
+            "farmer"
+        ]
+    },
+    {
+        "name": "ATMA Scheme",
+        "category": "Farmer",
+        "benefit": "Agriculture training",
+        "target": [
+            "farmer"
+        ]
+    },
+    {
+        "name": "Ayushman Bharat PM-JAY",
+        "category": "Health",
+        "benefit": "₹5 lakh health cover",
+        "target": [
+            "bpl",
+            "low_income"
+        ]
+    },
+    {
+        "name": "Pradhan Mantri Suraksha Bima Yojana",
+        "category": "Health",
+        "benefit": "Accident insurance",
+        "target": [
+            "adult"
+        ]
+    },
+    {
+        "name": "Pradhan Mantri Jeevan Jyoti Bima",
+        "category": "Health",
+        "benefit": "Life insurance",
+        "target": [
+            "adult"
+        ]
+    },
+    {
+        "name": "Janani Suraksha Yojana",
+        "category": "Health",
+        "benefit": "Maternity support",
+        "target": [
+            "pregnant_woman"
+        ]
+    },
+    {
+        "name": "Pradhan Mantri Matru Vandana Yojana",
+        "category": "Health",
+        "benefit": "Maternity benefit",
+        "target": [
+            "pregnant_woman"
+        ]
+    },
+    {
+        "name": "Atal Pension Yojana",
+        "category": "Pension",
+        "benefit": "Monthly pension",
+        "target": [
+            "worker"
+        ]
+    },
+    {
+        "name": "Rashtriya Swasthya Bima Yojana",
+        "category": "Health",
+        "benefit": "Hospitalization cover",
+        "target": [
+            "bpl"
+        ]
+    },
+    {
+        "name": "National Health Mission",
+        "category": "Health",
+        "benefit": "Healthcare services",
+        "target": [
+            "all"
+        ]
+    },
+    {
+        "name": "PM Awas Yojana Gramin",
+        "category": "Housing",
+        "benefit": "Rural housing",
+        "target": [
+            "rural",
+            "low_income"
+        ]
+    },
+    {
+        "name": "PM Awas Yojana Urban",
+        "category": "Housing",
+        "benefit": "Urban housing",
+        "target": [
+            "urban",
+            "low_income"
+        ]
+    },
+    {
+        "name": "Indira Awas Yojana",
+        "category": "Housing",
+        "benefit": "House construction support",
+        "target": [
+            "rural"
+        ]
+    },
+    {
+        "name": "Pradhan Mantri Grameen Awaas Plus",
+        "category": "Housing",
+        "benefit": "Housing support",
+        "target": [
+            "rural"
+        ]
+    },
+    {
+        "name": "PM Jan Dhan Yojana",
+        "category": "Banking",
+        "benefit": "Zero balance account",
+        "target": [
+            "all"
+        ]
+    },
+    {
+        "name": "PM Poshan",
+        "category": "Education",
+        "benefit": "Mid-day meal",
+        "target": [
+            "student"
+        ]
+    },
+    {
+        "name": "Samagra Shiksha Abhiyan",
+        "category": "Education",
+        "benefit": "Books and scholarships",
+        "target": [
+            "student"
+        ]
+    },
+    {
+        "name": "Pre-Matric Scholarship",
+        "category": "Education",
+        "benefit": "Scholarship",
+        "target": [
+            "sc",
+            "st",
+            "student"
+        ]
+    },
+    {
+        "name": "Post-Matric Scholarship",
+        "category": "Education",
+        "benefit": "Scholarship",
+        "target": [
+            "sc",
+            "st",
+            "obc",
+            "student"
+        ]
+    },
+    {
+        "name": "National Means Cum Merit Scholarship",
+        "category": "Education",
+        "benefit": "Merit scholarship",
+        "target": [
+            "student"
+        ]
+    },
+    {
+        "name": "PM Vidya Lakshmi",
+        "category": "Education",
+        "benefit": "Education loan",
+        "target": [
+            "student"
+        ]
+    },
+    {
+        "name": "Eklavya Model Residential Schools",
+        "category": "Education",
+        "benefit": "Residential education",
+        "target": [
+            "st",
+            "student"
+        ]
+    },
+    {
+        "name": "MGNREGA",
+        "category": "Employment",
+        "benefit": "100 days employment",
+        "target": [
+            "rural"
+        ]
+    },
+    {
+        "name": "PM Kaushal Vikas Yojana",
+        "category": "Employment",
+        "benefit": "Skill development",
+        "target": [
+            "youth"
+        ]
+    },
+    {
+        "name": "Deen Dayal Upadhyaya Grameen Kaushalya",
+        "category": "Employment",
+        "benefit": "Rural skill training",
+        "target": [
+            "rural",
+            "youth"
+        ]
+    },
+    {
+        "name": "PMEGP",
+        "category": "Employment",
+        "benefit": "Business loan subsidy",
+        "target": [
+            "entrepreneur"
+        ]
+    },
+    {
+        "name": "Startup India",
+        "category": "Employment",
+        "benefit": "Startup support",
+        "target": [
+            "entrepreneur"
+        ]
+    },
+    {
+        "name": "Rozgar Mela",
+        "category": "Employment",
+        "benefit": "Government recruitment",
+        "target": [
+            "job_seeker"
+        ]
+    },
+    {
+        "name": "PM KUSUM",
+        "category": "Energy",
+        "benefit": "Solar pump subsidy",
+        "target": [
+            "farmer"
+        ]
+    },
+    {
+        "name": "Saubhagya Scheme",
+        "category": "Energy",
+        "benefit": "Electricity connection",
+        "target": [
+            "all"
+        ]
+    },
+    {
+        "name": "PM Ujjwala Yojana 2.0",
+        "category": "Energy",
+        "benefit": "Free LPG connection",
+        "target": [
+            "woman",
+            "bpl"
+        ]
+    },
+    {
+        "name": "Jal Jeevan Mission",
+        "category": "Infrastructure",
+        "benefit": "Tap water connection",
+        "target": [
+            "rural"
+        ]
+    },
+    {
+        "name": "Swachh Bharat Mission Gramin",
+        "category": "Infrastructure",
+        "benefit": "Toilet construction",
+        "target": [
+            "rural"
+        ]
+    },
+    {
+        "name": "NSAP Old Age Pension",
+        "category": "Pension",
+        "benefit": "Old age pension",
+        "target": [
+            "senior_citizen"
+        ]
+    },
+    {
+        "name": "Widow Pension",
+        "category": "Pension",
+        "benefit": "Widow pension",
+        "target": [
+            "widow"
+        ]
+    },
+    {
+        "name": "Disability Pension",
+        "category": "Pension",
+        "benefit": "Disability support",
+        "target": [
+            "disabled"
+        ]
+    },
+    {
+        "name": "India Gandhi National Disability Scheme",
+        "category": "Pension",
+        "benefit": "Disability assistance",
+        "target": [
+            "disabled"
+        ]
+    },
+    {
+        "name": "Annapurna Scheme",
+        "category": "Pension",
+        "benefit": "Food support",
+        "target": [
+            "senior_citizen"
+        ]
+    },
+    {
+        "name": "Ambedkar Awas Navinikaran Yojana",
+        "category": "SC/ST",
+        "benefit": "House repair grant",
+        "target": [
+            "sc"
+        ]
+    },
+    {
+        "name": "Dr Ambedkar Foundation Schemes",
+        "category": "SC/ST",
+        "benefit": "Inter-caste marriage incentive",
+        "target": [
+            "sc"
+        ]
+    },
+    {
+        "name": "Tribal Sub Plan",
+        "category": "SC/ST",
+        "benefit": "Tribal development",
+        "target": [
+            "st"
+        ]
+    },
+    {
+        "name": "Scheduled Caste Development Corporation",
+        "category": "SC/ST",
+        "benefit": "Business loans",
+        "target": [
+            "sc"
+        ]
+    },
+    {
+        "name": "Van Dhan Vikas Kendra",
+        "category": "SC/ST",
+        "benefit": "Forest produce support",
+        "target": [
+            "st"
+        ]
+    },
+    {
+        "name": "Mudra Yojana",
+        "category": "Business",
+        "benefit": "Business loans",
+        "target": [
+            "entrepreneur"
+        ]
+    },
+    {
+        "name": "Stand Up India",
+        "category": "Business",
+        "benefit": "Startup loans",
+        "target": [
+            "sc",
+            "st",
+            "woman"
+        ]
+    },
+    {
+        "name": "Sukanya Samriddhi Yojana",
+        "category": "Savings",
+        "benefit": "Girl child savings",
+        "target": [
+            "girl_child"
+        ]
+    },
+    {
+        "name": "Post Office RD",
+        "category": "Savings",
+        "benefit": "Recurring deposit",
+        "target": [
+            "all"
+        ]
+    },
+    {
+        "name": "Kisan Vikas Patra",
+        "category": "Savings",
+        "benefit": "Long term savings",
+        "target": [
+            "all"
+        ]
+    },
+    {
+        "name": "National Savings Certificate",
+        "category": "Savings",
+        "benefit": "Tax saving investment",
+        "target": [
+            "all"
+        ]
+    },
+    {
+        "name": "PM SVANidhi",
+        "category": "Business",
+        "benefit": "Street vendor loan",
+        "target": [
+            "street_vendor"
+        ]
+    },
+    {
+        "name": "Beti Bachao Beti Padhao",
+        "category": "Women",
+        "benefit": "Girl child support",
+        "target": [
+            "girl_child"
+        ]
+    },
+    {
+        "name": "Mahila Shakti Kendra",
+        "category": "Women",
+        "benefit": "Women empowerment",
+        "target": [
+            "woman"
+        ]
+    },
+    {
+        "name": "POSHAN Abhiyan",
+        "category": "Women",
+        "benefit": "Nutrition support",
+        "target": [
+            "woman",
+            "child"
+        ]
+    },
+    {
+        "name": "Anganwadi Services",
+        "category": "Women",
+        "benefit": "Child nutrition",
+        "target": [
+            "child"
+        ]
+    },
+    {
+        "name": "Women SHG NRLM",
+        "category": "Women",
+        "benefit": "Self-help group loans",
+        "target": [
+            "woman"
+        ]
+    },
+    {
+        "name": "Kishori Shakti Yojana",
+        "category": "Women",
+        "benefit": "Adolescent girl support",
+        "target": [
+            "girl_child"
+        ]
+    },
+    {
+        "name": "PM Wani",
+        "category": "Digital",
+        "benefit": "Public WiFi",
+        "target": [
+            "all"
+        ]
+    },
+    {
+        "name": "BharatNet",
+        "category": "Digital",
+        "benefit": "Rural internet",
+        "target": [
+            "rural"
+        ]
+    },
+    {
+        "name": "Common Service Centres",
+        "category": "Digital",
+        "benefit": "Government digital services",
+        "target": [
+            "all"
+        ]
+    },
+    {
+        "name": "DigiLocker",
+        "category": "Digital",
+        "benefit": "Digital document storage",
+        "target": [
+            "all"
+        ]
+    }
+]

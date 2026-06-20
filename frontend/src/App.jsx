@@ -6,6 +6,9 @@ import SchemeResults from "./pages/SchemeResults";
 import FinancialHealth from "./pages/FinancialHealth";
 import SavingsPlanner from "./pages/SavingsPlanner";
 import VoiceInput from "./pages/VoiceInput";
+import Dashboard from "./pages/Dashboard";
+import AdminDashboard from "./pages/AdminDashboard";
+import SchemeDashboard from "./pages/SchemeDashboard";
 
 function App() {
   return (
@@ -13,11 +16,14 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/match" element={<SchemeMatcher />} />
         <Route path="/results" element={<SchemeResults />} />
         <Route path="/health" element={<FinancialHealth />} />
         <Route path="/savings" element={<SavingsPlanner />} />
         <Route path="/voice" element={<VoiceInput />} />
+        <Route path="/scheme/:schemeName" element={<SchemeDashboard />} />
       </Routes>
     </BrowserRouter>
   );

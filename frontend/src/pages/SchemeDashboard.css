@@ -1,0 +1,282 @@
+/* ===== SCHEME DETAILS DASHBOARD STYLING ===== */
+
+.scheme-dash-layout {
+  min-height: 100vh;
+  background-color: #FFFCF8;
+  color: #1a1a1a;
+  padding: 2.5rem;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Background Ashoka Chakra Spin Animation */
+@keyframes spin-chakra {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.scheme-dash-bg-chakra {
+  position: fixed;
+  bottom: -15%;
+  right: -15%;
+  width: 700px;
+  height: 700px;
+  pointer-events: none;
+  z-index: 0;
+  animation: spin-chakra 120s linear infinite;
+  opacity: 0.8;
+}
+
+.scheme-dash-bg-chakra svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Header Section */
+.scheme-dash-header {
+  position: relative;
+  z-index: 10;
+  margin-bottom: 2rem;
+  border-bottom: 1.5px solid #ede8e1;
+  padding-bottom: 1.5rem;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1.5px solid #ede8e1;
+  border-radius: 8px;
+  padding: 8px 16px;
+  color: #666;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 1rem;
+}
+
+.back-btn:hover {
+  border-color: #FF6B00;
+  color: #FF6B00;
+  transform: translateX(-2px);
+}
+
+.scheme-category-badge {
+  background: #fff3ed;
+  color: #FF6B00;
+  border: 1px solid #ffd4b8;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 100px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.scheme-status-active {
+  color: #138808;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.scheme-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
+  font-weight: 900;
+  margin: 10px 0 0;
+  color: #1a1a1a;
+  letter-spacing: -0.02em;
+}
+
+.apply-btn-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #FF6B00, #FF8C00);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 4px 18px rgba(255, 107, 0, 0.25);
+  transition: all 0.25s ease;
+}
+
+.apply-btn-main:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255, 107, 0, 0.35);
+}
+
+/* Layout Grid */
+.scheme-dash-grid {
+  display: grid;
+  grid-template-columns: 2.3fr 1fr;
+  gap: 2rem;
+  position: relative;
+  z-index: 10;
+}
+
+/* Tab Bar */
+.scheme-tab-bar {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1.5px solid #ede8e1;
+  margin-bottom: 1.5rem;
+}
+
+.scheme-tab-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 10px 16px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.scheme-tab-item:hover {
+  color: #FF6B00;
+}
+
+.scheme-tab-item.active {
+  color: #FF6B00;
+  border-bottom-color: #FF6B00;
+}
+
+/* Cards & Sections */
+.theory-card, .side-card {
+  background: #ffffff;
+  border: 1.5px solid #ede8e1;
+  border-radius: 16px;
+  padding: 1.6rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.theory-card:hover, .side-card:hover {
+  border-color: #ffd4b8;
+  box-shadow: 0 10px 30px rgba(255, 107, 0, 0.03);
+}
+
+/* Checklist Items */
+.checklist-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.checklist-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border: 1.5px solid #ede8e1;
+  border-radius: 12px;
+  background: #fafaf8;
+  transition: all 0.25s ease;
+}
+
+.checklist-row:hover {
+  border-color: #FF6B00;
+  background: #ffffff;
+}
+
+.doc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 100px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.doc-badge-verified {
+  background: #f0fdf4;
+  color: #138808;
+  border: 1px solid #bbf7d0;
+}
+
+.doc-badge-pending {
+  background: #fef3cd;
+  color: #856404;
+  border: 1px solid #ffc107;
+}
+
+.doc-badge-rejected {
+  background: #fde2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+}
+
+.doc-badge-missing {
+  background: #f8f9fa;
+  color: #721c24;
+  border: 1px solid #dee2e6;
+}
+
+.checklist-success-banner {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1.5px solid #bbf7d0;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.checklist-warn-banner {
+  background: #fff3ed;
+  color: #854d0e;
+  border: 1.5px solid #ffd4b8;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .scheme-dash-grid {
+    grid-template-columns: 1fr;
+  }
+  .scheme-dash-layout {
+    padding: 1.5rem;
+  }
+}

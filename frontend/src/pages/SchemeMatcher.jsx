@@ -1,4 +1,26 @@
+import API from "../api/axios";
+
 function SchemeMatcher() {
-    return <div className="p-8 text-2xl">Scheme Matcher Page</div>;
+
+    const testAPI = async () => {
+        try {
+            const res = await API.post("/match-schemes", {});
+            alert(JSON.stringify(res.data));
+        } catch (err) {
+            console.error(err);
+            alert("API Error");
+        }
+    };
+
+    return (
+        <div style={{ padding: "40px" }}>
+            <h1>Scheme Matcher</h1>
+
+            <button onClick={testAPI}>
+                Test Backend Connection
+            </button>
+        </div>
+    );
 }
+
 export default SchemeMatcher;
