@@ -52,7 +52,11 @@ function Navbar() {
                     <Link to="/health" style={{ color: "#d1d5db", textDecoration: "none" }}>Health Score</Link>
                     <Link to="/savings" style={{ color: "#d1d5db", textDecoration: "none" }}>Savings</Link>
                     <Link to="/voice" style={{ color: "#d1d5db", textDecoration: "none" }}>Voice</Link>
+                    {user?.role === "admin" && (
+                        <Link to="/dc-panel" style={{ color: "#ff6b00", textDecoration: "none", fontWeight: "600" }}>🖧 DC Monitor</Link>
+                    )}
                 </div>
+
 
             </div>
 
