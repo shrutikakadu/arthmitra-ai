@@ -146,6 +146,8 @@ export default function SchemeDashboard() {
     const [user, setUser] = useState(null);
     const [userDocs, setUserDocs] = useState([]);
     const [activeTab, setActiveTab] = useState("overview");
+    const [applying, setApplying] = useState(false);
+    const [appliedSuccess, setAppliedSuccess] = useState(false);
 
     useEffect(() => {
         const stored = localStorage.getItem("user");
@@ -166,6 +168,30 @@ export default function SchemeDashboard() {
             console.error("Error loading user documents:", e);
         }
     };
+
+    const handleApplyScheme = async () => {
+        if (!user) return;
+        setApplying(true);
+        try {
+            const res = await API.post("/applications/apply", {
+                user_id: user.id,
+                scheme_name: decodedName,
+                category: decodedName.includes("Kisan") || decodedName.includes("Fasal") ? "Agriculture" : decodedName.includes("Ayushman") || decodedName.includes("Bima") ? "Healthcare" : "Welfare",
+                benefit: details.benefits?.[0] || "Standard Welfare Grant",
+                reason_for_applying: `Eligible citizen (${user.occupation || "Applicant"}, Income: ${user.income || "Standard"}) applying via ArthMitra Direct Pipeline.`
+            });
+            if (res.data.status === "success") {
+                setAppliedSuccess(true);
+                alert(`🎉 Application Submitted Successfully!\nPushed to Multi-Stage Queue (ID #${res.data.application_id}). Currently pending Local Admin (Clerk) verification.`);
+            }
+        } catch (e) {
+            console.error("Apply error:", e);
+            alert(e.response?.data?.detail || "Application failed");
+        } finally {
+            setApplying(false);
+        }
+    };
+
 
     // Find scheme details, or construct a dynamic detailed fallback
     const decodedName = decodeURIComponent(schemeName);
@@ -259,9 +285,24 @@ export default function SchemeDashboard() {
                         </div>
                         <h1 className="scheme-title">{decodedName}</h1>
                     </div>
-                    <a href={details.link} target="_blank" rel="noopener noreferrer" className="apply-btn-main">
-                        Register / Apply Official Portal <ExternalLink size={14} />
-                    </a>
+                    <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                        <button
+                            onClick={handleApplyScheme}
+                            disabled={applying || appliedSuccess}
+                            className="apply-btn-main"
+                            style={{
+                                background: appliedSuccess ? "#16a34a" : "linear-gradient(90deg, #FF6B00 0%, #FF8C00 100%)",
+                                border: "none",
+                                cursor: applying || appliedSuccess ? "default" : "pointer"
+                            }}
+                        >
+                            {appliedSuccess ? "✓ Application Submitted to Queue" : applying ? "Submitting..." : "🚀 Apply Direct via ArthMitra Pipeline"}
+                        </button>
+                        <a href={details.link} target="_blank" rel="noopener noreferrer" className="apply-btn-main" style={{ background: "rgba(0,0,0,0.05)", color: "#1a1a1a", border: "1px solid #ddd" }}>
+                            Official Portal <ExternalLink size={14} />
+                        </a>
+                    </div>
+
                 </div>
             </header>
 

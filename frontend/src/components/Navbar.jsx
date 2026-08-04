@@ -9,51 +9,91 @@ function Navbar() {
     useEffect(() => {
         const stored = localStorage.getItem("user");
         if (stored) {
-            setUser(JSON.parse(stored));
+            try { setUser(JSON.parse(stored)); } catch (e) { setUser(null); }
+        } else {
+            setUser(null);
         }
-    }, []);
+    }, [location.pathname]);
 
-    // Hide navbar on home, dashboard, admin, and scheme dashboard pages
-    if (location.pathname === "/" || location.pathname === "/dashboard" || location.pathname === "/admin" || location.pathname.startsWith("/scheme")) {
+    // Hide navbar on pages that have their own custom sidebar/header layout
+    if (location.pathname === "/dashboard" || location.pathname === "/admin" || location.pathname.startsWith("/scheme") || location.pathname === "/dc-panel") {
         return null;
     }
 
     const handleLogout = () => {
         localStorage.removeItem("user");
         setUser(null);
-        alert("Logged out successfully");
-        navigate("/");
-        window.location.reload();
+        navigate("/login");
     };
 
     return (
-        <nav className="bg-green-700 text-white px-6 py-4 flex gap-6 items-center justify-between shadow-md">
-            <div className="flex gap-6 items-center">
-                <span className="font-bold text-xl mr-4">🌿 ArthMitra AI</span>
-                <Link to="/" className="hover:underline">Home</Link>
-                <Link to="/match" className="hover:underline">Scheme Matcher</Link>
-                <Link to="/health" className="hover:underline">Health Score</Link>
-                <Link to="/savings" className="hover:underline">Savings</Link>
-                <Link to="/voice" className="hover:underline">Voice</Link>
+        <nav style={{
+            background: "#0d2818",
+            borderBottom: "1px solid rgba(74, 222, 128, 0.2)",
+            color: "#ffffff",
+            padding: "14px 28px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
+            fontFamily: "'Inter', system-ui, sans-serif"
+        }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
+                <Link to="/" style={{ textDecoration: "none", color: "#ffffff", fontWeight: "800", fontSize: "20px", display: "flex", alignItems: "center", gap: "8px" }}>
+                    <span>🌿</span>
+                    <span style={{ background: "linear-gradient(90deg, #ff6b00, #4ade80)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                        ArthMitra AI
+                    </span>
+                </Link>
+
+                <div style={{ display: "flex", gap: "18px", fontSize: "14px", fontWeight: "500" }}>
+                    <Link to="/" style={{ color: "#d1d5db", textDecoration: "none" }}>Home</Link>
+                    <Link to="/match" style={{ color: "#d1d5db", textDecoration: "none" }}>Scheme Matcher</Link>
+                    <Link to="/health" style={{ color: "#d1d5db", textDecoration: "none" }}>Health Score</Link>
+                    <Link to="/savings" style={{ color: "#d1d5db", textDecoration: "none" }}>Savings</Link>
+                    <Link to="/voice" style={{ color: "#d1d5db", textDecoration: "none" }}>Voice</Link>
+                </div>
+
             </div>
-            <div className="flex gap-4 items-center">
+
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                 {user ? (
                     <>
-                        <span className="text-sm font-medium">👤 {user.name}</span>
+                        <span style={{ fontSize: "13px", color: "#4ade80", background: "rgba(74, 222, 128, 0.1)", padding: "4px 10px", borderRadius: "20px" }}>
+                            👤 {user.name} ({user.role})
+                        </span>
                         <Link to={user.role === "admin" ? "/admin" : "/dashboard"}
-                            className="bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded text-sm font-semibold transition-colors">
+                            style={{
+                                background: "#138808", color: "#ffffff", textDecoration: "none",
+                                padding: "6px 14px", borderRadius: "8px", fontSize: "13px", fontWeight: "600"
+                            }}>
                             Dashboard
                         </Link>
                         <button onClick={handleLogout}
-                            className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-sm font-semibold transition-colors">
+                            style={{
+                                background: "rgba(239, 68, 68, 0.2)", color: "#fca5a5", border: "1px solid rgba(239, 68, 68, 0.4)",
+                                padding: "6px 12px", borderRadius: "8px", fontSize: "13px", cursor: "pointer", fontWeight: "600"
+                            }}>
                             Logout
                         </button>
                     </>
                 ) : (
-                    <Link to="/"
-                        className="bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded text-sm font-semibold transition-colors">
-                        Login / Sign Up
-                    </Link>
+                    <>
+                        <Link to="/login"
+                            style={{
+                                background: "#138808", color: "#ffffff", textDecoration: "none",
+                                padding: "7px 16px", borderRadius: "8px", fontSize: "13px", fontWeight: "600"
+                            }}>
+                            Sign In
+                        </Link>
+                        <Link to="/register"
+                            style={{
+                                background: "#ff6b00", color: "#ffffff", textDecoration: "none",
+                                padding: "7px 16px", borderRadius: "8px", fontSize: "13px", fontWeight: "600"
+                            }}>
+                            Register
+                        </Link>
+                    </>
                 )}
             </div>
         </nav>

@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional
-from database import get_db, User, Notification
+from database import get_db, User, Notification, DCEvent
+import time
 import bcrypt
 
 router = APIRouter()
@@ -14,7 +15,9 @@ def hash_password(password: str) -> str:
 
 def verify_password(password: str, hashed: str) -> bool:
     try:
-        return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
+        if bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8')):
+            return True
+        return bcrypt.checkpw(password.strip().encode('utf-8'), hashed.encode('utf-8'))
     except Exception:
         return False
 
@@ -47,13 +50,28 @@ class ProfileUpdate(BaseModel):
 
 @router.post("/auth/register")
 def register(data: RegisterData, db: Session = Depends(get_db)):
-    existing = db.query(User).filter(User.mobile == data.mobile).first()
+    t0 = time.time()
+    clean_mobile = data.mobile.strip()
+    clean_password = data.password.strip()
+
+    existing = db.query(User).filter(User.mobile == clean_mobile).first()
     if existing:
+        # Log failed DC Event
+        dc_evt = DCEvent(
+            node_id="auth-node-01",
+            event_type="user_register",
+            payload=f"Mobile {clean_mobile} duplicate attempt",
+            latency_ms=round((time.time() - t0) * 1000, 2),
+            status="failed"
+        )
+        db.add(dc_evt)
+        db.commit()
         raise HTTPException(status_code=400, detail="Mobile already registered")
+
     user = User(
-        name=data.name,
-        mobile=data.mobile,
-        password=hash_password(data.password),
+        name=data.name.strip(),
+        mobile=clean_mobile,
+        password=hash_password(clean_password),
         state=data.state,
         language=data.language,
         role="user"
@@ -68,6 +86,16 @@ def register(data: RegisterData, db: Session = Depends(get_db)):
         category="success"
     )
     db.add(notif)
+
+    # Log successful DC Event
+    dc_evt = DCEvent(
+        node_id="auth-node-01",
+        event_type="user_register",
+        payload=f"Registered user: {user.name} ({user.mobile}), Shard: {user.state}",
+        latency_ms=round((time.time() - t0) * 1000, 2),
+        status="success"
+    )
+    db.add(dc_evt)
     db.commit()
 
     return {"status": "success", "message": f"Welcome {data.name}!", "user_id": user.id}
@@ -75,9 +103,49 @@ def register(data: RegisterData, db: Session = Depends(get_db)):
 
 @router.post("/auth/login")
 def login(data: LoginData, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.mobile == data.mobile).first()
-    if not user or not verify_password(data.password, user.password):
+    t0 = time.time()
+    clean_mobile = data.mobile.strip()
+    clean_password = data.password.strip()
+
+    from distributed_cache import get_cache
+    cache = get_cache()
+
+    # Rate Limiting check (DC Concept #1 & #10) — 20 attempts / min
+    rate_res = cache.check_rate_limit(f"login:{clean_mobile}", max_requests=20, window=60)
+    if not rate_res["allowed"]:
+        raise HTTPException(status_code=429, detail="Too many login attempts. Please wait 1 minute.")
+
+    user = db.query(User).filter(User.mobile == clean_mobile).first()
+    if not user or not verify_password(clean_password, user.password):
+        # Log failed auth event
+        dc_evt = DCEvent(
+            node_id="auth-node-01",
+            event_type="login",
+            payload=f"Failed auth for mobile: {clean_mobile}",
+            latency_ms=round((time.time() - t0) * 1000, 2),
+            status="failed"
+        )
+        db.add(dc_evt)
+        db.commit()
         raise HTTPException(status_code=401, detail="Invalid mobile or password")
+
+
+    # Cache user session token in distributed cache (DC Concept #11)
+    session_data = {"id": user.id, "name": user.name, "role": user.role, "state": user.state}
+    cache.set(f"session:user:{user.id}", session_data, ttl=86400)
+
+    # Log successful auth event
+    dc_evt = DCEvent(
+        node_id="auth-node-01",
+        event_type="login",
+        payload=f"User authenticated: {user.name} (Role: {user.role})",
+        latency_ms=round((time.time() - t0) * 1000, 2),
+        status="success"
+    )
+    db.add(dc_evt)
+    db.commit()
+
+
     return {
         "status": "success",
         "message": f"Welcome back {user.name}!",

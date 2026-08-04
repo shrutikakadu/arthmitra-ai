@@ -61,7 +61,11 @@ export default function Dashboard() {
     const stored = localStorage.getItem("user");
     if (!stored) { navigate("/"); return; }
     const parsed = JSON.parse(stored);
-    if (parsed.role === "admin") { navigate("/admin", { replace: true }); return; }
+    if (parsed.role && parsed.role !== "user") {
+      navigate("/admin", { replace: true });
+      return;
+    }
+
     setUser(parsed);
     loadProfile(parsed.id);
     loadDocuments(parsed.id);
