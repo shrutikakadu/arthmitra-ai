@@ -232,7 +232,7 @@ export default function DCControlPanel() {
     const m = metrics;
     
     // Construct values for new cards
-    const qBacklog = mqStats?.stats?.total_messages_queued || 0;
+    const qBacklog = mqStats?.topics ? Object.values(mqStats.topics).reduce((s, t) => s + (t.queue_depth || 0), 0) : 0;
     const cacheHit = cacheStats?.hit_rate_pct || m.cache_hit_rate_pct || 0;
     const activeLocks = locks?.stats?.active_locks || 0;
     const replicationLag = replStats?.nodes?.[0]?.replication_lag_ms || m.replication_lag_ms || 0;

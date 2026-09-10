@@ -40,11 +40,30 @@ def start_replication():
     thread.start()
 
 def get_replication_stats():
+    replica_exists = os.path.exists("arthmitra_replica.db")
+    lag_ms = 1.2 if replica_exists else 0.0
     return {
         "primary_db": "arthmitra.db",
         "replica_db": "arthmitra_replica.db",
         "wal_lsn": wal_lsn,
         "wal_entries_count": len(wal_log),
-        "replication_lag_ms": 1.2 if os.path.exists("arthmitra_replica.db") else 0.0,
-        "status": "healthy"
+        "replication_lag_ms": lag_ms,
+        "status": "healthy",
+        # nodes array expected by DC Control Panel frontend (replStats.nodes?.map(...))
+        "nodes": [
+            {
+                "node_id": "db-node-01 (Primary)",
+                "role": "primary",
+                "status": "online",
+                "wal_lsn": wal_lsn,
+                "wal_entries_count": len(wal_log),
+            },
+            {
+                "node_id": "db-node-01 (Replica)",
+                "role": "replica",
+                "status": "online" if replica_exists else "offline",
+                "replication_lag_ms": lag_ms,
+                "last_sync_time": __import__('datetime').datetime.utcnow().isoformat(),
+            }
+        ]
     }
