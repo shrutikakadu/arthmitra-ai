@@ -1,0 +1,49 @@
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+
+function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+
+    // temporary login
+    navigate("/dashboard");
+  };
+
+  return (
+    <div style={{ padding: "40px", maxWidth: "400px", margin: "auto" }}>
+      <h2>Login</h2>
+
+      <form onSubmit={handleLogin}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
+        />
+
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
+        />
+
+        <button type="submit">
+          Login
+        </button>
+      </form>
+
+      <p>
+        New User? <Link to="/register">Register</Link>
+      </p>
+    </div>
+  );
+}
+
+export default Login;
