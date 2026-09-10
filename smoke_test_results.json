@@ -1,0 +1,322 @@
+[
+  {
+    "endpoint": "/",
+    "method": "GET",
+    "status_code": 200,
+    "response_body": "{\"message\": \"ArthMitra AI Backend Running \\u2705\"}",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/auth/register",
+    "method": "POST",
+    "status_code": 200,
+    "response_body": "{\"status\": \"success\", \"message\": \"Welcome Test Citizen!\", \"user_id\": 6}",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/auth/login",
+    "method": "POST",
+    "status_code": 200,
+    "response_body": "{\"status\": \"success\", \"message\": \"Welcome back Ramesh Khedkar!\", \"user\": {\"id\": 1, \"name\": \"Ramesh Khedkar\", \"mobile\": \"9876543210\", \"state\": \"Maharas...",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/auth/profile/1",
+    "method": "GET",
+    "status_code": 200,
+    "response_body": "{\"id\": 1, \"name\": \"Ramesh Khedkar\", \"mobile\": \"9876543210\", \"state\": \"Maharashtra\", \"language\": \"English\", \"role\": \"user\", \"age\": 35, \"occupation\": \"F...",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/auth/profile/1",
+    "method": "PUT",
+    "status_code": 200,
+    "response_body": "{\"status\": \"success\", \"message\": \"Profile updated successfully\"}",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/auth/users",
+    "method": "GET",
+    "status_code": 200,
+    "response_body": "[{\"id\": 1, \"name\": \"Ramesh Khedkar\", \"mobile\": \"9876543210\", \"state\": \"Maharashtra\", \"role\": \"user\", \"occupation\": \"Farmer\", \"income\": \"60000\"}, {\"id\"...",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/match-schemes",
+    "method": "POST",
+    "status_code": 200,
+    "response_body": "{\"status\": \"ok\", \"total_schemes\": 52, \"schemes\": [{\"scheme_name\": \"Paramparagat Krishi Vikas Yojana\", \"category\": \"Farmer\", \"benefit\": \"Organic farmin...",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/internal/ml/match",
+    "method": "POST",
+    "status_code": 200,
+    "response_body": "{\"status\": \"ok\", \"total_schemes\": 40, \"schemes\": [{\"scheme_name\": \"Ayushman Bharat PM-JAY\", \"category\": \"Health\", \"benefit\": \"\\u20b95 lakh health cove...",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/health-score",
+    "method": "POST",
+    "status_code": 200,
+    "response_body": "{\"status\": \"ok\", \"score\": 45, \"grade\": \"D\", \"dimensions\": {\"income_adequacy\": {\"score\": 7, \"max\": 30, \"label\": \"Income Adequacy\"}, \"scheme_coverage\": ...",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/savings-plan",
+    "method": "POST",
+    "status_code": 200,
+    "response_body": "{\"status\": \"ok\", \"monthly_savings_capacity\": 500, \"total_monthly_commitment\": 631, \"plans\": [{\"name\": \"Post Office Recurring Deposit\", \"icon\": \"\\ud83c...",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/voice",
+    "method": "POST",
+    "status_code": 200,
+    "response_body": "{\"status\": \"ok\", \"text\": \"I am a 35 years old farmer from Maharashtra income is 60000\", \"profile\": {\"age\": 35, \"occupation\": \"Farmer\", \"income\": \"6000...",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/documents/upload",
+    "method": "POST",
+    "status_code": 200,
+    "response_body": "{\"status\": \"success\", \"message\": \"Aadhaar Card uploaded successfully\", \"document\": {\"id\": 1, \"doc_type\": \"aadhaar\", \"original_name\": \"test_aadhaar.png...",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/documents/my/1",
+    "method": "GET",
+    "status_code": 200,
+    "response_body": "[{\"id\": 1, \"doc_type\": \"aadhaar\", \"original_name\": \"test_aadhaar.png\", \"filename\": \"1_aadhaar_a2ddb541.png\", \"status\": \"pending_clerk\", \"uploaded_at\":...",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/documents/all",
+    "method": "GET",
+    "status_code": 200,
+    "response_body": "[{\"id\": 1, \"doc_type\": \"aadhaar\", \"original_name\": \"test_aadhaar.png\", \"filename\": \"1_aadhaar_a2ddb541.png\", \"status\": \"pending_clerk\", \"uploaded_at\":...",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/documents/1/verify",
+    "method": "PUT",
+    "status_code": 200,
+    "response_body": "{\"status\": \"success\", \"message\": \"Document pending_officer\", \"doc_status\": \"pending_officer\"}",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/applications/apply",
+    "method": "POST",
+    "status_code": 200,
+    "response_body": "{\"status\": \"success\", \"message\": \"Application for 'PM Kisan Samman Nidhi' submitted successfully!\", \"application_id\": 4}",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/applications/my/1",
+    "method": "GET",
+    "status_code": 200,
+    "response_body": "[{\"id\": 4, \"scheme_name\": \"PM Kisan Samman Nidhi\", \"category\": \"Farmer\", \"benefit\": \"\\u20b96,000/year\", \"reason_for_applying\": \"Applicant eligible bas...",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/applications/all",
+    "method": "GET",
+    "status_code": 200,
+    "response_body": "[{\"id\": 4, \"user_id\": 1, \"user_name\": \"Ramesh Khedkar\", \"user_mobile\": \"9876543210\", \"user_state\": \"Maharashtra\", \"user_occupation\": \"Farmer\", \"scheme...",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/applications/4/verify (Clerk)",
+    "method": "PUT",
+    "status_code": 200,
+    "response_body": "{\"status\": \"success\", \"message\": \"Application status updated to pending_district\", \"app_status\": \"pending_district\", \"current_handler\": \"District Offi...",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/applications/4/verify (Officer/DM)",
+    "method": "PUT",
+    "status_code": 200,
+    "response_body": "{\"status\": \"success\", \"message\": \"Application status updated to pending_state\", \"app_status\": \"pending_state\", \"current_handler\": \"Department Secretar...",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/applications/4/verify (Secretary)",
+    "method": "PUT",
+    "status_code": 200,
+    "response_body": "{\"status\": \"success\", \"message\": \"Application status updated to pending_minister\", \"app_status\": \"pending_minister\", \"current_handler\": \"Cabinet Minis...",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/applications/4/verify (Minister/Raft)",
+    "method": "PUT",
+    "status_code": 200,
+    "response_body": "{\"status\": \"success\", \"message\": \"Application status updated to verified\", \"app_status\": \"verified\", \"current_handler\": \"Approved & Disbursed\", \"versi...",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/notifications/1",
+    "method": "GET",
+    "status_code": 200,
+    "response_body": "[{\"id\": 8, \"message\": \"Your application for 'PM Kisan Samman Nidhi' was updated to 'Approved & Disbursed'.\", \"category\": \"success\", \"read\": false, \"cr...",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/notifications/1/unread-count",
+    "method": "GET",
+    "status_code": 200,
+    "response_body": "{\"count\": 7}",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/notifications/1/read",
+    "method": "PUT",
+    "status_code": 200,
+    "response_body": "{\"status\": \"success\"}",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/notifications/1/read-all",
+    "method": "PUT",
+    "status_code": 200,
+    "response_body": "{\"status\": \"success\"}",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/dc/nodes",
+    "method": "GET",
+    "status_code": 200,
+    "response_body": "[{\"id\": \"auth-node-01\", \"service\": \"Authentication Service\", \"region\": \"us-central\", \"port\": 8001, \"replicas\": 3, \"status\": \"online\", \"latency_ms\": 25...",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/dc/nodes/auth-node-01/toggle",
+    "method": "POST",
+    "status_code": 200,
+    "response_body": "{\"node_id\": \"auth-node-01\", \"status\": \"degraded\", \"previous_status\": \"online\"}",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/dc/consensus/vote?doc_id=1",
+    "method": "POST",
+    "status_code": 200,
+    "response_body": "{\"status\": \"success\", \"doc_id\": 1, \"doc_status\": \"verified\", \"raft\": {\"status\": \"success\", \"quorum_reached\": true, \"term\": 0, \"index\": 2, \"acks\": 3, \"...",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/dc/shard/rebalance",
+    "method": "POST",
+    "status_code": 200,
+    "response_body": "{\"status\": \"rebalanced\", \"timestamp\": \"2026-09-09T13:53:23.806467\"}",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/dc/topology",
+    "method": "GET",
+    "status_code": 200,
+    "response_body": "{\"nodes\": [{\"id\": \"auth-node-01\", \"service\": \"Authentication Service\", \"region\": \"us-central\", \"status\": \"degraded\", \"latency_ms\": 157.0}, {\"id\": \"ml-...",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/dc/shards",
+    "method": "GET",
+    "status_code": 200,
+    "response_body": "[{\"state\": \"Maharashtra\", \"shard\": \"shard-west-01\", \"region\": \"West\", \"color\": \"#ff6b35\", \"user_count\": 6, \"doc_count\": 18, \"pct\": 0.3}, {\"state\": \"Ut...",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/dc/events",
+    "method": "GET",
+    "status_code": 200,
+    "response_body": "[{\"id\": 15, \"node_id\": \"db-node-01\", \"event_type\": \"shard_sync\", \"icon\": \"\\ud83d\\udd04\", \"color\": \"#a78bfa\", \"latency_ms\": 42.1, \"status\": \"success\", ...",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/dc/metrics",
+    "method": "GET",
+    "status_code": 200,
+    "response_body": "{\"total_requests_today\": 375, \"avg_latency_ms\": 31.6, \"p99_latency_ms\": 162.1, \"throughput_rps\": 141.9, \"error_rate_pct\": 0.32, \"cache_hit_rate_pct\": ...",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/dc/consensus",
+    "method": "GET",
+    "status_code": 200,
+    "response_body": "{\"algorithm\": \"Raft\", \"total_nodes\": 3, \"quorum_size\": 2, \"leader\": \"admin-node-01\", \"term\": 1, \"pending_items\": []}",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/dc/cache/stats",
+    "method": "GET",
+    "status_code": 200,
+    "response_body": "{\"node_id\": \"cache-node-01\", \"status\": \"online\", \"total_keys\": 3, \"max_size\": 2000, \"hits\": 0, \"misses\": 2, \"hit_rate_pct\": 0.0, \"sets\": 4, \"deletes\":...",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/dc/locks",
+    "method": "GET",
+    "status_code": 200,
+    "response_body": "{\"stats\": {\"active_locks\": 0, \"locks\": [], \"total_acquired\": 5, \"total_released\": 5, \"total_denied\": 0, \"total_expired\": 0, \"total_contentions\": 0, \"u...",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/dc/circuit-breakers",
+    "method": "GET",
+    "status_code": 200,
+    "response_body": "{\"total_breakers\": 1, \"open_circuits\": 0, \"half_open_circuits\": 0, \"closed_circuits\": 1, \"breakers\": [{\"service\": \"ml-matcher\", \"state\": \"CLOSED\", \"fa...",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/dc/mq/stats",
+    "method": "GET",
+    "status_code": 200,
+    "response_body": "{\"topics\": {\"doc.submitted\": {\"queue_depth\": 0, \"processed_count\": 1}, \"doc.state-change\": {\"queue_depth\": 0, \"processed_count\": 0}, \"scheme.applied\":...",
+    "pass_fail": "PASS",
+    "error": ""
+  },
+  {
+    "endpoint": "/api/dc/replication/stats",
+    "method": "GET",
+    "status_code": 200,
+    "response_body": "{\"primary_db\": \"arthmitra.db\", \"replica_db\": \"arthmitra_replica.db\", \"wal_lsn\": 0, \"wal_entries_count\": 0, \"replication_lag_ms\": 1.2, \"status\": \"healt...",
+    "pass_fail": "PASS",
+    "error": ""
+  }
+]

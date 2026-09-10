@@ -1,0 +1,303 @@
+{
+  "total_endpoints_tested": 36,
+  "all_passed": true,
+  "average_latency_ms": 48.32,
+  "slowest_endpoint": {
+    "endpoint": "POST /api/match-schemes",
+    "latency_ms": 548.72
+  },
+  "fastest_endpoint": {
+    "endpoint": "GET /api/dc/circuit-breakers",
+    "latency_ms": 3.81
+  },
+  "results": [
+    {
+      "url": "/",
+      "method": "GET",
+      "status": 200,
+      "summary": "{\"message\": \"ArthMitra AI Backend Running \\u2705\"}",
+      "pass_fail": "PASS",
+      "latency_ms": 23.1
+    },
+    {
+      "url": "/api/auth/register",
+      "method": "POST",
+      "status": 200,
+      "summary": "{\"status\": \"success\", \"message\": \"Welcome Demo Citizen!\", \"user_id\": 7}",
+      "pass_fail": "PASS",
+      "latency_ms": 412.95
+    },
+    {
+      "url": "/api/auth/login",
+      "method": "POST",
+      "status": 200,
+      "summary": "{\"status\": \"success\", \"message\": \"Welcome back Ramesh Khedkar!\", \"user\": {\"id\": 1, \"name\": \"Ramesh Khedkar\", \"mobile\": \"...",
+      "pass_fail": "PASS",
+      "latency_ms": 385.14
+    },
+    {
+      "url": "/api/auth/profile/1",
+      "method": "GET",
+      "status": 200,
+      "summary": "{\"id\": 1, \"name\": \"Ramesh Khedkar\", \"mobile\": \"9876543210\", \"state\": \"Maharashtra\", \"language\": \"English\", \"role\": \"user...",
+      "pass_fail": "PASS",
+      "latency_ms": 7.65
+    },
+    {
+      "url": "/api/auth/profile/1",
+      "method": "PUT",
+      "status": 200,
+      "summary": "{\"status\": \"success\", \"message\": \"Profile updated successfully\"}",
+      "pass_fail": "PASS",
+      "latency_ms": 20.63
+    },
+    {
+      "url": "/api/auth/users",
+      "method": "GET",
+      "status": 200,
+      "summary": "[{\"id\": 1, \"name\": \"Ramesh Khedkar\", \"mobile\": \"9876543210\", \"state\": \"Maharashtra\", \"role\": \"user\", \"occupation\": \"Farm...",
+      "pass_fail": "PASS",
+      "latency_ms": 6.06
+    },
+    {
+      "url": "/api/match-schemes",
+      "method": "POST",
+      "status": 200,
+      "summary": "{\"status\": \"ok\", \"total_schemes\": 52, \"schemes\": [{\"scheme_name\": \"RKVY\", \"category\": \"Farmer\", \"benefit\": \"Agriculture ...",
+      "pass_fail": "PASS",
+      "latency_ms": 548.72
+    },
+    {
+      "url": "/api/internal/ml/match",
+      "method": "POST",
+      "status": 200,
+      "summary": "{\"status\": \"ok\", \"total_schemes\": 51, \"schemes\": [{\"scheme_name\": \"PM Kisan Samman Nidhi\", \"category\": \"Farmer\", \"benefi...",
+      "pass_fail": "PASS",
+      "latency_ms": 18.36
+    },
+    {
+      "url": "/api/health-score",
+      "method": "POST",
+      "status": 200,
+      "summary": "{\"status\": \"ok\", \"score\": 45, \"grade\": \"D\", \"dimensions\": {\"income_adequacy\": {\"score\": 7, \"max\": 30, \"label\": \"Income A...",
+      "pass_fail": "PASS",
+      "latency_ms": 13.98
+    },
+    {
+      "url": "/api/savings-plan",
+      "method": "POST",
+      "status": 200,
+      "summary": "{\"status\": \"ok\", \"monthly_savings_capacity\": 542, \"total_monthly_commitment\": 644, \"plans\": [{\"name\": \"Post Office Recur...",
+      "pass_fail": "PASS",
+      "latency_ms": 13.92
+    },
+    {
+      "url": "/api/voice",
+      "method": "POST",
+      "status": 200,
+      "summary": "{\"status\": \"ok\", \"text\": \"I am a 36 year old farmer from Maharashtra earning 65000 rupees\", \"profile\": {\"age\": 36, \"occu...",
+      "pass_fail": "PASS",
+      "latency_ms": 4.38
+    },
+    {
+      "url": "/api/documents/upload",
+      "method": "POST",
+      "status": 200,
+      "summary": "{\"status\": \"success\", \"message\": \"Aadhaar Card uploaded successfully\", \"document\": {\"id\": 2, \"doc_type\": \"aadhaar\", \"ori...",
+      "pass_fail": "PASS",
+      "latency_ms": 30.27
+    },
+    {
+      "url": "/api/documents/my/1",
+      "method": "GET",
+      "status": 200,
+      "summary": "[{\"id\": 2, \"doc_type\": \"aadhaar\", \"original_name\": \"demo_aadhaar.png\", \"filename\": \"1_aadhaar_a59a0f4b.png\", \"status\": \"...",
+      "pass_fail": "PASS",
+      "latency_ms": 7.63
+    },
+    {
+      "url": "/api/documents/all",
+      "method": "GET",
+      "status": 200,
+      "summary": "[{\"id\": 2, \"doc_type\": \"aadhaar\", \"original_name\": \"demo_aadhaar.png\", \"filename\": \"1_aadhaar_a59a0f4b.png\", \"status\": \"...",
+      "pass_fail": "PASS",
+      "latency_ms": 7.56
+    },
+    {
+      "url": "/api/documents/2/verify",
+      "method": "PUT",
+      "status": 200,
+      "summary": "{\"status\": \"success\", \"message\": \"Document pending_officer\", \"doc_status\": \"pending_officer\"}",
+      "pass_fail": "PASS",
+      "latency_ms": 25.25
+    },
+    {
+      "url": "/api/applications/apply",
+      "method": "POST",
+      "status": 200,
+      "summary": "{\"status\": \"success\", \"message\": \"Application for 'PM Kisan Samman Nidhi' submitted successfully!\", \"application_id\": 5}",
+      "pass_fail": "PASS",
+      "latency_ms": 34.3
+    },
+    {
+      "url": "/api/applications/my/1",
+      "method": "GET",
+      "status": 200,
+      "summary": "[{\"id\": 5, \"scheme_name\": \"PM Kisan Samman Nidhi\", \"category\": \"Farmer\", \"benefit\": \"\\u20b96,000/year\", \"reason_for_appl...",
+      "pass_fail": "PASS",
+      "latency_ms": 7.81
+    },
+    {
+      "url": "/api/applications/all",
+      "method": "GET",
+      "status": 200,
+      "summary": "[{\"id\": 5, \"user_id\": 1, \"user_name\": \"Ramesh Khedkar\", \"user_mobile\": \"9876543210\", \"user_state\": \"Maharashtra\", \"user_...",
+      "pass_fail": "PASS",
+      "latency_ms": 10.32
+    },
+    {
+      "url": "/api/applications/5/verify",
+      "method": "PUT",
+      "status": 200,
+      "summary": "{\"status\": \"success\", \"message\": \"Application status updated to pending_district\", \"app_status\": \"pending_district\", \"cu...",
+      "pass_fail": "PASS",
+      "latency_ms": 25.97
+    },
+    {
+      "url": "/api/notifications/1",
+      "method": "GET",
+      "status": 200,
+      "summary": "[{\"id\": 15, \"message\": \"Your application for 'PM Kisan Samman Nidhi' was updated to 'Rejected'.\", \"category\": \"info\", \"r...",
+      "pass_fail": "PASS",
+      "latency_ms": 7.34
+    },
+    {
+      "url": "/api/notifications/1/read",
+      "method": "PUT",
+      "status": 200,
+      "summary": "{\"status\": \"success\"}",
+      "pass_fail": "PASS",
+      "latency_ms": 6.57
+    },
+    {
+      "url": "/api/notifications/1/read-all",
+      "method": "PUT",
+      "status": 200,
+      "summary": "{\"status\": \"success\"}",
+      "pass_fail": "PASS",
+      "latency_ms": 14.96
+    },
+    {
+      "url": "/api/dc/nodes",
+      "method": "GET",
+      "status": 200,
+      "summary": "[{\"id\": \"auth-node-01\", \"service\": \"Authentication Service\", \"region\": \"us-central\", \"port\": 8001, \"replicas\": 3, \"statu...",
+      "pass_fail": "PASS",
+      "latency_ms": 4.88
+    },
+    {
+      "url": "/api/dc/nodes/auth-node-01/toggle",
+      "method": "POST",
+      "status": 200,
+      "summary": "{\"node_id\": \"auth-node-01\", \"status\": \"offline\", \"previous_status\": \"degraded\"}",
+      "pass_fail": "PASS",
+      "latency_ms": 12.28
+    },
+    {
+      "url": "/api/dc/consensus/vote?doc_id=1",
+      "method": "POST",
+      "status": 200,
+      "summary": "{\"status\": \"success\", \"doc_id\": 1, \"doc_status\": \"verified\", \"raft\": {\"status\": \"success\", \"quorum_reached\": true, \"term...",
+      "pass_fail": "PASS",
+      "latency_ms": 17.12
+    },
+    {
+      "url": "/api/dc/shard/rebalance",
+      "method": "POST",
+      "status": 200,
+      "summary": "{\"status\": \"rebalanced\", \"timestamp\": \"2026-09-09T15:12:19.299735\"}",
+      "pass_fail": "PASS",
+      "latency_ms": 13.72
+    },
+    {
+      "url": "/api/dc/topology",
+      "method": "GET",
+      "status": 200,
+      "summary": "{\"nodes\": [{\"id\": \"auth-node-01\", \"service\": \"Authentication Service\", \"region\": \"us-central\", \"status\": \"offline\", \"lat...",
+      "pass_fail": "PASS",
+      "latency_ms": 4.97
+    },
+    {
+      "url": "/api/dc/shards",
+      "method": "GET",
+      "status": 200,
+      "summary": "[{\"state\": \"Maharashtra\", \"shard\": \"shard-west-01\", \"region\": \"West\", \"color\": \"#ff6b35\", \"user_count\": 7, \"doc_count\": ...",
+      "pass_fail": "PASS",
+      "latency_ms": 6.12
+    },
+    {
+      "url": "/api/dc/events",
+      "method": "GET",
+      "status": 200,
+      "summary": "[{\"id\": 31, \"node_id\": \"db-node-01\", \"event_type\": \"shard_sync\", \"icon\": \"\\ud83d\\udd04\", \"color\": \"#a78bfa\", \"latency_ms...",
+      "pass_fail": "PASS",
+      "latency_ms": 7.7
+    },
+    {
+      "url": "/api/dc/metrics",
+      "method": "GET",
+      "status": 200,
+      "summary": "{\"total_requests_today\": 314, \"avg_latency_ms\": 35.8, \"p99_latency_ms\": 193.3, \"throughput_rps\": 64.3, \"error_rate_pct\":...",
+      "pass_fail": "PASS",
+      "latency_ms": 9.65
+    },
+    {
+      "url": "/api/dc/consensus",
+      "method": "GET",
+      "status": 200,
+      "summary": "{\"algorithm\": \"Raft\", \"total_nodes\": 3, \"quorum_size\": 2, \"leader\": \"admin-node-01\", \"term\": 2, \"pending_items\": []}",
+      "pass_fail": "PASS",
+      "latency_ms": 7.53
+    },
+    {
+      "url": "/api/dc/cache/stats",
+      "method": "GET",
+      "status": 200,
+      "summary": "{\"node_id\": \"cache-node-01\", \"status\": \"online\", \"total_keys\": 6, \"max_size\": 2000, \"hits\": 0, \"misses\": 6, \"hit_rate_pc...",
+      "pass_fail": "PASS",
+      "latency_ms": 5.59
+    },
+    {
+      "url": "/api/dc/locks",
+      "method": "GET",
+      "status": 200,
+      "summary": "{\"stats\": {\"active_locks\": 0, \"locks\": [], \"total_acquired\": 8, \"total_released\": 8, \"total_denied\": 0, \"total_expired\":...",
+      "pass_fail": "PASS",
+      "latency_ms": 4.39
+    },
+    {
+      "url": "/api/dc/circuit-breakers",
+      "method": "GET",
+      "status": 200,
+      "summary": "{\"total_breakers\": 1, \"open_circuits\": 0, \"half_open_circuits\": 0, \"closed_circuits\": 1, \"breakers\": [{\"service\": \"ml-ma...",
+      "pass_fail": "PASS",
+      "latency_ms": 3.81
+    },
+    {
+      "url": "/api/dc/mq/stats",
+      "method": "GET",
+      "status": 200,
+      "summary": "{\"topics\": {\"doc.submitted\": {\"queue_depth\": 0, \"processed_count\": 2}, \"doc.state-change\": {\"queue_depth\": 0, \"processed...",
+      "pass_fail": "PASS",
+      "latency_ms": 5.09
+    },
+    {
+      "url": "/api/dc/replication/stats",
+      "method": "GET",
+      "status": 200,
+      "summary": "{\"primary_db\": \"arthmitra.db\", \"replica_db\": \"arthmitra_replica.db\", \"wal_lsn\": 0, \"wal_entries_count\": 0, \"replication_...",
+      "pass_fail": "PASS",
+      "latency_ms": 3.93
+    }
+  ]
+}
