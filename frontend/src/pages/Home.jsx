@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import API from "../api/axios";
+import { useLanguage } from "../LanguageContext";
 
 // ─── 3D TIRANGA LIGHT BACKGROUND COMPONENT ──────────────────────────────────────
 function Tiranga3DBackground() {
@@ -207,6 +208,7 @@ const STEPS = [
 export default function Home() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const { lang, setLang, t } = useLanguage();
 
   useEffect(() => {
     const stored = localStorage.getItem("user");
@@ -249,10 +251,35 @@ export default function Home() {
         </Link>
 
         <div style={{ display: "flex", alignItems: "center", gap: 24, fontSize: 14, fontWeight: 500 }}>
-          <Link to="/match" style={{ color: "#334155", textDecoration: "none" }}>Scheme Matcher</Link>
-          <Link to="/health" style={{ color: "#334155", textDecoration: "none" }}>Health Score</Link>
-          <Link to="/savings" style={{ color: "#334155", textDecoration: "none" }}>Savings Planner</Link>
-          <Link to="/voice" style={{ color: "#334155", textDecoration: "none" }}>Voice Search</Link>
+          <Link to="/match" style={{ color: "#334155", textDecoration: "none" }}>{t("nav_scheme_matcher")}</Link>
+          <Link to="/health" style={{ color: "#334155", textDecoration: "none" }}>{t("nav_health_score")}</Link>
+          <Link to="/savings" style={{ color: "#334155", textDecoration: "none" }}>{t("nav_savings")}</Link>
+          <Link to="/voice" style={{ color: "#334155", textDecoration: "none" }}>{t("nav_voice")}</Link>
+
+          {/* ── LANGUAGE PICKER ── */}
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontSize: 13, color: "#64748b" }}>🌐</span>
+            <select
+              id="home-lang-picker"
+              value={lang}
+              onChange={e => setLang(e.target.value)}
+              style={{
+                background: "transparent",
+                border: "1px solid #e2e8f0",
+                borderRadius: 6,
+                padding: "4px 8px",
+                fontSize: 13,
+                fontWeight: 600,
+                color: "#334155",
+                cursor: "pointer",
+                fontFamily: "'Inter', sans-serif"
+              }}
+            >
+              <option value="en">English</option>
+              <option value="hi">हिन्दी</option>
+              <option value="es">Español</option>
+            </select>
+          </div>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -269,38 +296,24 @@ export default function Home() {
                 fontWeight: 600
               }}
             >
-              Go to Dashboard ({user.name})
+              {t("hero_cta_dashboard")} ({user.name})
             </Link>
           ) : (
-            <>
-              <Link
-                to="/login"
-                style={{
-                  color: "#334155",
-                  textDecoration: "none",
-                  fontSize: 14,
-                  fontWeight: 600,
-                  padding: "8px 14px"
-                }}
-              >
-                Sign In
-              </Link>
-              <Link
-                to="/register"
-                style={{
-                  background: "#ff6b00",
-                  color: "#ffffff",
-                  padding: "8px 18px",
-                  borderRadius: 8,
-                  textDecoration: "none",
-                  fontSize: 14,
-                  fontWeight: 600,
-                  boxShadow: "0 4px 12px rgba(255, 107, 0, 0.25)"
-                }}
-              >
-                Get Started →
-              </Link>
-            </>
+            <Link
+              to="/login"
+              style={{
+                background: "linear-gradient(90deg, #ff6b00 0%, #138808 100%)",
+                color: "#ffffff",
+                padding: "8px 18px",
+                borderRadius: 8,
+                textDecoration: "none",
+                fontSize: 14,
+                fontWeight: 600,
+                boxShadow: "0 4px 12px rgba(255, 107, 0, 0.25)"
+              }}
+            >
+              {t("nav_signin_register")} →
+            </Link>
           )}
         </div>
       </header>
@@ -327,7 +340,7 @@ export default function Home() {
           fontWeight: 600,
           marginBottom: 24
         }}>
-          <span>🇮🇳</span> Official Government Welfare & Financial Support Platform
+          {t("hero_badge")}
         </div>
 
         <h1 style={{
@@ -338,7 +351,7 @@ export default function Home() {
           color: "#0f172a",
           marginBottom: 20
         }}>
-          Find Government Schemes You Are <span style={{ background: "linear-gradient(90deg, #ff6b00 0%, #138808 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Eligible For in 2 Minutes</span>.
+          {t("hero_h1_pre")} <span style={{ background: "linear-gradient(90deg, #ff6b00 0%, #138808 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{t("hero_h1_hl")}</span>{t("hero_h1_post")}
         </h1>
 
         <p style={{
@@ -348,10 +361,10 @@ export default function Home() {
           margin: "0 auto 36px auto",
           lineHeight: 1.6
         }}>
-          Discover financial aid, health insurance, agricultural subsidies, and micro-savings tailored specifically to your family's income, occupation, and location.
+          {t("hero_sub")}
         </p>
 
-        {/* Primary Action Buttons */}
+        {/* Primary Action Buttons — single CTA only, no duplicate login */}
         <div style={{ display: "flex", justifyContent: "center", gap: 16, flexWrap: "wrap", marginBottom: 48 }}>
           <button
             onClick={() => navigate(user ? "/match" : "/register")}
@@ -368,22 +381,7 @@ export default function Home() {
               transition: "transform 0.15s ease"
             }}
           >
-            🎯 Find My Schemes Now
-          </button>
-          <button
-            onClick={() => navigate("/login")}
-            style={{
-              padding: "14px 28px",
-              background: "#ffffff",
-              color: "#0f172a",
-              border: "1px solid #cbd5e1",
-              borderRadius: 10,
-              fontSize: 16,
-              fontWeight: 600,
-              cursor: "pointer"
-            }}
-          >
-            🔑 Member / Official Login
+            {t("hero_cta_primary")}
           </button>
         </div>
 
@@ -401,19 +399,19 @@ export default function Home() {
         }}>
           <div>
             <div style={{ fontSize: "28px", fontWeight: 800, color: "#138808" }}>₹50,000+ Cr</div>
-            <div style={{ fontSize: 13, color: "#64748b" }}>Welfare Benefits Tracked</div>
+            <div style={{ fontSize: 13, color: "#64748b" }}>{t("hero_trust_1")}</div>
           </div>
           <div>
             <div style={{ fontSize: "28px", fontWeight: 800, color: "#ff6b00" }}>500+</div>
-            <div style={{ fontSize: 13, color: "#64748b" }}>Government Schemes</div>
+            <div style={{ fontSize: 13, color: "#64748b" }}>{t("hero_trust_2")}</div>
           </div>
           <div>
             <div style={{ fontSize: "28px", fontWeight: 800, color: "#0284c7" }}>12</div>
-            <div style={{ fontSize: 13, color: "#64748b" }}>Indian Languages Supported</div>
+            <div style={{ fontSize: 13, color: "#64748b" }}>{t("hero_trust_3")}</div>
           </div>
           <div>
             <div style={{ fontSize: "28px", fontWeight: 800, color: "#16a34a" }}>99.4%</div>
-            <div style={{ fontSize: 13, color: "#64748b" }}>Matching Accuracy</div>
+            <div style={{ fontSize: 13, color: "#64748b" }}>{t("hero_trust_4")}</div>
           </div>
         </div>
       </section>
@@ -422,8 +420,8 @@ export default function Home() {
       <section style={{ background: "rgba(248, 250, 252, 0.85)", backdropFilter: "blur(8px)", padding: "64px 24px", borderTop: "1px solid #e2e8f0", borderBottom: "1px solid #e2e8f0", position: "relative", zIndex: 1 }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 40 }}>
-            <h2 style={{ fontSize: "30px", fontWeight: 800, color: "#0f172a" }}>Popular Central & State Welfare Schemes</h2>
-            <p style={{ fontSize: 15, color: "#64748b", marginTop: 6 }}>Key financial aid programs available for eligible Indian households</p>
+            <h2 style={{ fontSize: "30px", fontWeight: 800, color: "#0f172a" }}>{t("schemes_title")}</h2>
+            <p style={{ fontSize: 15, color: "#64748b", marginTop: 6 }}>{t("schemes_sub")}</p>
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 24 }}>
@@ -466,7 +464,7 @@ export default function Home() {
                     cursor: "pointer"
                   }}
                 >
-                  View Scheme Details & Apply →
+                  {t("scheme_view_btn")}
                 </button>
               </div>
             ))}
@@ -477,8 +475,8 @@ export default function Home() {
       {/* ── CORE CAPABILITIES ── */}
       <section style={{ padding: "64px 24px", maxWidth: 1100, margin: "0 auto", position: "relative", zIndex: 1 }}>
         <div style={{ textAlign: "center", marginBottom: 44 }}>
-          <h2 style={{ fontSize: "30px", fontWeight: 800, color: "#0f172a" }}>Designed for Every Indian Household</h2>
-          <p style={{ fontSize: 15, color: "#64748b", marginTop: 6 }}>Intelligent tools that make financial security accessible to all</p>
+          <h2 style={{ fontSize: "30px", fontWeight: 800, color: "#0f172a" }}>{t("feat_title")}</h2>
+          <p style={{ fontSize: 15, color: "#64748b", marginTop: 6 }}>{t("feat_sub")}</p>
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 24 }}>
@@ -501,8 +499,8 @@ export default function Home() {
       {/* ── HOW IT WORKS (3 SIMPLE STEPS) ── */}
       <section style={{ background: "#0f172a", color: "#ffffff", padding: "64px 24px", position: "relative", zIndex: 1 }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", textAlign: "center" }}>
-          <h2 style={{ fontSize: "30px", fontWeight: 800, marginBottom: 12 }}>How ArthMitra Works in 3 Simple Steps</h2>
-          <p style={{ fontSize: 15, color: "#94a3b8", marginBottom: 48 }}>Zero complicated paperwork or manual search needed</p>
+          <h2 style={{ fontSize: "30px", fontWeight: 800, marginBottom: 12 }}>{t("steps_title")}</h2>
+          <p style={{ fontSize: 15, color: "#94a3b8", marginBottom: 48 }}>{t("steps_sub")}</p>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 32 }}>
             {STEPS.map((step, idx) => (
@@ -522,7 +520,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── FOOTER ── */}
+      {/* ── FOOTER — No duplicate Portal Login link ── */}
       <footer style={{
         background: "#090d16",
         color: "#64748b",
@@ -539,12 +537,11 @@ export default function Home() {
         zIndex: 1
       }}>
         <div>
-          © 2026 <strong>ArthMitra AI</strong> — Government Scheme Finder & Welfare Lifecycle Management Engine.
+          {t("footer_copy")}
         </div>
         <div style={{ display: "flex", gap: 20 }}>
-          <Link to="/match" style={{ color: "#94a3b8", textDecoration: "none" }}>Scheme Matcher</Link>
-          <Link to="/health" style={{ color: "#94a3b8", textDecoration: "none" }}>Health Score</Link>
-          <Link to="/login" style={{ color: "#ff6b00", textDecoration: "none", fontWeight: 600 }}>Portal Login</Link>
+          <Link to="/match" style={{ color: "#94a3b8", textDecoration: "none" }}>{t("footer_scheme_matcher")}</Link>
+          <Link to="/health" style={{ color: "#94a3b8", textDecoration: "none" }}>{t("footer_health")}</Link>
         </div>
       </footer>
     </div>

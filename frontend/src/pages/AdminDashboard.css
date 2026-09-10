@@ -6,16 +6,16 @@
   display: flex;
   min-height: 100vh;
   font-family: 'Inter', sans-serif;
-  background: #f5f3f0; /* Light beige from main theme */
-  color: #1a1a1a;
+  background: #F8FAFC;
+  color: #1E293B;
 }
 
 /* Admin Sidebar */
 .admin-sidebar {
   width: 260px;
   min-height: 100vh;
-  background: #1a1a1a; /* Dark sidebar matches user dashboard */
-  color: #aaa;
+  background: #1E293B;
+  color: #94A3B8;
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -37,7 +37,7 @@
   width: 38px;
   height: 38px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #138808, #166534); /* Green theme for admin */
+  background: linear-gradient(135deg, #10B981, #0EA5E9);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -54,7 +54,7 @@
   margin: 0;
 }
 
-.admin-brand h3 span { color: #138808; } /* Green accent */
+.admin-brand h3 span { color: #10B981; }
 
 .admin-brand p {
   font-size: 10px;
@@ -91,13 +91,13 @@
   color: #aaa;
 }
 
-.admin-nav-item:hover { background: #2a2a2a; color: #fff; }
+.admin-nav-item:hover { background: #2D3F55; color: #fff; }
 
 .admin-nav-item.active {
-  background: linear-gradient(135deg, #138808, #166534); /* Green active state */
+  background: linear-gradient(135deg, #10B981, #2563EB);
   color: #fff;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(19, 136, 8, 0.3);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
 }
 
 .admin-nav-badge {
@@ -118,8 +118,8 @@
 }
 
 .admin-header {
-  background: #ffffff;
-  border-bottom: 1px solid #ede8e1;
+  background: #FFFFFF;
+  border-bottom: 1px solid rgba(0,0,0,0.07);
   padding: 1rem 2rem;
   display: flex;
   align-items: center;
@@ -127,19 +127,20 @@
   position: sticky;
   top: 0;
   z-index: 50;
+  backdrop-filter: blur(8px);
 }
 
 .admin-header h2 {
   font-family: 'Playfair Display', serif;
   font-size: 1.35rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: #1E293B;
   margin: 0;
 }
 
 .admin-header p {
   font-size: 12px;
-  color: #666;
+  color: #64748B;
   margin: 2px 0 0;
 }
 
@@ -154,14 +155,14 @@
 }
 
 .admin-stat {
-  background: #ffffff;
-  border: 1.5px solid #ede8e1;
+  background: #FFFFFF;
+  border: 1.5px solid rgba(0,0,0,0.07);
   border-radius: 12px;
   padding: 1.25rem;
   transition: all 0.2s;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 .admin-stat::before {
@@ -171,12 +172,12 @@
   height: 3px;
 }
 
-.admin-stat.purple::before { background: #3b82f6; } /* Blue instead of purple */
-.admin-stat.green::before { background: #138808; } /* Saffron Theme Green */
-.admin-stat.amber::before { background: #FF6B00; } /* Saffron Theme Orange */
+.admin-stat.purple::before { background: #2563EB; }
+.admin-stat.green::before { background: #10B981; }
+.admin-stat.amber::before { background: #F59E0B; }
 .admin-stat.red::before { background: #ef4444; }
 
-.admin-stat:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); border-color: #ffd4b8; }
+.admin-stat:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.09); border-color: rgba(37,99,235,0.2); }
 
 .admin-stat-icon {
   width: 40px; height: 40px; border-radius: 10px;
@@ -184,16 +185,16 @@
   font-size: 18px; margin-bottom: 0.75rem;
 }
 
-.admin-stat-icon.purple { background: #eff6ff; border: 1px solid #bfdbfe; }
-.admin-stat-icon.green { background: #f0fdf4; border: 1px solid #bbf7d0; }
-.admin-stat-icon.amber { background: #fff3ed; border: 1px solid #ffd4b8; }
-.admin-stat-icon.red { background: #fde2e2; border: 1px solid #fca5a5; }
+.admin-stat-icon.purple { background: rgba(37,99,235,0.08); border: 1px solid rgba(37,99,235,0.2); }
+.admin-stat-icon.green { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); }
+.admin-stat-icon.amber { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); }
+.admin-stat-icon.red { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); }
 
 .admin-stat-value {
   font-family: 'Playfair Display', serif;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: #1E293B;
 }
 
 .admin-stat-label {
@@ -206,12 +207,12 @@
 
 /* Admin card */
 .admin-card {
-  background: #ffffff;
-  border: 1.5px solid #ede8e1;
+  background: #FFFFFF;
+  border: 1.5px solid rgba(0,0,0,0.07);
   border-radius: 16px;
   padding: 1.5rem;
   margin-bottom: 1.25rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 .admin-card-header {
@@ -221,8 +222,8 @@
   margin-bottom: 1rem;
 }
 
-.admin-card-title { font-size: 14px; font-weight: 600; color: #1a1a1a; }
-.admin-card-sub { font-size: 11px; color: #666; margin-top: 2px; }
+.admin-card-title { font-size: 14px; font-weight: 600; color: #1E293B; }
+.admin-card-sub { font-size: 11px; color: #64748B; margin-top: 2px; }
 
 /* Admin table */
 .admin-table {
@@ -237,19 +238,19 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #666;
-  border-bottom: 1px solid #ede8e1;
+  color: #94A3B8;
+  border-bottom: 1px solid rgba(0,0,0,0.07);
   font-weight: 600;
 }
 
 .admin-table td {
   padding: 12px 14px;
   font-size: 13px;
-  color: #444;
-  border-bottom: 1px solid #f0ece6;
+  color: #475569;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
 }
 
-.admin-table tr:hover td { background: #fafaf8; }
+.admin-table tr:hover td { background: #F8FAFC; }
 
 /* Admin buttons */
 .admin-btn {
@@ -273,13 +274,13 @@
 
 .admin-btn-outline {
   background: transparent;
-  border: 1.5px solid #ede8e1;
-  color: #666;
+  border: 1.5px solid rgba(0,0,0,0.12);
+  color: #475569;
 }
-.admin-btn-outline:hover { border-color: #138808; color: #138808; }
+.admin-btn-outline:hover { border-color: #10B981; color: #10B981; }
 
 .admin-logout-btn {
-  background: #FF6B00;
+  background: linear-gradient(135deg, #10B981, #2563EB);
   color: #fff;
   border: none;
   padding: 8px 18px;
@@ -290,7 +291,7 @@
   transition: all 0.2s;
 }
 
-.admin-logout-btn:hover { background: #e55e00; }
+.admin-logout-btn:hover { opacity: 0.88; transform: translateY(-1px); }
 
 /* Status in admin */
 .admin-status {
@@ -302,6 +303,6 @@
   letter-spacing: 0.04em;
 }
 
-.admin-status.pending { background: #fff3ed; color: #c2410c; border: 1px solid #ffd4b8; }
-.admin-status.verified { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
-.admin-status.rejected { background: #fde2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+.admin-status.pending { background: rgba(245,158,11,0.08); color: #B45309; border: 1px solid rgba(245,158,11,0.25); }
+.admin-status.verified { background: rgba(16,185,129,0.08); color: #065F46; border: 1px solid rgba(16,185,129,0.25); }
+.admin-status.rejected { background: rgba(239,68,68,0.08); color: #B91C1C; border: 1px solid rgba(239,68,68,0.25); }

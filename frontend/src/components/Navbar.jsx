@@ -1,10 +1,12 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useLanguage } from "../LanguageContext";
 
 function Navbar() {
     const navigate = useNavigate();
     const location = useLocation();
     const [user, setUser] = useState(null);
+    const { lang, setLang, t } = useLanguage();
 
     useEffect(() => {
         const stored = localStorage.getItem("user");
@@ -46,15 +48,36 @@ function Navbar() {
                     </span>
                 </Link>
 
-                <div style={{ display: "flex", gap: "18px", fontSize: "14px", fontWeight: "500" }}>
-                    <Link to="/" style={{ color: "#d1d5db", textDecoration: "none" }}>Home</Link>
-                    <Link to="/match" style={{ color: "#d1d5db", textDecoration: "none" }}>Scheme Matcher</Link>
-                    <Link to="/health" style={{ color: "#d1d5db", textDecoration: "none" }}>Health Score</Link>
-                    <Link to="/savings" style={{ color: "#d1d5db", textDecoration: "none" }}>Savings</Link>
-                    <Link to="/voice" style={{ color: "#d1d5db", textDecoration: "none" }}>Voice</Link>
+                <div style={{ display: "flex", gap: "18px", fontSize: "14px", fontWeight: "500", alignItems: "center" }}>
+                    <Link to="/" style={{ color: "#d1d5db", textDecoration: "none" }}>{t("nav_home")}</Link>
+                    <Link to="/match" style={{ color: "#d1d5db", textDecoration: "none" }}>{t("nav_scheme_matcher")}</Link>
+                    <Link to="/health" style={{ color: "#d1d5db", textDecoration: "none" }}>{t("nav_health_score")}</Link>
+                    <Link to="/savings" style={{ color: "#d1d5db", textDecoration: "none" }}>{t("nav_savings")}</Link>
+                    <Link to="/voice" style={{ color: "#d1d5db", textDecoration: "none" }}>{t("nav_voice")}</Link>
                     {user?.role === "admin" && (
-                        <Link to="/dc-panel" style={{ color: "#ff6b00", textDecoration: "none", fontWeight: "600" }}>🖧 DC Monitor</Link>
+                        <Link to="/dc-panel" style={{ color: "#ff6b00", textDecoration: "none", fontWeight: "600" }}>{t("nav_dc_monitor")}</Link>
                     )}
+                    {/* ── LANGUAGE PICKER ── */}
+                    <select
+                        id="navbar-lang-picker"
+                        value={lang}
+                        onChange={e => setLang(e.target.value)}
+                        style={{
+                            background: "rgba(255,255,255,0.07)",
+                            border: "1px solid rgba(74,222,128,0.25)",
+                            borderRadius: 6,
+                            padding: "4px 8px",
+                            fontSize: 12,
+                            fontWeight: 600,
+                            color: "#d1d5db",
+                            cursor: "pointer",
+                            fontFamily: "'Inter', sans-serif"
+                        }}
+                    >
+                        <option value="en">EN</option>
+                        <option value="hi">हिं</option>
+                        <option value="es">ES</option>
+                    </select>
                 </div>
 
 
@@ -82,22 +105,19 @@ function Navbar() {
                         </button>
                     </>
                 ) : (
-                    <>
-                        <Link to="/login"
-                            style={{
-                                background: "#138808", color: "#ffffff", textDecoration: "none",
-                                padding: "7px 16px", borderRadius: "8px", fontSize: "13px", fontWeight: "600"
-                            }}>
-                            Sign In
-                        </Link>
-                        <Link to="/register"
-                            style={{
-                                background: "#ff6b00", color: "#ffffff", textDecoration: "none",
-                                padding: "7px 16px", borderRadius: "8px", fontSize: "13px", fontWeight: "600"
-                            }}>
-                            Register
-                        </Link>
-                    </>
+                    <Link to="/login"
+                        style={{
+                            background: "linear-gradient(90deg, #ff6b00 0%, #138808 100%)",
+                            color: "#ffffff",
+                            textDecoration: "none",
+                            padding: "8px 18px",
+                            borderRadius: "8px",
+                            fontSize: "13px",
+                            fontWeight: "600",
+                            boxShadow: "0 2px 10px rgba(0,0,0,0.2)"
+                        }}>
+                        {t("nav_signin_register")} →
+                    </Link>
                 )}
             </div>
         </nav>

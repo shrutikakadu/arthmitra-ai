@@ -17,6 +17,7 @@ import {
 } from "recharts";
 import API from "../api/axios";
 import "./Dashboard.css";
+import { useLanguage } from "../LanguageContext";
 
 const DOC_TYPES = [
   { key: "aadhaar", label: "Aadhaar Card", icon: "🪪" },
@@ -30,19 +31,20 @@ const DOC_TYPES = [
 ];
 
 const SIDEBAR_ITEMS = [
-  { key: "overview", icon: "🏠", label: "Overview" },
-  { key: "profile", icon: "👤", label: "My Profile" },
-  { key: "schemes", icon: "🎯", label: "Scheme Finder" },
-  { key: "applications", icon: "📋", label: "My Applications" },
-  { key: "documents", icon: "📄", label: "Documents" },
-  { key: "verification", icon: "✅", label: "Verification" },
-  { key: "notifications", icon: "🔔", label: "Notifications" },
-  { key: "settings", icon: "⚙️", label: "Settings" },
+  { key: "overview",      icon: "🏠", labelKey: "dash_overview" },
+  { key: "profile",       icon: "👤", labelKey: "dash_profile" },
+  { key: "schemes",       icon: "🎯", labelKey: "dash_schemes" },
+  { key: "applications",  icon: "📋", labelKey: "dash_applications" },
+  { key: "documents",     icon: "📄", labelKey: "dash_documents" },
+  { key: "verification",  icon: "✅", labelKey: "dash_verification" },
+  { key: "notifications", icon: "🔔", labelKey: "dash_notifications" },
+  { key: "settings",      icon: "⚙️",  labelKey: "dash_settings" },
 ];
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const fileRef = useRef(null);
+  const { t } = useLanguage();
 
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("overview");
@@ -509,13 +511,30 @@ export default function Dashboard() {
       "#8b5cf6"
     ];
 
-    const healthScore = [
-      {
-        name: "Score",
-        value: 74,
-        fill: "#138808"
-      }
-    ];
+    // ── Dynamic Financial Profile Progress ──
+    // Profile completeness: count non-empty profile fields (9 total)
+    const PROFILE_FIELDS = ["name","age","income","occupation","state","caste","family_size","gender","education"];
+    const filledFields = PROFILE_FIELDS.filter(k => profile[k] && String(profile[k]).trim() !== "").length;
+    // Docs score: each uploaded doc = 5pts, each verified doc = 10pts bonus (max 100 total)
+    const docUploadPts  = Math.min(documents.length * 5, 30);
+    const docVerifyPts  = Math.min(docsVerified * 10, 30);
+    const profilePct    = Math.round((filledFields / PROFILE_FIELDS.length) * 40); // 40% weight
+    const computedScore = Math.min(profilePct + docUploadPts + docVerifyPts, 100);
+
+    const scoreLabel =
+      computedScore === 0   ? "No Data" :
+      computedScore < 30    ? "Needs Attention" :
+      computedScore < 60    ? "Fair" :
+      computedScore < 80    ? "Good Standing" : "Excellent";
+    const scoreColor =
+      computedScore < 30  ? "#EF4444" :
+      computedScore < 60  ? "#F59E0B" :
+      computedScore < 80  ? "#10B981" : "#2563EB";
+
+    const healthScore = [{ name: "Score", value: computedScore || 1, fill: scoreColor }];
+
+    // ── Profile completion % shown in onboarding ──
+    const profileCompletionPct = Math.round((filledFields / PROFILE_FIELDS.length) * 100);
 
     return (
       <div className="animate-in">
@@ -790,24 +809,25 @@ export default function Dashboard() {
                   style={{
                     fontSize: "2.5rem",
                     fontWeight: 800,
-                    color: "#138808",
+                    color: scoreColor,
                     fontFamily:
                       "'Playfair Display', serif"
                   }}
                 >
-                  74
+                  {computedScore}%
                 </div>
 
                 <div
                   style={{
                     fontSize: "0.75rem",
-                    color: "#666",
+                    color: scoreColor,
+                    fontWeight: 600,
                     textTransform:
                       "uppercase",
                     letterSpacing: "0.05em"
                   }}
                 >
-                  Good Standing
+                  {scoreLabel}
                 </div>
 
               </div>
@@ -3597,7 +3617,7 @@ export default function Dashboard() {
               </span>
 
               <span className="sidebar-item-text">
-                {item.label}
+                {t(item.labelKey) || item.labelKey}
               </span>
 
               {item.key ===
@@ -3778,7 +3798,7 @@ export default function Dashboard() {
                 handleLogout
               }
             >
-              Logout
+              {t("dash_logout") || "Logout"}
             </button>
 
           </div>
