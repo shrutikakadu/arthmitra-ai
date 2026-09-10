@@ -217,6 +217,11 @@ export default function Home() {
     }
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setUser(null);
+  };
+
   return (
     <div style={{
       fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
@@ -284,20 +289,38 @@ export default function Home() {
 
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           {user ? (
-            <Link
-              to={user.role === "user" ? "/dashboard" : "/admin"}
-              style={{
-                background: "#138808",
-                color: "#ffffff",
-                padding: "8px 18px",
-                borderRadius: 8,
-                textDecoration: "none",
-                fontSize: 14,
-                fontWeight: 600
-              }}
-            >
-              {t("hero_cta_dashboard")} ({user.name})
-            </Link>
+            <>
+              <Link
+                to={user.role === "user" ? "/dashboard" : "/admin"}
+                style={{
+                  background: "#138808",
+                  color: "#ffffff",
+                  padding: "8px 18px",
+                  borderRadius: 8,
+                  textDecoration: "none",
+                  fontSize: 14,
+                  fontWeight: 600
+                }}
+              >
+                {t("hero_cta_dashboard")} ({user.name})
+              </Link>
+              <button
+                id="home-logout-btn"
+                onClick={handleLogout}
+                style={{
+                  background: "rgba(239,68,68,0.1)",
+                  color: "#dc2626",
+                  border: "1px solid rgba(239,68,68,0.3)",
+                  padding: "8px 16px",
+                  borderRadius: 8,
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: "pointer"
+                }}
+              >
+                {t("nav_logout")}
+              </button>
+            </>
           ) : (
             <Link
               to="/login"

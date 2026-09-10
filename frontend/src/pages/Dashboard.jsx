@@ -44,7 +44,7 @@ const SIDEBAR_ITEMS = [
 export default function Dashboard() {
   const navigate = useNavigate();
   const fileRef = useRef(null);
-  const { t } = useLanguage();
+  const { lang, setLang, t } = useLanguage();
 
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("overview");
@@ -412,7 +412,7 @@ export default function Dashboard() {
   if (!user) {
     return (
       <div style={{ padding: 40 }}>
-        Loading...
+        {t("loading")}
       </div>
     );
   }
@@ -441,9 +441,20 @@ export default function Dashboard() {
     (d) => d.status === "rejected"
   ).length;
 
-  const getDocLabel = (key) =>
-    DOC_TYPES.find((d) => d.key === key)?.label ||
-    key;
+  const getDocLabel = (key) => {
+    const map = {
+      aadhaar: "doc_aadhaar",
+      pan_card: "doc_pan_card",
+      income_cert: "doc_income_cert",
+      caste_cert: "doc_caste_cert",
+      ration_card: "doc_ration_card",
+      bank_passbook: "doc_bank_passbook",
+      land_record: "doc_land_record",
+      voter_id: "doc_voter_id"
+    };
+    if (map[key]) return t(map[key]);
+    return DOC_TYPES.find((d) => d.key === key)?.label || key;
+  };
 
   const getDocIcon = (key) =>
     DOC_TYPES.find((d) => d.key === key)?.icon ||
@@ -487,19 +498,19 @@ export default function Dashboard() {
 
     const pieData = [
       {
-        name: "Agriculture",
+        name: t("cat_agri"),
         value: 45
       },
       {
-        name: "Healthcare",
+        name: t("cat_health"),
         value: 30
       },
       {
-        name: "Education",
+        name: t("cat_edu"),
         value: 15
       },
       {
-        name: "Housing",
+        name: t("cat_housing"),
         value: 10
       }
     ];
@@ -522,10 +533,10 @@ export default function Dashboard() {
     const computedScore = Math.min(profilePct + docUploadPts + docVerifyPts, 100);
 
     const scoreLabel =
-      computedScore === 0   ? "No Data" :
-      computedScore < 30    ? "Needs Attention" :
-      computedScore < 60    ? "Fair" :
-      computedScore < 80    ? "Good Standing" : "Excellent";
+      computedScore === 0   ? t("standing_needs_attention") :
+      computedScore < 30    ? t("standing_needs_attention") :
+      computedScore < 60    ? t("standing_moderate") :
+      computedScore < 80    ? t("standing_good") : t("standing_excellent");
     const scoreColor =
       computedScore < 30  ? "#EF4444" :
       computedScore < 60  ? "#F59E0B" :
@@ -553,7 +564,7 @@ export default function Dashboard() {
             </div>
 
             <div className="stat-label">
-              Eligible Schemes
+              {t("dash_eligible_schemes")}
             </div>
           </div>
 
@@ -567,7 +578,7 @@ export default function Dashboard() {
             </div>
 
             <div className="stat-label">
-              Docs Uploaded
+              {t("dash_documents_uploaded")}
             </div>
           </div>
 
@@ -581,7 +592,7 @@ export default function Dashboard() {
             </div>
 
             <div className="stat-label">
-              Verified
+              {t("admin_status_approved")}
             </div>
           </div>
 
@@ -595,7 +606,7 @@ export default function Dashboard() {
             </div>
 
             <div className="stat-label">
-              Notifications
+              {t("dash_notifications")}
             </div>
           </div>
 
@@ -615,11 +626,11 @@ export default function Dashboard() {
             <div className="dash-card-header">
               <div>
                 <div className="dash-card-title">
-                  Projected Welfare Benefits (5 Years)
+                  {t("dash_projected_welfare")}
                 </div>
 
                 <div className="dash-card-subtitle">
-                  Estimated financial impact of your matched schemes in ₹
+                  {t("dash_projected_welfare_sub")}
                 </div>
               </div>
             </div>
@@ -693,7 +704,7 @@ export default function Dashboard() {
 
                   <Bar
                     dataKey="schemes"
-                    name="Subsidies & Exemptions"
+                    name={t("cat_subsidies")}
                     stackId="a"
                     fill="#FF6B00"
                     radius={[
@@ -707,7 +718,7 @@ export default function Dashboard() {
 
                   <Bar
                     dataKey="direct_benefit"
-                    name="Direct Benefit Transfer"
+                    name={t("cat_dbt")}
                     stackId="a"
                     fill="#138808"
                     radius={[
@@ -743,11 +754,11 @@ export default function Dashboard() {
               <div>
 
                 <div className="dash-card-title">
-                  Financial Health
+                  {t("dash_health")}
                 </div>
 
                 <div className="dash-card-subtitle">
-                  Your AI generated score
+                  {t("dash_health_sub")}
                 </div>
 
               </div>
@@ -840,7 +851,7 @@ export default function Dashboard() {
                 width: "100%"
               }}
             >
-              View Improvement Plan
+              {t("dash_view_plan")}
             </button>
 
           </div>
@@ -861,11 +872,11 @@ export default function Dashboard() {
               <div>
 
                 <div className="dash-card-title">
-                  Eligibility by Category
+                  {t("dash_eligibility_category")}
                 </div>
 
                 <div className="dash-card-subtitle">
-                  Breakdown of schemes you qualify for
+                  {t("dash_eligibility_category_sub")}
                 </div>
 
               </div>
@@ -1001,11 +1012,11 @@ export default function Dashboard() {
               <div>
 
                 <div className="dash-card-title">
-                  Pending Tasks
+                  {t("dash_pending_tasks")}
                 </div>
 
                 <div className="dash-card-subtitle">
-                  Next steps to maximize your benefits
+                  {t("dash_pending_tasks_sub")}
                 </div>
 
               </div>
@@ -1023,8 +1034,7 @@ export default function Dashboard() {
               {[
                 {
                   icon: "📄",
-                  text:
-                    "Upload Income Certificate",
+                  text: t("task_upload_income"),
                   tab: "documents",
                   done: documents.some(
                     (d) =>
@@ -1034,8 +1044,7 @@ export default function Dashboard() {
                 },
                 {
                   icon: "✅",
-                  text:
-                    "Get Aadhaar Verified",
+                  text: t("task_verify_aadhaar"),
                   tab: "verification",
                   done: documents.some(
                     (d) =>
@@ -1047,8 +1056,7 @@ export default function Dashboard() {
                 },
                 {
                   icon: "🎯",
-                  text:
-                    "Apply for PM-Kisan",
+                  text: t("task_apply_pmkisan"),
                   tab: "schemes",
                   done: false
                 }
@@ -1128,259 +1136,165 @@ export default function Dashboard() {
   // =========================
   // PROFILE
   // =========================
-  const renderProfile = () => (
-    <div className="dash-card animate-in">
+  const renderProfile = () => {
+    const profileFields = [
+      { label: t("prof_name"), key: "name", type: "text", placeholder: t("name_placeholder") },
+      { label: t("prof_age"), key: "age", type: "number", placeholder: t("age_placeholder") },
+      {
+        label: t("prof_gender"),
+        key: "gender",
+        type: "select",
+        options: [
+          { value: "", label: t("select_gender") },
+          { value: "Male", label: t("gender_male") },
+          { value: "Female", label: t("gender_female") },
+          { value: "Other", label: t("gender_other") }
+        ]
+      },
+      {
+        label: t("prof_edu"),
+        key: "education",
+        type: "select",
+        options: [
+          { value: "", label: t("select_edu") },
+          { value: "Below 10th Pass", label: t("edu_below_10") },
+          { value: "10th Pass (SSC)", label: t("edu_10th") },
+          { value: "12th Pass (HSC)", label: t("edu_12th") },
+          { value: "Graduate / Bachelor's", label: t("edu_grad") },
+          { value: "Post Graduate & Above", label: t("edu_postgrad") }
+        ]
+      },
+      { label: t("prof_occ"), key: "occupation", type: "text", placeholder: t("occ_placeholder") },
+      { label: t("prof_income"), key: "income", type: "text", placeholder: t("income_placeholder") },
+      {
+        label: t("match_caste_label"),
+        key: "caste",
+        type: "select",
+        options: [
+          { value: "", label: t("select_caste") },
+          { value: "General", label: t("caste_general") },
+          { value: "OBC", label: t("caste_obc") },
+          { value: "SC", label: t("caste_sc") },
+          { value: "ST", label: t("caste_st") },
+          { value: "EWS", label: t("caste_ews") }
+        ]
+      },
+      { label: t("prof_family"), key: "family_size", type: "number", placeholder: t("family_placeholder") },
+      {
+        label: t("prof_state"),
+        key: "state",
+        type: "select",
+        options: [
+          { value: "", label: t("select_state") },
+          ...["Maharashtra","Uttar Pradesh","Rajasthan","Madhya Pradesh","Bihar","Gujarat","West Bengal","Tamil Nadu","Karnataka","Andhra Pradesh","Kerala","Odisha","Punjab","Haryana","Jharkhand","Chhattisgarh","Assam","Telangana"].map(s => ({ value: s, label: s }))
+        ]
+      },
+      {
+        label: t("prof_lang"),
+        key: "language",
+        type: "select",
+        options: [
+          { value: "", label: t("select_lang") },
+          { value: "English", label: "English" },
+          { value: "Hindi", label: "हिन्दी (Hindi)" },
+          { value: "Marathi", label: "मराठी (Marathi)" }
+        ]
+      }
+    ];
 
-      <div className="dash-card-header">
-
-        <div>
-
-          <div className="dash-card-title">
-            My Profile
+    return (
+      <div className="dash-card animate-in">
+        <div className="dash-card-header">
+          <div>
+            <div className="dash-card-title">{t("dash_profile")}</div>
+            <div className="dash-card-subtitle">{t("dash_profile_sub")}</div>
           </div>
 
-          <div className="dash-card-subtitle">
-            Complete your details to get matched with best schemes
-          </div>
-
+          {profileSaved && (
+            <span
+              style={{
+                background: "#f0fdf4",
+                color: "#166534",
+                padding: "5px 14px",
+                borderRadius: 100,
+                fontSize: 12,
+                fontWeight: 600,
+                border: "1px solid #bbf7d0"
+              }}
+            >
+              ✅ {t("dash_saved")}
+            </span>
+          )}
         </div>
 
-        {profileSaved && (
-          <span
-            style={{
-              background: "#f0fdf4",
-              color: "#166534",
-              padding: "5px 14px",
-              borderRadius: 100,
-              fontSize: 12,
-              fontWeight: 600,
-              border:
-                "1px solid #bbf7d0"
-            }}
-          >
-            ✅ Saved!
-          </span>
-        )}
+        <div className="form-grid">
+          {profileFields.map((field) => (
+            <div className="form-group" key={field.key}>
+              <label className="form-label">{field.label}</label>
 
-      </div>
-
-      <div className="form-grid">
-
-        {[
-          [
-            "Full Name",
-            "name",
-            "text",
-            "Enter your full name"
-          ],
-          [
-            "Age",
-            "age",
-            "number",
-            "Enter age"
-          ],
-          [
-            "Gender",
-            "gender",
-            "select",
-            [
-              "Select Gender",
-              "Male",
-              "Female",
-              "Other"
-            ]
-          ],
-          [
-            "Education",
-            "education",
-            "select",
-            [
-              "Select Education",
-              "No Formal Education",
-              "Primary School",
-              "High School",
-              "Graduate",
-              "Post Graduate"
-            ]
-          ],
-          [
-            "Occupation",
-            "occupation",
-            "text",
-            "e.g. Farmer, Labour, Self-employed"
-          ],
-          [
-            "Annual Income (₹)",
-            "income",
-            "text",
-            "e.g. 120000"
-          ],
-          [
-            "Caste Category",
-            "caste",
-            "select",
-            [
-              "Select Category",
-              "General",
-              "OBC",
-              "SC",
-              "ST",
-              "EWS"
-            ]
-          ],
-          [
-            "Family Size",
-            "family_size",
-            "number",
-            "Number of family members"
-          ],
-          [
-            "State",
-            "state",
-            "select",
-            [
-              "Select State",
-              "Maharashtra",
-              "Uttar Pradesh",
-              "Rajasthan",
-              "Madhya Pradesh",
-              "Bihar",
-              "Gujarat",
-              "West Bengal",
-              "Tamil Nadu",
-              "Karnataka",
-              "Andhra Pradesh",
-              "Kerala",
-              "Odisha",
-              "Punjab",
-              "Haryana",
-              "Jharkhand",
-              "Chhattisgarh",
-              "Assam",
-              "Telangana"
-            ]
-          ],
-          [
-            "Preferred Language",
-            "language",
-            "select",
-            [
-              "Select Language",
-              "English",
-              "हिंदी (Hindi)",
-              "मराठी (Marathi)",
-              "বাংলা (Bengali)",
-              "தமிழ் (Tamil)",
-              "తెలుగు (Telugu)"
-            ]
-          ]
-        ].map(
-          ([
-            label,
-            key,
-            type,
-            placeholder
-          ]) => (
-
-            <div
-              className="form-group"
-              key={key}
-            >
-
-              <label className="form-label">
-                {label}
-              </label>
-
-              {type === "select" ? (
-
+              {field.type === "select" ? (
                 <select
                   className="form-select"
                   value={
-                    profile[key] || ""
+                    field.key === "language"
+                      ? (lang === "mr" ? "Marathi" : lang === "hi" ? "Hindi" : "English")
+                      : (profile[field.key] || "")
                   }
-                  onChange={(e) =>
-                    setProfile({
-                      ...profile,
-                      [key]:
-                        e.target.value
-                    })
-                  }
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setProfile({ ...profile, [field.key]: val });
+                    if (field.key === "language") {
+                      if (val === "English" || val === "en") setLang("en");
+                      else if (val === "Hindi" || val === "hi" || val.includes("Hindi")) setLang("hi");
+                      else if (val === "Marathi" || val === "mr" || val.includes("Marathi")) setLang("mr");
+                    }
+                  }}
                 >
-
-                  {placeholder.map(
-                    (opt) => (
-                      <option
-                        key={opt}
-                        value={
-                          opt.startsWith(
-                            "Select"
-                          )
-                            ? ""
-                            : opt
-                        }
-                      >
-                        {opt}
-                      </option>
-                    )
-                  )}
-
+                  {field.options.map((opt) => (
+                    <option key={opt.value || opt.label} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
                 </select>
-
               ) : (
-
                 <input
                   className="form-input"
-                  type={type}
-                  placeholder={placeholder}
-                  value={
-                    profile[key] || ""
-                  }
+                  type={field.type}
+                  placeholder={field.placeholder}
+                  value={profile[field.key] || ""}
                   onChange={(e) =>
                     setProfile({
                       ...profile,
-                      [key]:
-                        e.target.value
+                      [field.key]: e.target.value
                     })
                   }
                 />
-
               )}
-
             </div>
+          ))}
+        </div>
 
-          )
-        )}
-
-      </div>
-
-      <div
-        style={{
-          marginTop: "1.5rem",
-          display: "flex",
-          gap: 12
-        }}
-      >
-
-        <button
-          className="btn btn-primary"
-          onClick={saveProfile}
+        <div
+          style={{
+            marginTop: "1.5rem",
+            display: "flex",
+            gap: 12
+          }}
         >
-          💾 Save Profile
-        </button>
+          <button className="btn btn-primary" onClick={saveProfile}>
+            💾 {t("prof_save_btn")}
+          </button>
 
-        <button
-          className="btn btn-outline"
-          onClick={() =>
-            loadProfile(user.id)
-          }
-        >
-          ↩️ Reset
-        </button>
-
+          <button
+            className="btn btn-outline"
+            onClick={() => loadProfile(user.id)}
+          >
+            ↩️ {t("prof_reset_btn")}
+          </button>
+        </div>
       </div>
-
-    </div>
-  );
+    );
+  };
 
   // =========================
   // SCHEME FINDER
@@ -1399,8 +1313,7 @@ export default function Dashboard() {
           className="dash-card-header"
           style={{
             display: "flex",
-            justifyContent:
-              "space-between",
+            justifyContent: "space-between",
             alignItems: "center"
           }}
         >
@@ -1408,11 +1321,11 @@ export default function Dashboard() {
           <div>
 
             <div className="dash-card-title">
-              🎯 Scheme Eligibility Finder
+              🎯 {t("dash_tab_schemes")}
             </div>
 
             <div className="dash-card-subtitle">
-              AI-powered matching from 500+ government schemes
+              {t("dash_tab_schemes_sub")}
             </div>
 
           </div>
@@ -1452,10 +1365,10 @@ export default function Dashboard() {
                   }}
                 />
 
-                🛑 Listening...
+                🛑 {t("voice_listening")}
               </>
             ) : (
-              "🎙️ Try Voice Search"
+              `🎙️ ${t("nav_voice")}`
             )}
 
           </button>
@@ -1477,7 +1390,7 @@ export default function Dashboard() {
             }}
           >
             <strong>
-              Voice Input:
+              {t("voice_transcript_label")}:
             </strong>{" "}
             "{speechTranscript}"
           </div>
@@ -1487,46 +1400,46 @@ export default function Dashboard() {
 
           {[
             [
-              "Name",
+              t("prof_name"),
               "name",
               "text",
-              "Your name"
+              t("name_placeholder")
             ],
             [
-              "Age",
+              t("prof_age"),
               "age",
               "number",
-              "Age"
+              t("age_placeholder")
             ],
             [
-              "Occupation",
+              t("prof_occ"),
               "occupation",
               "text",
-              "Occupation (e.g. Farmer, Student, Labour)"
+              t("occ_placeholder")
             ],
             [
-              "Annual Income (₹)",
+              t("prof_income"),
               "income",
               "text",
-              "Income (e.g. 150000)"
+              t("income_placeholder")
             ],
             [
-              "State",
+              t("prof_state"),
               "state",
               "text",
-              "State (e.g. Maharashtra)"
+              t("select_state")
             ],
             [
-              "Caste Category",
+              t("match_caste_label"),
               "caste",
               "text",
-              "Category (e.g. General, OBC, SC, ST, EWS)"
+              t("select_caste")
             ],
             [
-              "Family Size",
+              t("prof_family"),
               "family_size",
               "number",
-              "Members"
+              t("family_placeholder")
             ]
           ].map(
             ([
@@ -1580,7 +1493,7 @@ export default function Dashboard() {
               findSchemes()
             }
           >
-            🔍 Find Eligible Schemes
+            🔍 {t("match_btn")}
           </button>
 
         </div>
@@ -1606,11 +1519,11 @@ export default function Dashboard() {
               <div>
 
                 <div className="dash-card-title">
-                  Matched Schemes
+                  {t("match_results_title")}
                 </div>
 
                 <div className="dash-card-subtitle">
-                  {schemeResults.total_schemes} schemes matched using AI ranking
+                  {schemeResults.total_schemes} {t("match_results_label")}
                 </div>
 
               </div>
@@ -1632,7 +1545,7 @@ export default function Dashboard() {
               >
                 {schemeResults.schemes
                   ?.length || 0}{" "}
-                TOP MATCHES
+                {t("top_matches")}
               </span>
 
             </div>
@@ -1754,7 +1667,7 @@ export default function Dashboard() {
                       }}
                     >
                       {s.match_probability}%
-                      Match
+                      {" "}{t("card_match")}
                     </span>
 
                   </div>
@@ -1770,8 +1683,8 @@ export default function Dashboard() {
                       marginBottom: 6
                     }}
                   >
-                    Category:{" "}
-                    {s.category} • Benefit:{" "}
+                    {t("card_category")}:{" "}
+                    {s.category} • {t("card_benefit")}:{" "}
                     <strong>
                       {s.benefit}
                     </strong>
@@ -1827,7 +1740,7 @@ export default function Dashboard() {
                     }}
                   >
                     <span>
-                      Click scheme to open detailed dashboard & apply
+                      {t("click_to_open_scheme")}
                     </span>{" "}
                     ➔
                   </div>
@@ -1865,7 +1778,7 @@ export default function Dashboard() {
                   <div>
 
                     <div className="dash-card-title">
-                      🤖 AI Match Report
+                      🤖 {t("ai_match_report")}
                     </div>
 
                     <div className="dash-card-subtitle">
@@ -1905,7 +1818,7 @@ export default function Dashboard() {
                         color: "#999"
                       }}
                     >
-                      ACCURACY
+                      {t("accuracy")}
                     </div>
 
                     <div
@@ -1942,7 +1855,7 @@ export default function Dashboard() {
                         color: "#999"
                       }}
                     >
-                      TRAINED SAMPLES
+                      {t("trained_samples")}
                     </div>
 
                     <div
@@ -1996,7 +1909,7 @@ export default function Dashboard() {
                       marginBottom: 8
                     }}
                   >
-                    Feature Importance weights:
+                    {t("feature_importance")}:
                   </div>
 
                   <div
@@ -2259,11 +2172,11 @@ export default function Dashboard() {
           <div>
 
             <div className="dash-card-title">
-              📋 My Applications
+              📋 {t("apps_title")}
             </div>
 
             <div className="dash-card-subtitle">
-              Track the status of your welfare scheme applications
+              {t("apps_sub")}
             </div>
 
           </div>
@@ -2274,7 +2187,7 @@ export default function Dashboard() {
               loadApplications(user.id)
             }
           >
-            🔄 Refresh
+            🔄 {t("admin_refresh")}
           </button>
 
         </div>
@@ -2304,7 +2217,7 @@ export default function Dashboard() {
                 marginBottom: 12
               }}
             >
-              No applications submitted yet.
+              {t("apps_no_apps")}
             </p>
 
             <button
@@ -2313,7 +2226,7 @@ export default function Dashboard() {
                 setActiveTab("schemes")
               }
             >
-              🎯 Find Schemes
+              🎯 {t("dash_schemes")}
             </button>
 
           </div>
@@ -2426,19 +2339,18 @@ export default function Dashboard() {
                         }}
                       >
                         {isRejected
-                          ? "Rejected"
+                          ? t("status_REJECTED")
                           : isVerified
-                          ? "Approved"
-                          : app.status
-                              ?.replace(
-                                "pending_",
-                                "Pending "
-                              )
-                              .replace(
-                                "_",
-                                " "
-                              ) ||
-                            "Pending"}
+                          ? t("status_APPROVED")
+                          : app.status === "pending_clerk"
+                          ? t("status_PENDING_CLERK")
+                          : app.status === "pending_officer"
+                          ? t("status_PENDING_OFFICER")
+                          : app.status === "pending_secretary"
+                          ? t("status_PENDING_SECRETARY")
+                          : app.status === "pending_minister"
+                          ? t("status_PENDING_MINISTER")
+                          : t("status_PENDING_CLERK")}
                       </span>
 
                     </div>
@@ -2621,11 +2533,11 @@ export default function Dashboard() {
           <div>
 
             <div className="dash-card-title">
-              Upload Document
+              {t("docs_upload_title")}
             </div>
 
             <div className="dash-card-subtitle">
-              Select document type then upload your file
+              {t("docs_sub")}
             </div>
 
           </div>
@@ -2652,7 +2564,7 @@ export default function Dashboard() {
                 }
               >
                 {dt.icon}{" "}
-                {dt.label}
+                {getDocLabel(dt.key)}
               </div>
 
             )
@@ -2680,7 +2592,7 @@ export default function Dashboard() {
               !selectedDocType
             ) {
               alert(
-                "Please select a document type first"
+                t("docs_select_file_err")
               );
               return;
             }
@@ -2697,16 +2609,16 @@ export default function Dashboard() {
 
           <div className="upload-zone-text">
             {uploading
-              ? "Uploading..."
+              ? t("docs_uploading")
               : selectedDocType
-              ? `Upload ${getDocLabel(
+              ? `${t("dash_upload_doc")} ${getDocLabel(
                   selectedDocType
                 )}`
-              : "Select a document type above"}
+              : t("docs_select_type")}
           </div>
 
           <div className="upload-zone-sub">
-            PDF, JPG, PNG — Max 5MB
+            {t("docs_file_limit")}
           </div>
 
         </div>
@@ -2720,11 +2632,11 @@ export default function Dashboard() {
           <div>
 
             <div className="dash-card-title">
-              My Documents
+              {t("docs_my_files")}
             </div>
 
             <div className="dash-card-subtitle">
-              {documents.length} document(s) uploaded
+              {documents.length} {t("dash_documents_uploaded")}
             </div>
 
           </div>
@@ -2744,7 +2656,7 @@ export default function Dashboard() {
               fontSize: 13
             }}
           >
-            No documents uploaded yet. Start by selecting a type and uploading.
+            {t("docs_no_files")}
           </p>
 
         ) : (
@@ -2825,11 +2737,11 @@ export default function Dashboard() {
         <div>
 
           <div className="dash-card-title">
-            Verification Status
+            {t("dash_verification")}
           </div>
 
           <div className="dash-card-subtitle">
-            Track the progress of your document verification
+            {t("dash_tab_verify_sub")}
           </div>
 
         </div>
@@ -2864,7 +2776,7 @@ export default function Dashboard() {
               marginBottom: 8
             }}
           >
-            No documents to verify
+            {t("docs_no_files")}
           </p>
 
           <button
@@ -2875,7 +2787,7 @@ export default function Dashboard() {
               )
             }
           >
-            Upload Documents →
+            {t("dash_upload_doc")} →
           </button>
 
         </div>
@@ -2890,7 +2802,7 @@ export default function Dashboard() {
                 "grid",
               gridTemplateColumns:
                 "repeat(3, 1fr)",
-              gap: "1rem",
+              gap: "1.25rem",
               marginBottom:
                 "1.5rem"
             }}
@@ -2930,7 +2842,7 @@ export default function Dashboard() {
                   fontWeight: 600
                 }}
               >
-                PENDING
+                {t("docs_pending")}
               </div>
 
             </div>
@@ -2969,7 +2881,7 @@ export default function Dashboard() {
                   fontWeight: 600
                 }}
               >
-                VERIFIED
+                {t("status_VERIFIED")}
               </div>
 
             </div>
@@ -3008,7 +2920,7 @@ export default function Dashboard() {
                   fontWeight: 600
                 }}
               >
-                REJECTED
+                {t("status_REJECTED")}
               </div>
 
             </div>
@@ -3061,23 +2973,23 @@ export default function Dashboard() {
                     <p>
                       {d.status ===
                         "verified" &&
-                        "Document has been verified successfully ✅"}
+                        t("docs_verified_msg")}
 
                       {d.status ===
                         "pending" &&
-                        "Awaiting admin review..."}
+                        t("docs_awaiting_admin")}
 
                       {d.status ===
                         "pending_clerk" &&
-                        "Awaiting clerk review..."}
+                        t("docs_awaiting_clerk")}
 
                       {d.status ===
                         "pending_officer" &&
-                        "Awaiting officer review..."}
+                        t("docs_awaiting_officer")}
 
                       {d.status ===
                         "rejected" &&
-                        `Rejected${
+                        `${t("status_REJECTED")}${
                           d.review_note
                             ? `: ${d.review_note}`
                             : ""
@@ -3129,11 +3041,11 @@ export default function Dashboard() {
         <div>
 
           <div className="dash-card-title">
-            Notifications
+            {t("dash_notifications")}
           </div>
 
           <div className="dash-card-subtitle">
-            {unreadCount} unread notification(s)
+            {unreadCount} {t("notif_sub")}
           </div>
 
         </div>
@@ -3145,7 +3057,7 @@ export default function Dashboard() {
               markAllRead
             }
           >
-            Mark all read
+            {t("notif_mark_read")}
           </button>
         )}
 
@@ -3178,7 +3090,7 @@ export default function Dashboard() {
               color: "#666"
             }}
           >
-            No notifications yet
+            {t("notif_no_notif")}
           </p>
 
         </div>
@@ -3241,7 +3153,7 @@ export default function Dashboard() {
                       fontWeight: 700
                     }}
                   >
-                    NEW
+                    {t("notif_new")}
                   </span>
                 )}
 
@@ -3268,11 +3180,11 @@ export default function Dashboard() {
         <div>
 
           <div className="dash-card-title">
-            Settings
+            {t("dash_settings")}
           </div>
 
           <div className="dash-card-subtitle">
-            Manage your account preferences
+            {t("dash_tab_settings_sub")}
           </div>
 
         </div>
@@ -3313,7 +3225,7 @@ export default function Dashboard() {
                   "#1a1a1a"
               }}
             >
-              🌐 Language Preference
+              🌐 {t("prof_lang")}
             </div>
 
             <div
@@ -3323,9 +3235,8 @@ export default function Dashboard() {
                 marginTop: 2
               }}
             >
-              Currently:{" "}
-              {profile.language ||
-                "English"}
+              {t("currently")}:{" "}
+              {lang === "mr" ? "मराठी" : lang === "hi" ? "हिन्दी" : "English"}
             </div>
 
           </div>
@@ -3336,30 +3247,30 @@ export default function Dashboard() {
               width: 200
             }}
             value={
-              profile.language ||
-              "English"
+              lang === "mr" ? "Marathi" : lang === "hi" ? "Hindi" : "English"
             }
-            onChange={(e) =>
+            onChange={(e) => {
+              const val = e.target.value;
               setProfile({
                 ...profile,
-                language:
-                  e.target.value
-              })
-            }
+                language: val
+              });
+              if (val === "English" || val === "en") setLang("en");
+              else if (val === "Hindi" || val.includes("Hindi")) setLang("hi");
+              else if (val === "Marathi" || val.includes("Marathi")) setLang("mr");
+            }}
           >
 
             {[
-              "English",
-              "हिंदी (Hindi)",
-              "मराठी (Marathi)",
-              "বাংলা (Bengali)",
-              "தமிழ் (Tamil)"
+              { val: "English", label: "English" },
+              { val: "Hindi", label: "हिन्दी (Hindi)" },
+              { val: "Marathi", label: "मराठी (Marathi)" }
             ].map((l) => (
               <option
-                key={l}
-                value={l}
+                key={l.val}
+                value={l.val}
               >
-                {l}
+                {l.label}
               </option>
             ))}
 
@@ -3392,7 +3303,7 @@ export default function Dashboard() {
                   "#1a1a1a"
               }}
             >
-              👤 Account Info
+              👤 {t("account_info")}
             </div>
 
             <div
@@ -3402,9 +3313,9 @@ export default function Dashboard() {
                 marginTop: 2
               }}
             >
-              Mobile:{" "}
-              {user.mobile} |
-              Role:{" "}
+              {t("login_mobile_label")}:{" "}
+              {user.mobile} |{" "}
+              {t("role_citizen")}:{" "}
               {user.role}
             </div>
 
@@ -3439,7 +3350,7 @@ export default function Dashboard() {
                   "#b91c1c"
               }}
             >
-              🚪 Logout
+              🚪 {t("dash_logout")}
             </div>
 
             <div
@@ -3450,7 +3361,7 @@ export default function Dashboard() {
                 marginTop: 2
               }}
             >
-              Sign out of your account
+              {t("dash_logout")}
             </div>
 
           </div>
@@ -3461,7 +3372,7 @@ export default function Dashboard() {
               handleLogout
             }
           >
-            Logout
+            {t("dash_logout")}
           </button>
 
         </div>
@@ -3487,43 +3398,43 @@ export default function Dashboard() {
 
   const tabTitles = {
     overview: [
-      "Dashboard Overview",
-      "Welcome back! Here's your activity summary."
+      t("dash_tab_overview"),
+      t("dash_tab_overview_sub")
     ],
 
     profile: [
-      "My Profile",
-      "Keep your information updated for best scheme matching."
+      t("dash_profile"),
+      t("dash_profile_sub")
     ],
 
     schemes: [
-      "Scheme Finder",
-      "AI-powered government scheme eligibility matching."
+      t("dash_tab_schemes"),
+      t("dash_tab_schemes_sub")
     ],
 
     applications: [
-      "My Applications",
-      "Track your welfare scheme application status."
+      t("dash_applications"),
+      t("dash_tab_apps_sub")
     ],
 
     documents: [
-      "Document Management",
-      "Upload and manage your verification documents."
+      t("dash_tab_docs"),
+      t("dash_tab_docs_sub")
     ],
 
     verification: [
-      "Verification Status",
-      "Track your document verification progress."
+      t("dash_verification"),
+      t("dash_tab_verify_sub")
     ],
 
     notifications: [
-      "Notifications",
-      "Stay updated with your latest alerts."
+      t("dash_notifications"),
+      t("dash_tab_notif_sub")
     ],
 
     settings: [
-      "Settings",
-      "Manage your account and preferences."
+      t("dash_settings"),
+      t("dash_tab_settings_sub")
     ]
   };
 
@@ -3579,7 +3490,7 @@ export default function Dashboard() {
             </div>
 
             <div className="role">
-              Beneficiary
+              {t("dash_beneficiary")}
             </div>
 
           </div>
@@ -3589,7 +3500,7 @@ export default function Dashboard() {
         <nav className="sidebar-nav">
 
           <div className="sidebar-section-label">
-            Main Menu
+            {t("dash_main_menu")}
           </div>
 
           {SIDEBAR_ITEMS.slice(
@@ -3634,7 +3545,7 @@ export default function Dashboard() {
           ))}
 
           <div className="sidebar-section-label">
-            Documents
+            {t("dash_documents")}
           </div>
 
           {SIDEBAR_ITEMS.slice(
@@ -3662,7 +3573,7 @@ export default function Dashboard() {
               </span>
 
               <span className="sidebar-item-text">
-                {item.label}
+                {t(item.labelKey) || item.labelKey}
               </span>
 
             </div>
@@ -3670,7 +3581,7 @@ export default function Dashboard() {
           ))}
 
           <div className="sidebar-section-label">
-            Account
+            {t("dash_account")}
           </div>
 
           {SIDEBAR_ITEMS.slice(
@@ -3697,7 +3608,7 @@ export default function Dashboard() {
               </span>
 
               <span className="sidebar-item-text">
-                {item.label}
+                {t(item.labelKey) || item.labelKey}
               </span>
 
               {item.key ===

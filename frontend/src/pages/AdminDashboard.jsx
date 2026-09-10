@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import API from "../api/axios";
 import "./AdminDashboard.css";
+import { useLanguage } from "../LanguageContext";
 
 /* ── DB Fault Tolerance Widget ── */
 function ResilienceWidget() {
@@ -219,6 +220,7 @@ const NAV_ITEMS = [
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("overview");
 
@@ -241,12 +243,13 @@ export default function AdminDashboard() {
     const stored = localStorage.getItem("user");
     if (!stored) { navigate("/"); return; }
     const parsed = JSON.parse(stored);
+    // Only plain 'user' role (citizens) are not allowed here
     if (parsed.role === "user" || !parsed.role) { navigate("/dashboard"); return; }
     setUser(parsed);
     if (parsed.role === "clerk") setViewPerspective("clerk");
     else if (parsed.role === "officer") setViewPerspective("officer");
     else if (parsed.role === "state_admin") setViewPerspective("state_admin");
-    else setViewPerspective("master");
+    else setViewPerspective("master"); // minister, admin and any fallback gets master view
     loadData();
   }, [navigate]);
 
@@ -324,7 +327,7 @@ export default function AdminDashboard() {
     window.location.reload();
   };
 
-  if (!user) return <div style={{ padding: 40, color: "#fff" }}>Loading...</div>;
+  if (!user) return <div style={{ padding: 40, color: "#fff" }}>{t("loading")}</div>;
 
   const pendingDocs = allDocs.filter(d => {
     if (user?.role === "clerk") return d.status === "pending_clerk";
@@ -360,17 +363,17 @@ export default function AdminDashboard() {
           <div className="admin-stat amber">
             <div className="admin-stat-icon amber">📋</div>
             <div className="admin-stat-value">{clerkApps.length}</div>
-            <div className="admin-stat-label">Pending Level-1 Applications</div>
+            <div className="admin-stat-label">{t("admin_pending_l1")}</div>
           </div>
           <div className="admin-stat purple">
             <div className="admin-stat-icon purple">📄</div>
             <div className="admin-stat-value">{pendingDocs.length}</div>
-            <div className="admin-stat-label">Pending Proof Documents</div>
+            <div className="admin-stat-label">{t("admin_pending_docs")}</div>
           </div>
           <div className="admin-stat green">
             <div className="admin-stat-icon green">✅</div>
             <div className="admin-stat-value">{verifiedDocs.length}</div>
-            <div className="admin-stat-label">Verified Proof Docs</div>
+            <div className="admin-stat-label">{t("admin_verified_docs")}</div>
           </div>
         </div>
 
@@ -381,22 +384,22 @@ export default function AdminDashboard() {
               <div className="admin-card-title">📋 Level-1 Scheme Application Queue</div>
               <div className="admin-card-sub">Check citizen scheme submissions and forward verified files to the District Collector (DM)</div>
             </div>
-            <button className="admin-btn admin-btn-outline" onClick={loadData}>🔄 Refresh Queue</button>
+            <button className="admin-btn admin-btn-outline" onClick={loadData}>🔄 {t("admin_refresh")}</button>
           </div>
 
           {clerkApps.length === 0 ? (
             <p style={{ textAlign: "center", color: "#666", padding: "2rem 0", fontSize: 13 }}>
-              🎉 No pending Level-1 applications! All initial forms checked.
+              🎉 {t("admin_no_pending_l1")}
             </p>
           ) : (
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>Applicant</th>
-                  <th>Scheme</th>
-                  <th>Reason for Applying</th>
-                  <th>Current Handler</th>
-                  <th>Action</th>
+                  <th>{t("admin_col_applicant")}</th>
+                  <th>{t("admin_col_scheme")}</th>
+                  <th>{t("admin_col_reason")}</th>
+                  <th>{t("admin_col_handler")}</th>
+                  <th>{t("admin_col_action")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -423,14 +426,14 @@ export default function AdminDashboard() {
                           style={{ background: "#d97706", fontSize: 12, fontWeight: 700 }}
                           onClick={() => handleVerifyApplication(a.id, "verified")}
                         >
-                          ✓ Approve & Send to DM
+                          ✓ {t("admin_approve_send_dm")}
                         </button>
                         <button
                           className="admin-btn admin-btn-reject"
                           style={{ fontSize: 12 }}
                           onClick={() => handleVerifyApplication(a.id, "rejected")}
                         >
-                          ✗ Reject
+                          ✗ {t("admin_reject")}
                         </button>
                       </div>
                     </td>
@@ -450,16 +453,16 @@ export default function AdminDashboard() {
             </div>
           </div>
           {pendingDocs.length === 0 ? (
-            <p style={{ textAlign: "center", color: "#666", padding: "2rem 0", fontSize: 13 }}>🎉 No pending proof documents to review!</p>
+            <p style={{ textAlign: "center", color: "#666", padding: "2rem 0", fontSize: 13 }}>🎉 {t("admin_no_pending_docs")}</p>
           ) : (
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>Citizen Name</th>
-                  <th>Document Type</th>
-                  <th>Original File</th>
-                  <th>Uploaded Date</th>
-                  <th>Action</th>
+                  <th>{t("admin_col_citizen")}</th>
+                  <th>{t("admin_col_doc_type")}</th>
+                  <th>{t("admin_col_file")}</th>
+                  <th>{t("admin_col_date")}</th>
+                  <th>{t("admin_col_action")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -471,8 +474,8 @@ export default function AdminDashboard() {
                     <td style={{ fontSize: 12, color: "#666" }}>{d.uploaded_at?.split("T")[0] || d.uploaded_at?.split(" ")[0]}</td>
                     <td>
                       <div style={{ display: "flex", gap: 6 }}>
-                        <button className="admin-btn admin-btn-approve" onClick={() => handleVerify(d.id, "verified")}>✓ Verify Document</button>
-                        <button className="admin-btn admin-btn-reject" onClick={() => handleVerify(d.id, "rejected")}>✗ Reject</button>
+                        <button className="admin-btn admin-btn-approve" onClick={() => handleVerify(d.id, "verified")}>✓ {t("admin_verify_doc")}</button>
+                        <button className="admin-btn admin-btn-reject" onClick={() => handleVerify(d.id, "rejected")}>✗ {t("admin_reject")}</button>
                       </div>
                     </td>
                   </tr>
@@ -694,15 +697,15 @@ export default function AdminDashboard() {
     );
   };
 
-  // ─── 4. DEDICATED CABINET MINISTER / SUPER ADMIN DASHBOARD ───
+  // ─── 4. DEDICATED CABINET MINISTER DASHBOARD (Final Welfare Approval) ───
   const renderAdminOverview = () => {
     const ministerApps = allApps.filter(a => a.status === "pending_minister" || a.status === "pending_officer");
     return (
       <>
         <div style={{ background: "linear-gradient(90deg, rgba(239, 68, 68, 0.15) 0%, rgba(249, 115, 22, 0.15) 100%)", border: "1px solid rgba(239, 68, 68, 0.3)", borderRadius: 12, padding: "16px 20px", marginBottom: 24, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div>
-            <h3 style={{ margin: 0, color: "#f87171", fontSize: 18 }}>👑 Cabinet Minister & Apex Super Admin Office</h3>
-            <p style={{ margin: "4px 0 0 0", color: "#9ca3af", fontSize: 13 }}>ROLE_SUPER_ADMIN — Raft Consensus Quorum Execution, System Configuration & DC Telemetry.</p>
+            <h3 style={{ margin: 0, color: "#f87171", fontSize: 18 }}>👑 Cabinet Minister — Final Approval Authority</h3>
+            <p style={{ margin: "4px 0 0 0", color: "#9ca3af", fontSize: 13 }}>ROLE_MINISTER — Raft Consensus Quorum Execution for final welfare scheme disbursement.</p>
           </div>
           <span style={{ background: "linear-gradient(90deg, #ef4444 0%, #f97316 100%)", color: "#ffffff", padding: "6px 14px", borderRadius: 8, fontSize: 12, fontWeight: 700 }}>
             Level-4 Apex Authority (Raft Quorum)
@@ -805,12 +808,82 @@ export default function AdminDashboard() {
     );
   };
 
+  // ─── 5. SYSTEM ADMIN OVERVIEW — DC Panel Entry Point ───
+  const renderSysAdminOverview = () => (
+    <>
+      {/* Identity Banner */}
+      <div style={{ background: "linear-gradient(135deg, #030c1a 0%, #0a1628 100%)", border: "1px solid rgba(14,165,233,0.35)", borderRadius: 16, padding: "20px 28px", marginBottom: 24, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
+        <div>
+          <div style={{ fontFamily: "monospace", fontSize: 11, letterSpacing: 2, color: "#38bdf8", marginBottom: 6 }}>ARTHMITRA DISTRIBUTED SYSTEM — SYSTEM ADMINISTRATOR</div>
+          <h3 style={{ margin: 0, color: "#e2e8f0", fontSize: 20 }}>🖥️ System Administrator Portal</h3>
+          <p style={{ margin: "6px 0 0 0", color: "#94a3b8", fontSize: 13 }}>ROLE_SYSADMIN — Full access to Distributed Computing Command Center, node monitoring, and system telemetry.</p>
+        </div>
+        <span style={{ background: "linear-gradient(135deg, #0284c7, #0ea5e9)", color: "#ffffff", padding: "6px 16px", borderRadius: 8, fontSize: 12, fontWeight: 700 }}>
+          DC System Administrator
+        </span>
+      </div>
+
+      {/* Quick Access Cards */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20, marginBottom: 28 }}>
+        {/* Primary DC Panel Card */}
+        <div style={{ background: "linear-gradient(135deg, #030c1a 0%, #0d1b2a 100%)", border: "2px solid rgba(0,212,255,0.4)", borderRadius: 16, padding: 28, position: "relative", overflow: "hidden", cursor: "pointer" }}
+          onClick={() => navigate("/dc-panel")}>
+          <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: "linear-gradient(90deg, #00d4ff, #00ff88, #00d4ff)", backgroundSize: "200% 100%", animation: "shimmer 2s linear infinite" }} />
+          <div style={{ fontSize: 40, marginBottom: 14 }}>🖧</div>
+          <div style={{ fontSize: 18, fontWeight: 800, color: "#00d4ff", marginBottom: 8 }}>DC Command Center</div>
+          <div style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.5, marginBottom: 20 }}>
+            Full distributed computing dashboard — node grid, topology, event timeline, consensus, cache monitoring, and CAP theorem visualization.
+          </div>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "linear-gradient(90deg, #00d4ff20, #00ff8820)", border: "1px solid #00d4ff50", borderRadius: 8, padding: "10px 20px", color: "#00d4ff", fontWeight: 700, fontSize: 14 }}>
+            🚀 Open DC Panel →
+          </div>
+        </div>
+
+        {/* System Stats Cards */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <div style={{ background: "rgba(14,165,233,0.08)", border: "1px solid rgba(14,165,233,0.2)", borderRadius: 12, padding: "16px 20px", display: "flex", alignItems: "center", gap: 16 }}>
+            <div style={{ fontSize: 28 }}>⚡</div>
+            <div>
+              <div style={{ fontWeight: 700, color: "#38bdf8", fontSize: 15 }}>Distributed Cache</div>
+              <div style={{ fontSize: 12, color: "#64748b" }}>Redis layer — real-time key monitoring</div>
+            </div>
+          </div>
+          <div style={{ background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.2)", borderRadius: 12, padding: "16px 20px", display: "flex", alignItems: "center", gap: 16 }}>
+            <div style={{ fontSize: 28 }}>🔒</div>
+            <div>
+              <div style={{ fontWeight: 700, color: "#34d399", fontSize: 15 }}>Distributed Locks</div>
+              <div style={{ fontSize: 12, color: "#64748b" }}>Redlock mutex — prevent race conditions</div>
+            </div>
+          </div>
+          <div style={{ background: "rgba(168,85,247,0.08)", border: "1px solid rgba(168,85,247,0.2)", borderRadius: 12, padding: "16px 20px", display: "flex", alignItems: "center", gap: 16 }}>
+            <div style={{ fontSize: 28 }}>🗳️</div>
+            <div>
+              <div style={{ fontWeight: 700, color: "#c084fc", fontSize: 15 }}>Raft Consensus</div>
+              <div style={{ fontSize: 12, color: "#64748b" }}>Leader election &amp; quorum management</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Info Banner */}
+      <div style={{ background: "rgba(14,165,233,0.06)", border: "1px solid rgba(14,165,233,0.15)", borderRadius: 12, padding: "16px 20px", fontSize: 13, color: "#94a3b8", lineHeight: 1.6 }}>
+        <span style={{ color: "#38bdf8", fontWeight: 700 }}>System Admin access is restricted</span> to technical monitoring tools only.
+        For welfare scheme approvals, see the Cabinet Minister role. Click <strong style={{ color: "#00d4ff" }}>DC Command Center</strong> above to access the full distributed systems dashboard.
+      </div>
+      <style>{`
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+      `}</style>
+    </>
+  );
+
   const renderOverview = () => {
     if (user?.role === "clerk") return renderClerkOverview();
     if (user?.role === "officer") return renderOfficerOverview();
     if (user?.role === "state_admin") return renderSecretaryOverview();
-    return renderAdminOverview();
+    if (user?.role === "admin") return renderSysAdminOverview();
+    return renderAdminOverview(); // minister
   };
+
 
 
   const renderApplications = () => {
@@ -1248,26 +1321,29 @@ export default function AdminDashboard() {
   );
 
   const getRoleTitle = () => {
-    if (user?.role === "clerk") return "📋 Section Officer / Front Desk Clerk Portal (ROLE_VERIFIER)";
-    if (user?.role === "officer") return "🏛️ District Collector / DM Portal (ROLE_DISTRICT_ADMIN)";
-    if (user?.role === "state_admin") return "🏢 Department Secretary Portal (ROLE_STATE_ADMIN)";
-    if (user?.role === "admin") return "👑 Cabinet Minister & Apex Super Admin Portal (ROLE_SUPER_ADMIN)";
-    return "Government Administration Portal";
+    if (user?.role === "clerk") return t("admin_role_clerk");
+    if (user?.role === "officer") return t("admin_role_officer");
+    if (user?.role === "state_admin") return t("admin_role_secretary");
+    if (user?.role === "minister") return t("admin_role_minister");
+    if (user?.role === "admin") return t("admin_role_sysadmin");
+    return t("admin_role_default");
   };
 
   const getRoleBadge = () => {
     if (user?.role === "clerk") return { text: "ROLE_VERIFIER (Level 1)", bg: "#d97706" };
     if (user?.role === "officer") return { text: "ROLE_DISTRICT_ADMIN (Level 2)", bg: "#2563eb" };
     if (user?.role === "state_admin") return { text: "ROLE_STATE_ADMIN (Level 3)", bg: "#9333ea" };
+    if (user?.role === "minister") return { text: "ROLE_MINISTER (Apex Approver)", bg: "#ef4444" };
+    if (user?.role === "admin") return { text: "ROLE_SYSADMIN (DC Monitor)", bg: "#0284c7" };
     return { text: "ROLE_SUPER_ADMIN (Apex)", bg: "#ef4444" };
   };
 
   const tabTitles = {
-    overview:     [getRoleTitle(), "Government hierarchy review & process workflow"],
-    applications: ["Scheme Lifecycle Review Queue", "Process applications assigned to your official jurisdiction"],
-    documents:    ["Document Review",   "Review and verify user uploaded proof documents"],
-    users:        ["User Management",   "View registered citizens in your jurisdiction"],
-    dcmonitor:    ["DC System Monitor", "Live node health and distributed computing metrics"],
+    overview:     [getRoleTitle(), t("admin_tab_overview_sub")],
+    applications: [t("admin_tab_apps"), t("admin_tab_apps_sub")],
+    documents:    [t("admin_tab_docs"),    t("admin_tab_docs_sub")],
+    users:        [t("admin_tab_users"),   t("admin_tab_users_sub")],
+    dcmonitor:    [t("admin_dc_monitor"), t("admin_tab_dc_sub")],
   };
 
   const tabContent = {
@@ -1292,9 +1368,10 @@ export default function AdminDashboard() {
         </div>
 
         <nav className="admin-nav">
-          <div className="admin-nav-label">Official Jurisdiction</div>
+          <div className="admin-nav-label">{t("admin_jurisdiction")}</div>
           {NAV_ITEMS.filter(item => {
             if (item.key === "dcmonitor") return user?.role === "admin";
+            if (item.key === "applications") return user?.role !== "admin";
             if (item.key === "documents") return user?.role === "clerk" || user?.role === "admin";
             return true;
           }).map((item) => (
@@ -1330,7 +1407,7 @@ export default function AdminDashboard() {
             }}>
               {user.name} ({badge.text})
             </span>
-            <button className="admin-logout-btn" onClick={handleLogout}>Logout</button>
+            <button className="admin-logout-btn" onClick={handleLogout}>{t("admin_logout")}</button>
           </div>
         </div>
 

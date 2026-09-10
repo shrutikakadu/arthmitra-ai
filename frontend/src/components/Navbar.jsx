@@ -36,7 +36,7 @@ function Navbar() {
     const handleLogout = () => {
         localStorage.removeItem("user");
         setUser(null);
-        navigate("/login");
+        navigate("/");
     };
 
     return (
@@ -149,7 +149,7 @@ function Navbar() {
                         <Link
                             to="/dc-panel"
                             style={{
-                                color: "#ff6b00",
+                                color: "#818cf8",
                                 textDecoration: "none",
                                 fontWeight: "600"
                             }}
@@ -205,9 +205,9 @@ function Navbar() {
 
                         <Link
                             to={
-                                user.role === "admin"
-                                    ? "/admin"
-                                    : "/dashboard"
+                                user.role === "user"
+                                    ? "/dashboard"
+                                    : "/admin"
                             }
                             style={{
                                 background: "#138808",
@@ -219,7 +219,7 @@ function Navbar() {
                                 fontWeight: "600"
                             }}
                         >
-                            Dashboard
+                            {t("nav_dashboard")}
                         </Link>
 
                         <button
@@ -235,7 +235,7 @@ function Navbar() {
                                 fontWeight: "600"
                             }}
                         >
-                            Logout
+                            {t("nav_logout")}
                         </button>
                     </>
                 ) : (

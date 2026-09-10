@@ -1,8 +1,9 @@
 import { useEffect, useState, useCallback, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import API from "../api/axios";
 import "./DCControlPanel.css";
+import { useLanguage } from "../LanguageContext";
 
 // ─── Static trace steps (illustrative distributed trace) ───────────────────
 const TRACE_STEPS = [
@@ -141,6 +142,8 @@ const AnimatedCounter = ({ value, suffix = "" }) => {
 };
 
 export default function DCControlPanel() {
+  const navigate = useNavigate();
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState("overview");
   const [nodes,     setNodes]     = useState([]);
   const [topology,  setTopology]  = useState({ nodes: [], edges: [] });
@@ -158,6 +161,19 @@ export default function DCControlPanel() {
   
   const [voteAnim, setVoteAnim] = useState(false);
 
+  // Role guard: only System Admin (role='admin') can access this panel
+  useEffect(() => {
+    const stored = localStorage.getItem("user");
+    if (!stored) { navigate("/login"); return; }
+    const parsed = JSON.parse(stored);
+    if (parsed.role !== "admin") {
+      // Cabinet Minister and other gov roles → approval dashboard
+      if (parsed.role && parsed.role !== "user") navigate("/admin");
+      else navigate("/dashboard");
+    }
+  }, [navigate]);
+
+  // Clock timer
   useEffect(() => {
     const t = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(t);
@@ -242,14 +258,14 @@ export default function DCControlPanel() {
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
         <div className="dc-metrics-grid">
           {[
-            { label: "Active Nodes",       value: `${m.active_nodes}/${m.total_nodes}`, color: "var(--dc-green)",  trend: "System Online" },
-            { label: "Avg Latency",        value: <AnimatedCounter value={m.avg_latency_ms} suffix="ms" />, color: "var(--dc-cyan)", trend: "p99: "+m.p99_latency_ms+"ms" },
-            { label: "Throughput (RPS)",   value: <AnimatedCounter value={m.throughput_rps} />, color: "var(--dc-purple)", trend: "Traffic Stable" },
-            { label: "Cache Hit Rate",     value: <AnimatedCounter value={cacheHit} suffix="%" />, color: cacheHit > 80 ? "var(--dc-green)" : "var(--dc-orange)", trend: "Redis Layer" },
-            { label: "Replication Health", value: replHealth, color: replHealth === 'Healthy' ? "var(--dc-green)" : "var(--dc-orange)", trend: `Lag: ${replicationLag}ms` },
-            { label: "Queue Backlog",      value: <AnimatedCounter value={qBacklog} />, color: qBacklog < 100 ? "var(--dc-green)" : "var(--dc-orange)", trend: "RabbitMQ / Event Bus" },
-            { label: "Consensus Status",   value: consensus?.pending_items?.length === 0 ? "Synced" : "Pending", color: consensus?.pending_items?.length === 0 ? "var(--dc-green)" : "var(--dc-orange)", trend: "Raft Quorum" },
-            { label: "Active Locks",       value: <AnimatedCounter value={activeLocks} />, color: "var(--dc-cyan)", trend: "Distributed Mutex" },
+            { label: t("dc_active_nodes"),       value: `${m.active_nodes}/${m.total_nodes}`, color: "var(--dc-green)",  trend: t("dc_system_online") },
+            { label: t("dc_avg_latency"),        value: <AnimatedCounter value={m.avg_latency_ms} suffix="ms" />, color: "var(--dc-cyan)", trend: "p99: "+m.p99_latency_ms+"ms" },
+            { label: t("dc_throughput"),   value: <AnimatedCounter value={m.throughput_rps} />, color: "var(--dc-purple)", trend: t("dc_traffic_stable") },
+            { label: t("dc_cache_hit"),     value: <AnimatedCounter value={cacheHit} suffix="%" />, color: cacheHit > 80 ? "var(--dc-green)" : "var(--dc-orange)", trend: t("dc_redis_layer") },
+            { label: t("dc_repl_health"), value: replHealth === 'Healthy' ? t("dc_healthy") : t("dc_lagging"), color: replHealth === 'Healthy' ? "var(--dc-green)" : "var(--dc-orange)", trend: `Lag: ${replicationLag}ms` },
+            { label: t("dc_queue_backlog"),      value: <AnimatedCounter value={qBacklog} />, color: qBacklog < 100 ? "var(--dc-green)" : "var(--dc-orange)", trend: "RabbitMQ / Event Bus" },
+            { label: t("dc_consensus_status"),   value: consensus?.pending_items?.length === 0 ? t("dc_synced") : t("dc_pending"), color: consensus?.pending_items?.length === 0 ? "var(--dc-green)" : "var(--dc-orange)", trend: "Raft Quorum" },
+            { label: t("dc_active_locks"),       value: <AnimatedCounter value={activeLocks} />, color: "var(--dc-cyan)", trend: "Distributed Mutex" },
           ].map((item, i) => (
             <motion.div className="dc-metric-card" key={i} whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 300 }}>
               <div className="dc-metric-label">{item.label}</div>
@@ -585,48 +601,60 @@ export default function DCControlPanel() {
     cacherepl: renderCacheRepl, trace: renderTrace, cap: renderCap,
   };
 
-  return (
-    <div className="dc-root">
-      <header className="dc-header">
-        <div className="dc-logo">
-          <div className="dc-logo-icon">🖧</div>
-          <div>
-            <div className="dc-logo-text">ArthMitra DC Control Panel</div>
-            <div className="dc-logo-sub">Distributed Computing Command Center</div>
-          </div>
-        </div>
-        <div className="dc-header-right">
-          <div className="dc-live-badge"><div className="dc-live-dot" /> LIVE · {nodes.filter(n=>n.status==='online').length}/{nodes.length} NODES</div>
-          <div className="dc-time">{time.toLocaleTimeString("en-IN", { hour12: false })}</div>
-          <button className="dc-refresh-btn" onClick={() => fetchAll(true)} disabled={refreshing}>
-            <span className={refreshing ? "dc-spinning" : ""}>⟳</span> REFRESH
-          </button>
-          <Link to="/" className="dc-back-btn">← HOME</Link>
-        </div>
-      </header>
+    const navTabsList = [
+      { key: "overview",   icon: "⬡",   label: t("dc_overview") },
+      { key: "nodes",      icon: "○",   label: t("dc_nodes") },
+      { key: "topology",   icon: "◈",   label: t("dc_topology") },
+      { key: "events",     icon: "≡",   label: t("dc_events") },
+      { key: "shards",     icon: "◫",   label: t("dc_shards") },
+      { key: "consensus",  icon: "⊞",   label: t("dc_consensus") },
+      { key: "cacherepl",  icon: "⚡",   label: t("dc_cache_repl") },
+      { key: "trace",      icon: "↻",   label: t("dc_trace") },
+      { key: "cap",        icon: "△",   label: t("dc_cap") },
+    ];
 
-      <nav className="dc-nav">
-        {NAV_TABS.map(tab => (
-          <button key={tab.key} className={`dc-nav-tab ${activeTab === tab.key ? "active" : ""}`} onClick={() => setActiveTab(tab.key)}>
-            <span>{tab.icon}</span> {tab.label}
-          </button>
-        ))}
-      </nav>
-
-      <div className="dc-page">
-        <div className="dc-section-header">
-          <div>
-            <div className="dc-section-title">ARTHMITRA AI / DISTRIBUTED SYSTEMS</div>
-            <div className="dc-section-subtitle">{NAV_TABS.find(t => t.key === activeTab)?.label}</div>
+    return (
+      <div className="dc-root">
+        <header className="dc-header">
+          <div className="dc-logo">
+            <div className="dc-logo-icon">🖧</div>
+            <div>
+              <div className="dc-logo-text">{t("dc_title")}</div>
+              <div className="dc-logo-sub">{t("dc_subtitle")}</div>
+            </div>
           </div>
+          <div className="dc-header-right">
+            <div className="dc-live-badge"><div className="dc-live-dot" /> {t("dc_live")} · {nodes.filter(n=>n.status==='online').length}/{nodes.length} NODES</div>
+            <div className="dc-time">{time.toLocaleTimeString("en-IN", { hour12: false })}</div>
+            <button className="dc-refresh-btn" onClick={() => fetchAll(true)} disabled={refreshing}>
+              <span className={refreshing ? "dc-spinning" : ""}>⟳</span> {t("dc_refresh")}
+            </button>
+            <Link to="/" className="dc-back-btn">{t("dc_back")}</Link>
+          </div>
+        </header>
+
+        <nav className="dc-nav">
+          {navTabsList.map(tab => (
+            <button key={tab.key} className={`dc-nav-tab ${activeTab === tab.key ? "active" : ""}`} onClick={() => setActiveTab(tab.key)}>
+              <span>{tab.icon}</span> {tab.label}
+            </button>
+          ))}
+        </nav>
+
+        <div className="dc-page">
+          <div className="dc-section-header">
+            <div>
+              <div className="dc-section-title">ARTHMITRA AI / DISTRIBUTED SYSTEMS</div>
+              <div className="dc-section-subtitle">{navTabsList.find(t => t.key === activeTab)?.label}</div>
+            </div>
+          </div>
+          
+          <AnimatePresence mode="wait">
+            <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
+              {TABS[activeTab]?.()}
+            </motion.div>
+          </AnimatePresence>
         </div>
-        
-        <AnimatePresence mode="wait">
-          <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
-            {TABS[activeTab]?.()}
-          </motion.div>
-        </AnimatePresence>
       </div>
-    </div>
-  );
+    );
 }

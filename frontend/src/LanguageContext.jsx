@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from "react";
+import { createContext, useContext, useState, useCallback, useMemo } from "react";
 import translations from "./i18n";
 
 const LanguageContext = createContext(null);
@@ -13,10 +13,25 @@ export function LanguageProvider({ children }) {
     setLangState(newLang);
   }, []);
 
-  const t = useCallback(
-    (key) => translations[lang]?.[key] || translations["en"]?.[key] || key,
+  const getTranslation = useCallback(
+    (key) => {
+      if (!key) return "";
+      return translations[lang]?.[key] || translations["en"]?.[key] || key;
+    },
     [lang]
   );
+
+  const t = useMemo(() => {
+    const fn = (key) => getTranslation(key);
+    return new Proxy(fn, {
+      get: (target, prop) => {
+        if (typeof prop === "symbol" || prop in target || prop === "then") {
+          return target[prop];
+        }
+        return getTranslation(prop);
+      }
+    });
+  }, [getTranslation]);
 
   return (
     <LanguageContext.Provider value={{ lang, setLang, t }}>

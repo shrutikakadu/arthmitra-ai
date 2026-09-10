@@ -5,6 +5,7 @@ import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { ArrowLeft, ExternalLink, CheckCircle, XCircle, AlertCircle, FileText, TrendingUp, Info, HelpCircle, BookOpen } from "lucide-react";
 import API from "../api/axios";
 import "./SchemeDashboard.css";
+import { useLanguage } from "../LanguageContext";
 
 // ─── 3D TILT CARD COMPONENT ──────────────────────────────────────────────────
 function TiltCard({ children, style, className }) {
@@ -142,6 +143,7 @@ const SCHEME_DETAILS_MAP = {
 export default function SchemeDashboard() {
     const { schemeName } = useParams();
     const navigate = useNavigate();
+    const { t } = useLanguage();
     
     const [user, setUser] = useState(null);
     const [userDocs, setUserDocs] = useState([]);
@@ -227,17 +229,19 @@ export default function SchemeDashboard() {
     // Calculate document checklist status
     const docChecklist = details.docs.map(docKey => {
         const matchingDoc = userDocs.find(d => d.doc_type === docKey);
-        const meta = COMMON_DOCS[docKey] || { label: docKey.replace("_", " ").toUpperCase(), icon: "📄" };
+        const docLabel = t(`doc_${docKey}`) || docKey;
+        const docIcons = { aadhaar: "🪪", income_cert: "💰", caste_cert: "📜", ration_card: "🏠", bank_passbook: "🏦", land_record: "🌾", pan_card: "💳", voter_id: "🗳️" };
+        const icon = docIcons[docKey] || "📄";
         
-        let status = "missing"; // missing, pending, verified
+        let status = "missing";
         if (matchingDoc) {
-            status = matchingDoc.status; // 'verified', 'pending', 'rejected' -> fallback to pending
+            status = matchingDoc.status;
         }
 
         return {
             key: docKey,
-            label: meta.label,
-            icon: meta.icon,
+            label: docLabel,
+            icon: icon,
             status: status
         };
     });
@@ -275,13 +279,13 @@ export default function SchemeDashboard() {
             {/* HEADER */}
             <header className="scheme-dash-header">
                 <button className="back-btn" onClick={() => navigate("/dashboard")}>
-                    <ArrowLeft size={16} /> Back to Dashboard
+                    <ArrowLeft size={16} /> {t("sd_back")}
                 </button>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 14 }}>
                     <div>
                         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                             <span className="scheme-category-badge">{decodedName.includes("Kisan") || decodedName.includes("Fasal") ? "🌾 Agriculture" : decodedName.includes("Ayushman") || decodedName.includes("Bima") ? "🏥 Healthcare" : "🏛️ Welfare"}</span>
-                            <span className="scheme-status-active">● Active Scheme</span>
+                            <span className="scheme-status-active">● {t("sd_active_scheme")}</span>
                         </div>
                         <h1 className="scheme-title">{decodedName}</h1>
                     </div>
@@ -296,10 +300,10 @@ export default function SchemeDashboard() {
                                 cursor: applying || appliedSuccess ? "default" : "pointer"
                             }}
                         >
-                            {appliedSuccess ? "✓ Application Submitted to Queue" : applying ? "Submitting..." : "🚀 Apply Direct via ArthMitra Pipeline"}
+                            {appliedSuccess ? t("sd_submitted_queue") : applying ? t("sd_submitting") : t("sd_apply_direct")}
                         </button>
                         <a href={details.link} target="_blank" rel="noopener noreferrer" className="apply-btn-main" style={{ background: "rgba(0,0,0,0.05)", color: "#1a1a1a", border: "1px solid #ddd" }}>
-                            Official Portal <ExternalLink size={14} />
+                            {t("sd_official_portal")} <ExternalLink size={14} />
                         </a>
                     </div>
 
@@ -313,9 +317,9 @@ export default function SchemeDashboard() {
                     {/* Navigation Tabs */}
                     <div className="scheme-tab-bar">
                         {[
-                            { id: "overview", label: "Overview & Benefits", icon: <BookOpen size={14} /> },
-                            { id: "checklist", label: "Documents Checklist", icon: <FileText size={14} /> },
-                            { id: "stats", label: "Budget & Stats Impact", icon: <TrendingUp size={14} /> }
+                            { id: "overview", label: t("sd_tab_overview"), icon: <BookOpen size={14} /> },
+                            { id: "checklist", label: t("sd_tab_checklist"), icon: <FileText size={14} /> },
+                            { id: "stats", label: t("sd_tab_stats"), icon: <TrendingUp size={14} /> }
                         ].map(tab => (
                             <button
                                 key={tab.id}
@@ -332,13 +336,13 @@ export default function SchemeDashboard() {
                         <div className="tab-pane animate-fade-in">
                             {/* Theory */}
                             <TiltCard className="theory-card">
-                                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.25rem", color: C.saffron, marginBottom: 12 }}>Detailed Theory</h3>
+                                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.25rem", color: C.saffron, marginBottom: 12 }}>{t("sd_theory_title")}</h3>
                                 <p style={{ fontSize: "0.95rem", lineHeight: 1.8, color: C.textSoft }}>{details.theory}</p>
                             </TiltCard>
 
                             {/* Benefits List */}
                             <div className="theory-card" style={{ marginTop: "1.25rem" }}>
-                                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.25rem", color: C.green, marginBottom: 14 }}>Key Benefits</h3>
+                                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.25rem", color: C.green, marginBottom: 14 }}>{t("sd_benefits_title")}</h3>
                                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                                     {details.benefits.map((benefit, idx) => (
                                         <div key={idx} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
@@ -351,7 +355,7 @@ export default function SchemeDashboard() {
 
                             {/* Step by Step Guide */}
                             <div className="theory-card" style={{ marginTop: "1.25rem" }}>
-                                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.25rem", color: C.text, marginBottom: 14 }}>How to Register & Apply</h3>
+                                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.25rem", color: C.text, marginBottom: 14 }}>{t("sd_steps_title")}</h3>
                                 <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                                     {details.steps.map((step, idx) => (
                                         <div key={idx} style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
@@ -370,8 +374,8 @@ export default function SchemeDashboard() {
                     {activeTab === "checklist" && (
                         <div className="tab-pane animate-fade-in">
                             <div className="theory-card">
-                                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.25rem", color: C.saffron, marginBottom: 4 }}>Required Documents</h3>
-                                <p style={{ fontSize: "0.85rem", color: C.textMuted, marginBottom: 20 }}>We've checked your verified dashboard documents to measure readiness.</p>
+                                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.25rem", color: C.saffron, marginBottom: 4 }}>{t("sd_docs_title")}</h3>
+                                <p style={{ fontSize: "0.85rem", color: C.textMuted, marginBottom: 20 }}>{t("sd_readiness_sub")}</p>
 
                                 <div className="checklist-container">
                                     {docChecklist.map((doc, idx) => (
@@ -380,29 +384,29 @@ export default function SchemeDashboard() {
                                                 <span style={{ fontSize: 20 }}>{doc.icon}</span>
                                                 <div>
                                                     <div style={{ fontSize: 13, fontWeight: 600 }}>{doc.label}</div>
-                                                    <div style={{ fontSize: 10, color: C.textMuted }}>Required for identity check</div>
+                                                    <div style={{ fontSize: 10, color: C.textMuted }}>Requirement for verification</div>
                                                 </div>
                                             </div>
 
                                             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                                                 {doc.status === "verified" && (
                                                     <span className="doc-badge doc-badge-verified">
-                                                        <CheckCircle size={12} /> Verified Ready
+                                                        <CheckCircle size={12} /> {t("sd_verified_ready")}
                                                     </span>
                                                 )}
                                                 {doc.status === "pending" && (
                                                     <span className="doc-badge doc-badge-pending">
-                                                        <AlertCircle size={12} /> Pending Review
+                                                        <AlertCircle size={12} /> {t("sd_pending_review")}
                                                     </span>
                                                 )}
                                                 {doc.status === "rejected" && (
                                                     <span className="doc-badge doc-badge-rejected">
-                                                        <XCircle size={12} /> Rejected
+                                                        <XCircle size={12} /> {t("sd_rejected")}
                                                     </span>
                                                 )}
                                                 {doc.status === "missing" && (
                                                     <span className="doc-badge doc-badge-missing">
-                                                        <XCircle size={12} /> Not Uploaded
+                                                        <XCircle size={12} /> {t("sd_not_uploaded")}
                                                     </span>
                                                 )}
                                             </div>
@@ -412,11 +416,11 @@ export default function SchemeDashboard() {
 
                                 {readinessScore === 100 ? (
                                     <div className="checklist-success-banner">
-                                        <CheckCircle size={16} /> All documents ready! You can apply online immediately.
+                                        <CheckCircle size={16} /> {t("sd_all_ready_banner")}
                                     </div>
                                 ) : (
                                     <div className="checklist-warn-banner">
-                                        <AlertCircle size={16} /> Some required documents are missing or pending. Please upload them in your dashboard to ensure successful processing.
+                                        <AlertCircle size={16} /> {t("sd_missing_warn_banner")}
                                     </div>
                                 )}
                             </div>
@@ -426,8 +430,8 @@ export default function SchemeDashboard() {
                     {activeTab === "stats" && (
                         <div className="tab-pane animate-fade-in">
                             <div className="theory-card">
-                                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.25rem", color: C.saffron, marginBottom: 4 }}>National Budget Allocation</h3>
-                                <p style={{ fontSize: "0.85rem", color: C.textMuted, marginBottom: 20 }}>Projected funding in ₹ Crores (5-year historical and target trend)</p>
+                                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.25rem", color: C.saffron, marginBottom: 4 }}>{t("sd_budget_title")}</h3>
+                                <p style={{ fontSize: "0.85rem", color: C.textMuted, marginBottom: 20 }}>{t("sd_budget_sub")}</p>
                                 
                                 <div style={{ width: "100%", height: 260 }}>
                                     <ResponsiveContainer>
@@ -437,15 +441,15 @@ export default function SchemeDashboard() {
                                             <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#666' }} />
                                             <Tooltip contentStyle={{ borderRadius: 8, border: '1px solid #ede8e1' }} />
                                             <Legend iconType="circle" wrapperStyle={{ fontSize: 12, paddingTop: 10 }} />
-                                            <Bar dataKey="budget" name="Budget Allocation (in ₹ Crores)" fill="#FF6B00" radius={[4, 4, 0, 0]} barSize={28} />
+                                            <Bar dataKey="budget" name={t("sd_budget_legend")} fill="#FF6B00" radius={[4, 4, 0, 0]} barSize={28} />
                                         </BarChart>
                                     </ResponsiveContainer>
                                 </div>
                             </div>
 
                             <div className="theory-card" style={{ marginTop: "1.25rem" }}>
-                                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.25rem", color: C.green, marginBottom: 4 }}>Beneficiaries Impacted</h3>
-                                <p style={{ fontSize: "0.85rem", color: C.textMuted, marginBottom: 20 }}>Number of active families assisted in Crores</p>
+                                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.25rem", color: C.green, marginBottom: 4 }}>{t("sd_ben_title")}</h3>
+                                <p style={{ fontSize: "0.85rem", color: C.textMuted, marginBottom: 20 }}>{t("sd_ben_sub")}</p>
                                 
                                 <div style={{ width: "100%", height: 260 }}>
                                     <ResponsiveContainer>
@@ -455,7 +459,7 @@ export default function SchemeDashboard() {
                                             <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#666' }} />
                                             <Tooltip contentStyle={{ borderRadius: 8, border: '1px solid #ede8e1' }} />
                                             <Legend iconType="circle" wrapperStyle={{ fontSize: 12, paddingTop: 10 }} />
-                                            <Line type="monotone" dataKey="beneficiaries" name="Active Beneficiaries (in Crores)" stroke="#138808" strokeWidth={3} activeDot={{ r: 8 }} />
+                                            <Line type="monotone" dataKey="beneficiaries" name={t("sd_ben_legend")} stroke="#138808" strokeWidth={3} activeDot={{ r: 8 }} />
                                         </LineChart>
                                     </ResponsiveContainer>
                                 </div>
@@ -469,8 +473,8 @@ export default function SchemeDashboard() {
                     {/* 2D/3D Document Readiness Circular Gauge */}
                     <TiltCard className="side-card">
                         <div style={{ textAlign: "center", marginBottom: 12 }}>
-                            <div style={{ fontSize: 13, fontWeight: 700, color: C.text }}>Document Readiness</div>
-                            <div style={{ fontSize: 10, color: C.textMuted }}>Requirement completion score</div>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: C.text }}>{t("sd_doc_readiness")}</div>
+                            <div style={{ fontSize: 10, color: C.textMuted }}>{t("sd_req_score")}</div>
                         </div>
 
                         <div style={{ position: "relative", width: 140, height: 140, margin: "0 auto 16px" }}>
@@ -495,20 +499,20 @@ export default function SchemeDashboard() {
                                     {readinessScore}%
                                 </div>
                                 <div style={{ fontSize: 10, color: C.textMuted, textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 700 }}>
-                                    {readinessScore === 100 ? "Ready" : "Incomplete"}
+                                    {readinessScore === 100 ? t("sd_status_ready") : t("sd_status_incomplete")}
                                 </div>
                             </div>
                         </div>
 
                         <div style={{ textAlign: "center", fontSize: 12, color: C.textSoft, lineHeight: 1.5 }}>
-                            {verifiedCount} of {totalCount} verified documents are ready.
+                            {verifiedCount} / {totalCount} {t("sd_verified_ready")}
                         </div>
                     </TiltCard>
 
                     {/* FAQ */}
                     <div className="side-card" style={{ marginTop: "1.25rem" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 12 }}>
-                            <HelpCircle size={16} color={C.saffron} /> Frequently Asked Questions
+                            <HelpCircle size={16} color={C.saffron} /> {t("sd_faq_title")}
                         </div>
                         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                             {details.faq.map((item, idx) => (
@@ -525,9 +529,9 @@ export default function SchemeDashboard() {
                         <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
                             <Info size={18} color={C.saffron} style={{ flexShrink: 0, marginTop: 2 }} />
                             <div>
-                                <h4 style={{ fontSize: 12, fontWeight: 700, margin: "0 0 4px", color: C.text }}>Important Notice</h4>
+                                <h4 style={{ fontSize: 12, fontWeight: 700, margin: "0 0 4px", color: C.text }}>{t("sd_notice_title")}</h4>
                                 <p style={{ fontSize: 11, color: C.textSoft, lineHeight: 1.6, margin: 0 }}>
-                                    Double-check information on the official government website. Direct all claims through approved Common Service Centers (CSC) to avoid middlemen or processing fees.
+                                    {t("sd_notice_body")}
                                 </p>
                             </div>
                         </div>
