@@ -10,6 +10,7 @@ import os
 import asyncio
 from contextlib import asynccontextmanager
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup: Start Replication Thread (Fault Tolerance / WAL Replication)
@@ -57,3 +58,4 @@ app.include_router(application_routes.router, prefix="/api")
 @app.get("/")
 def root():
     return {"message": "ArthMitra AI Backend Running ✅"}
+    

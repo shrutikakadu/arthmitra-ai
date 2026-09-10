@@ -10,15 +10,26 @@ function Navbar() {
 
     useEffect(() => {
         const stored = localStorage.getItem("user");
+
         if (stored) {
-            try { setUser(JSON.parse(stored)); } catch (e) { setUser(null); }
+            try {
+                setUser(JSON.parse(stored));
+            } catch (e) {
+                setUser(null);
+            }
         } else {
             setUser(null);
         }
     }, [location.pathname]);
 
-    // Hide navbar on pages that have their own custom sidebar/header layout
-    if (location.pathname === "/dashboard" || location.pathname === "/admin" || location.pathname.startsWith("/scheme") || location.pathname === "/dc-panel") {
+    // Hide navbar on pages that already have their own custom layout
+    if (
+        location.pathname === "/" ||
+        location.pathname === "/dashboard" ||
+        location.pathname === "/admin" ||
+        location.pathname.startsWith("/scheme") ||
+        location.pathname === "/dc-panel"
+    ) {
         return null;
     }
 
@@ -29,39 +40,129 @@ function Navbar() {
     };
 
     return (
-        <nav style={{
-            background: "#0d2818",
-            borderBottom: "1px solid rgba(74, 222, 128, 0.2)",
-            color: "#ffffff",
-            padding: "14px 28px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
-            fontFamily: "'Inter', system-ui, sans-serif"
-        }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
-                <Link to="/" style={{ textDecoration: "none", color: "#ffffff", fontWeight: "800", fontSize: "20px", display: "flex", alignItems: "center", gap: "8px" }}>
+        <nav
+            style={{
+                background: "#0d2818",
+                borderBottom: "1px solid rgba(74, 222, 128, 0.2)",
+                color: "#ffffff",
+                padding: "14px 28px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
+                fontFamily: "'Inter', system-ui, sans-serif"
+            }}
+        >
+            <div
+                style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "24px"
+                }}
+            >
+                <Link
+                    to="/"
+                    style={{
+                        textDecoration: "none",
+                        color: "#ffffff",
+                        fontWeight: "800",
+                        fontSize: "20px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px"
+                    }}
+                >
                     <span>🌿</span>
-                    <span style={{ background: "linear-gradient(90deg, #ff6b00, #4ade80)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+
+                    <span
+                        style={{
+                            background:
+                                "linear-gradient(90deg, #ff6b00, #4ade80)",
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent"
+                        }}
+                    >
                         ArthMitra AI
                     </span>
                 </Link>
 
-                <div style={{ display: "flex", gap: "18px", fontSize: "14px", fontWeight: "500", alignItems: "center" }}>
-                    <Link to="/" style={{ color: "#d1d5db", textDecoration: "none" }}>{t("nav_home")}</Link>
-                    <Link to="/match" style={{ color: "#d1d5db", textDecoration: "none" }}>{t("nav_scheme_matcher")}</Link>
-                    <Link to="/health" style={{ color: "#d1d5db", textDecoration: "none" }}>{t("nav_health_score")}</Link>
-                    <Link to="/savings" style={{ color: "#d1d5db", textDecoration: "none" }}>{t("nav_savings")}</Link>
-                    <Link to="/voice" style={{ color: "#d1d5db", textDecoration: "none" }}>{t("nav_voice")}</Link>
+                <div
+                    style={{
+                        display: "flex",
+                        gap: "18px",
+                        fontSize: "14px",
+                        fontWeight: "500",
+                        alignItems: "center"
+                    }}
+                >
+                    <Link
+                        to="/"
+                        style={{
+                            color: "#d1d5db",
+                            textDecoration: "none"
+                        }}
+                    >
+                        {t("nav_home")}
+                    </Link>
+
+                    <Link
+                        to="/match"
+                        style={{
+                            color: "#d1d5db",
+                            textDecoration: "none"
+                        }}
+                    >
+                        {t("nav_scheme_matcher")}
+                    </Link>
+
+                    <Link
+                        to="/health"
+                        style={{
+                            color: "#d1d5db",
+                            textDecoration: "none"
+                        }}
+                    >
+                        {t("nav_health_score")}
+                    </Link>
+
+                    <Link
+                        to="/savings"
+                        style={{
+                            color: "#d1d5db",
+                            textDecoration: "none"
+                        }}
+                    >
+                        {t("nav_savings")}
+                    </Link>
+
+                    <Link
+                        to="/voice"
+                        style={{
+                            color: "#d1d5db",
+                            textDecoration: "none"
+                        }}
+                    >
+                        {t("nav_voice")}
+                    </Link>
+
                     {user?.role === "admin" && (
-                        <Link to="/dc-panel" style={{ color: "#ff6b00", textDecoration: "none", fontWeight: "600" }}>{t("nav_dc_monitor")}</Link>
+                        <Link
+                            to="/dc-panel"
+                            style={{
+                                color: "#ff6b00",
+                                textDecoration: "none",
+                                fontWeight: "600"
+                            }}
+                        >
+                            {t("nav_dc_monitor")}
+                        </Link>
                     )}
-                    {/* ── LANGUAGE PICKER ── */}
+
+                    {/* LANGUAGE PICKER */}
                     <select
                         id="navbar-lang-picker"
                         value={lang}
-                        onChange={e => setLang(e.target.value)}
+                        onChange={(e) => setLang(e.target.value)}
                         style={{
                             background: "rgba(255,255,255,0.07)",
                             border: "1px solid rgba(74,222,128,0.25)",
@@ -74,40 +175,75 @@ function Navbar() {
                             fontFamily: "'Inter', sans-serif"
                         }}
                     >
-                        <option value="en">EN</option>
-                        <option value="hi">हिं</option>
-                        <option value="es">ES</option>
+                       <option value="en">EN</option>
+                       <option value="hi">हिं</option>
+                       <option value="mr">मरा</option>
                     </select>
                 </div>
-
-
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <div
+                style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "12px"
+                }}
+            >
                 {user ? (
                     <>
-                        <span style={{ fontSize: "13px", color: "#4ade80", background: "rgba(74, 222, 128, 0.1)", padding: "4px 10px", borderRadius: "20px" }}>
+                        <span
+                            style={{
+                                fontSize: "13px",
+                                color: "#4ade80",
+                                background: "rgba(74, 222, 128, 0.1)",
+                                padding: "4px 10px",
+                                borderRadius: "20px"
+                            }}
+                        >
                             👤 {user.name} ({user.role})
                         </span>
-                        <Link to={user.role === "admin" ? "/admin" : "/dashboard"}
+
+                        <Link
+                            to={
+                                user.role === "admin"
+                                    ? "/admin"
+                                    : "/dashboard"
+                            }
                             style={{
-                                background: "#138808", color: "#ffffff", textDecoration: "none",
-                                padding: "6px 14px", borderRadius: "8px", fontSize: "13px", fontWeight: "600"
-                            }}>
+                                background: "#138808",
+                                color: "#ffffff",
+                                textDecoration: "none",
+                                padding: "6px 14px",
+                                borderRadius: "8px",
+                                fontSize: "13px",
+                                fontWeight: "600"
+                            }}
+                        >
                             Dashboard
                         </Link>
-                        <button onClick={handleLogout}
+
+                        <button
+                            onClick={handleLogout}
                             style={{
-                                background: "rgba(239, 68, 68, 0.2)", color: "#fca5a5", border: "1px solid rgba(239, 68, 68, 0.4)",
-                                padding: "6px 12px", borderRadius: "8px", fontSize: "13px", cursor: "pointer", fontWeight: "600"
-                            }}>
+                                background: "rgba(239, 68, 68, 0.2)",
+                                color: "#fca5a5",
+                                border: "1px solid rgba(239, 68, 68, 0.4)",
+                                padding: "6px 12px",
+                                borderRadius: "8px",
+                                fontSize: "13px",
+                                cursor: "pointer",
+                                fontWeight: "600"
+                            }}
+                        >
                             Logout
                         </button>
                     </>
                 ) : (
-                    <Link to="/login"
+                    <Link
+                        to="/login"
                         style={{
-                            background: "linear-gradient(90deg, #ff6b00 0%, #138808 100%)",
+                            background:
+                                "linear-gradient(90deg, #ff6b00 0%, #138808 100%)",
                             color: "#ffffff",
                             textDecoration: "none",
                             padding: "8px 18px",
@@ -115,7 +251,8 @@ function Navbar() {
                             fontSize: "13px",
                             fontWeight: "600",
                             boxShadow: "0 2px 10px rgba(0,0,0,0.2)"
-                        }}>
+                        }}
+                    >
                         {t("nav_signin_register")} →
                     </Link>
                 )}
@@ -123,4 +260,5 @@ function Navbar() {
         </nav>
     );
 }
+
 export default Navbar;
