@@ -144,12 +144,17 @@ export default function SchemeDashboard() {
     const { schemeName } = useParams();
     const navigate = useNavigate();
     const { t } = useLanguage();
-    
+
     const [user, setUser] = useState(null);
     const [userDocs, setUserDocs] = useState([]);
+    const [currentApp, setCurrentApp] = useState(null);
     const [activeTab, setActiveTab] = useState("overview");
     const [applying, setApplying] = useState(false);
-    const [appliedSuccess, setAppliedSuccess] = useState(false);
+    const [submittingApp, setSubmittingApp] = useState(false);
+    const [uploadingDocKey, setUploadingDocKey] = useState(null);
+    const [reasonText, setReasonText] = useState("");
+
+    const decodedName = decodeURIComponent(schemeName);
 
     useEffect(() => {
         const stored = localStorage.getItem("user");
@@ -159,19 +164,27 @@ export default function SchemeDashboard() {
         }
         const parsed = JSON.parse(stored);
         setUser(parsed);
-        fetchUserDocs(parsed.id);
-    }, [navigate]);
+        loadAllData(parsed.id);
+    }, [navigate, decodedName]);
 
-    const fetchUserDocs = async (userId) => {
+    const loadAllData = async (userId) => {
         try {
-            const res = await API.get(`/documents/my/${userId}`);
-            setUserDocs(res.data);
+            const [docsRes, appsRes] = await Promise.all([
+                API.get(`/documents/my/${userId}`),
+                API.get(`/applications/my/${userId}`)
+            ]);
+            setUserDocs(docsRes.data);
+            const foundApp = (appsRes.data || []).find(a => a.scheme_name === decodedName);
+            setCurrentApp(foundApp || null);
+            if (foundApp?.reason_for_applying) {
+                setReasonText(foundApp.reason_for_applying);
+            }
         } catch (e) {
-            console.error("Error loading user documents:", e);
+            console.error("Error loading scheme application data:", e);
         }
     };
 
-    const handleApplyScheme = async () => {
+    const handleStartApplication = async () => {
         if (!user) return;
         setApplying(true);
         try {
@@ -180,11 +193,22 @@ export default function SchemeDashboard() {
                 scheme_name: decodedName,
                 category: decodedName.includes("Kisan") || decodedName.includes("Fasal") ? "Agriculture" : decodedName.includes("Ayushman") || decodedName.includes("Bima") ? "Healthcare" : "Welfare",
                 benefit: details.benefits?.[0] || "Standard Welfare Grant",
-                reason_for_applying: `Eligible citizen (${user.occupation || "Applicant"}, Income: ${user.income || "Standard"}) applying via ArthMitra Direct Pipeline.`
+                reason_for_applying: reasonText || `Eligible citizen (${user.occupation || "Applicant"}, Income: ${user.income || "Standard"}) applying via ArthMitra Direct Pipeline.`
             });
-            if (res.data.status === "success") {
-                setAppliedSuccess(true);
-                alert(`🎉 Application Submitted Successfully!\nPushed to Multi-Stage Queue (ID #${res.data.application_id}). Currently pending Local Admin (Clerk) verification.`);
+            if (
+                res.data.status === "success" ||
+                res.data.application_status === "draft"
+            ) {
+                await loadAllData(user.id);
+
+                const applicationId =
+                    res.data.application_id || res.data.application?.id;
+
+                alert(
+                    `📋 Application #${applicationId || "created"} Initiated!\n\n` +
+                    `Step 1: Upload the required documents below.\n` +
+                    `Step 2: Review and submit your application to the Section Officer (Clerk).`
+                );
             }
         } catch (e) {
             console.error("Apply error:", e);
@@ -194,9 +218,57 @@ export default function SchemeDashboard() {
         }
     };
 
+    const handleUploadDocForApp = async (docKey, file) => {
+        if (!file || !user) return;
+        if (!currentApp) {
+            alert("Please click 'Start Application' first so documents can be linked to your application.");
+            return;
+        }
+        setUploadingDocKey(docKey);
+        try {
+            const fd = new FormData();
+            fd.append("file", file);
+            fd.append("user_id", user.id);
+            fd.append("doc_type", docKey);
+            fd.append("application_id", currentApp.id);
+
+            await API.post("/documents/upload", fd, {
+                headers: { "Content-Type": "multipart/form-data" }
+            });
+            await loadAllData(user.id);
+        } catch (e) {
+            console.error("Upload error:", e);
+            alert(e.response?.data?.detail || "Document upload failed");
+        } finally {
+            setUploadingDocKey(null);
+        }
+    };
+
+    const handleSubmitApplication = async () => {
+        if (!user || !currentApp) return;
+        const attached = currentApp.documents || [];
+        if (attached.length === 0) {
+            alert("Please upload at least one required document before submitting.");
+            return;
+        }
+        setSubmittingApp(true);
+        try {
+            const res = await API.post(`/applications/${currentApp.id}/submit`, {
+                user_id: user.id
+            });
+            if (res.data.status === "success") {
+                await loadAllData(user.id);
+                alert(`🎉 Application #${currentApp.id} Submitted Successfully!\n\nYour application and all attached documents have been forwarded to the Section Officer (Clerk) for Level-1 Verification.`);
+            }
+        } catch (e) {
+            console.error("Submit error:", e);
+            alert(e.response?.data?.detail || "Submission failed");
+        } finally {
+            setSubmittingApp(false);
+        }
+    };
 
     // Find scheme details, or construct a dynamic detailed fallback
-    const decodedName = decodeURIComponent(schemeName);
     const details = SCHEME_DETAILS_MAP[decodedName] || {
         link: "https://www.myscheme.gov.in/",
         theory: `The ${decodedName} is a government initiative designed to provide financial, educational, social, or welfare support. It targets qualified beneficiaries to improve livelihood, enhance standard of living, and ensure socio-economic inclusion.`,
@@ -226,13 +298,13 @@ export default function SchemeDashboard() {
         ]
     };
 
-    // Calculate document checklist status
+    // Calculate document checklist status based on this application's attached docs
+    const appDocs = currentApp?.documents || [];
     const docChecklist = details.docs.map(docKey => {
-        const matchingDoc = userDocs.find(d => d.doc_type === docKey);
-        const docLabel = t(`doc_${docKey}`) || docKey;
-        const docIcons = { aadhaar: "🪪", income_cert: "💰", caste_cert: "📜", ration_card: "🏠", bank_passbook: "🏦", land_record: "🌾", pan_card: "💳", voter_id: "🗳️" };
-        const icon = docIcons[docKey] || "📄";
-        
+        const matchingDoc = appDocs.find(d => d.doc_type === docKey);
+        const docLabel = t(`doc_${docKey}`) || COMMON_DOCS[docKey]?.label || docKey;
+        const icon = COMMON_DOCS[docKey]?.icon || "📄";
+
         let status = "missing";
         if (matchingDoc) {
             status = matchingDoc.status;
@@ -242,7 +314,8 @@ export default function SchemeDashboard() {
             key: docKey,
             label: docLabel,
             icon: icon,
-            status: status
+            status: status,
+            docObj: matchingDoc
         };
     });
 
@@ -290,25 +363,225 @@ export default function SchemeDashboard() {
                         <h1 className="scheme-title">{decodedName}</h1>
                     </div>
                     <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                        <button
-                            onClick={handleApplyScheme}
-                            disabled={applying || appliedSuccess}
-                            className="apply-btn-main"
-                            style={{
-                                background: appliedSuccess ? "#16a34a" : "linear-gradient(90deg, #FF6B00 0%, #FF8C00 100%)",
-                                border: "none",
-                                cursor: applying || appliedSuccess ? "default" : "pointer"
-                            }}
-                        >
-                            {appliedSuccess ? t("sd_submitted_queue") : applying ? t("sd_submitting") : t("sd_apply_direct")}
-                        </button>
+                        {!currentApp ? (
+                            <button
+                                onClick={handleStartApplication}
+                                disabled={applying}
+                                className="apply-btn-main"
+                                style={{
+                                    background: "linear-gradient(90deg, #FF6B00 0%, #FF8C00 100%)",
+                                    border: "none",
+                                    cursor: applying ? "default" : "pointer"
+                                }}
+                            >
+                                {applying ? "Initiating..." : "Apply / Start Application"}
+                            </button>
+                        ) : currentApp.status === "draft" ? (
+                            <button
+                                onClick={() => {
+                                    const el = document.getElementById("app-workflow-card");
+                                    if (el) el.scrollIntoView({ behavior: "smooth" });
+                                }}
+                                className="apply-btn-main"
+                                style={{
+                                    background: "linear-gradient(90deg, #f59e0b 0%, #d97706 100%)",
+                                    border: "none",
+                                    cursor: "pointer"
+                                }}
+                            >
+                                📋 Draft Active (#{currentApp.id}) — Upload & Submit
+                            </button>
+                        ) : currentApp.status === "SUBMITTED" ? (
+                            <span className="apply-btn-main" style={{ background: "#2563eb", color: "#fff", cursor: "default" }}>
+                                ⏳ Submitted — Pending Clerk Review (#{currentApp.id})
+                            </span>
+                        ) : currentApp.status === "CLERK_APPROVED" ? (
+                            <span className="apply-btn-main" style={{ background: "#7c3aed", color: "#fff", cursor: "default" }}>
+                                ⏳ Clerk Approved — Pending District Officer (#{currentApp.id})
+                            </span>
+                        ) : currentApp.status === "OFFICER_APPROVED" ? (
+                            <span className="apply-btn-main" style={{ background: "#9333ea", color: "#fff", cursor: "default" }}>
+                                ⏳ Officer Approved — Pending Secretary (#{currentApp.id})
+                            </span>
+                        ) : currentApp.status === "FINAL_VERIFICATION" ? (
+                            <span className="apply-btn-main" style={{ background: "#ea580c", color: "#fff", cursor: "default" }}>
+                                ⏳ Final Verification — Pending Minister (#{currentApp.id})
+                            </span>
+                        ) : currentApp.status === "APPROVED" ? (
+                            <span className="apply-btn-main" style={{ background: "#16a34a", color: "#fff", cursor: "default" }}>
+                                ✅ Approved & Disbursed (#{currentApp.id})
+                            </span>
+                        ) : currentApp.status === "REJECTED" ? (
+                            <span className="apply-btn-main" style={{ background: "#dc2626", color: "#fff", cursor: "default" }}>
+                                ❌ Application Rejected (#{currentApp.id})
+                            </span>
+                        ) : (
+                            <span className="apply-btn-main" style={{ background: "#475569", color: "#fff", cursor: "default" }}>
+                                ● {currentApp.status} (#{currentApp.id})
+                            </span>
+                        )}
                         <a href={details.link} target="_blank" rel="noopener noreferrer" className="apply-btn-main" style={{ background: "rgba(0,0,0,0.05)", color: "#1a1a1a", border: "1px solid #ddd" }}>
                             {t("sd_official_portal")} <ExternalLink size={14} />
                         </a>
                     </div>
-
                 </div>
             </header>
+
+            {/* SCHEME APPLICATION WORKFLOW CARD */}
+            {currentApp && (
+                <div id="app-workflow-card" style={{ maxWidth: 1200, margin: "0 auto 20px", padding: "0 24px" }}>
+                    <div style={{
+                        background: currentApp.status === "draft" ? "#fffbf5" : currentApp.status === "APPROVED" ? "#f0fdf4" : currentApp.status === "REJECTED" ? "#fef2f2" : "#f8fafc",
+                        border: `1.5px solid ${currentApp.status === "draft" ? "#f59e0b" : currentApp.status === "APPROVED" ? "#86efac" : currentApp.status === "REJECTED" ? "#fca5a5" : "#cbd5e1"}`,
+                        borderRadius: 14,
+                        padding: "20px 24px",
+                        boxShadow: "0 4px 14px rgba(0,0,0,0.03)"
+                    }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12, marginBottom: 16 }}>
+                            <div>
+                                <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                                    <span style={{ fontSize: 13, fontWeight: 700, background: "#1a1a1a", color: "#fff", padding: "3px 10px", borderRadius: 6 }}>
+                                        Application ID: #{currentApp.id}
+                                    </span>
+                                    <span style={{
+                                        fontSize: 12, fontWeight: 700,
+                                        color: currentApp.status === "draft" ? "#b45309" : currentApp.status === "APPROVED" ? "#15803d" : currentApp.status === "REJECTED" ? "#b91c1c" : "#1d4ed8",
+                                        background: currentApp.status === "draft" ? "#fef3c7" : currentApp.status === "APPROVED" ? "#dcfce7" : currentApp.status === "REJECTED" ? "#fee2e2" : "#dbeafe",
+                                        padding: "3px 10px", borderRadius: 6
+                                    }}>
+                                        {currentApp.status === "draft" ? "Step 2: Upload Documents & Submit" : `Status: ${currentApp.status.toUpperCase()}`}
+                                    </span>
+                                </div>
+                                <h3 style={{ margin: "10px 0 4px", fontSize: 18, color: "#1e293b" }}>
+                                    {decodedName} — Application Desk
+                                </h3>
+                                <p style={{ margin: 0, fontSize: 13, color: "#64748b" }}>
+                                    {currentApp.status === "draft"
+                                        ? "All uploaded documents are directly linked to this Application ID. Upload the required documents, review, and click 'Submit to Clerk'."
+                                        : `Handled by: ${currentApp.current_handler || "Review Authority"} • Applied: ${currentApp.applied_at?.split("T")[0] || "Recent"}`}
+                                </p>
+                            </div>
+
+                            {currentApp.status === "draft" && (
+                                <button
+                                    onClick={handleSubmitApplication}
+                                    disabled={submittingApp || (currentApp.documents || []).length === 0}
+                                    style={{
+                                        background: (currentApp.documents || []).length > 0 ? "linear-gradient(90deg, #138808 0%, #16a34a 100%)" : "#cbd5e1",
+                                        color: "#fff",
+                                        border: "none",
+                                        borderRadius: 8,
+                                        padding: "10px 20px",
+                                        fontSize: 14,
+                                        fontWeight: 700,
+                                        cursor: (currentApp.documents || []).length > 0 ? "pointer" : "not-allowed",
+                                        boxShadow: (currentApp.documents || []).length > 0 ? "0 4px 12px rgba(19, 136, 8, 0.25)" : "none"
+                                    }}
+                                >
+                                    {submittingApp ? "Submitting..." : "🚀 Review & Submit Application to Clerk"}
+                                </button>
+                            )}
+                        </div>
+
+                        {/* REJECTION REASON IF ANY */}
+                        {currentApp.status === "REJECTED" && currentApp.review_note && (
+                            <div style={{ background: "#fee2e2", border: "1px solid #fca5a5", borderRadius: 8, padding: "10px 14px", marginBottom: 14, fontSize: 13, color: "#7f1d1d" }}>
+                                <strong>Rejection Details:</strong> {currentApp.review_note}
+                            </div>
+                        )}
+
+                        {/* REQUIRED DOCUMENTS ATTACHMENT HUB */}
+                        <div style={{ marginTop: 14, background: "#ffffff", borderRadius: 10, border: "1px solid #e2e8f0", padding: "14px 16px" }}>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: "#334155", marginBottom: 10 }}>
+                                📑 Required Scheme Documents (Linked to Application #{currentApp.id})
+                            </div>
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 12 }}>
+                                {details.docs.map((docKey) => {
+                                    const attachedDoc = (currentApp.documents || []).find(d => d.doc_type === docKey);
+                                    const label = COMMON_DOCS[docKey]?.label || docKey;
+                                    const icon = COMMON_DOCS[docKey]?.icon || "📄";
+                                    const isUploading = uploadingDocKey === docKey;
+
+                                    return (
+                                        <div key={docKey} style={{
+                                            border: `1.5px solid ${attachedDoc ? "#bbf7d0" : "#fed7aa"}`,
+                                            background: attachedDoc ? "#f0fdf4" : "#fffaf5",
+                                            borderRadius: 8,
+                                            padding: "12px 14px",
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            alignItems: "center",
+                                            gap: 10
+                                        }}>
+                                            <div style={{ display: "flex", alignItems: "center", gap: 10, overflow: "hidden" }}>
+                                                <span style={{ fontSize: 22 }}>{icon}</span>
+                                                <div style={{ overflow: "hidden" }}>
+                                                    <div style={{ fontSize: 13, fontWeight: 600, color: "#1e293b", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                                        {label}
+                                                    </div>
+                                                    <div style={{ fontSize: 11, color: attachedDoc ? "#166534" : "#9a3412" }}>
+                                                        {attachedDoc ? `✓ ${attachedDoc.original_name}` : "Missing / Required"}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {currentApp.status === "draft" ? (
+                                                <label style={{
+                                                    background: attachedDoc ? "#e2e8f0" : "#ff6b00",
+                                                    color: attachedDoc ? "#334155" : "#ffffff",
+                                                    padding: "6px 12px",
+                                                    borderRadius: 6,
+                                                    fontSize: 11,
+                                                    fontWeight: 600,
+                                                    cursor: isUploading ? "wait" : "pointer",
+                                                    whiteSpace: "nowrap"
+                                                }}>
+                                                    {isUploading ? "Uploading..." : attachedDoc ? "Re-upload" : "Upload File"}
+                                                    <input
+                                                        type="file"
+                                                        accept=".pdf,.jpg,.jpeg,.png"
+                                                        style={{ display: "none" }}
+                                                        disabled={isUploading}
+                                                        onChange={(e) => {
+                                                            if (e.target.files?.[0]) {
+                                                                handleUploadDocForApp(docKey, e.target.files[0]);
+                                                            }
+                                                        }}
+                                                    />
+                                                </label>
+                                            ) : (
+                                                <span style={{
+                                                    fontSize: 11,
+                                                    fontWeight: 700,
+                                                    padding: "3px 8px",
+                                                    borderRadius: 4,
+                                                    background: attachedDoc?.status === "verified" ? "#bbf7d0" : attachedDoc?.status === "rejected" ? "#fca5a5" : "#fef08a",
+                                                    color: attachedDoc?.status === "verified" ? "#166534" : attachedDoc?.status === "rejected" ? "#991b1b" : "#854d0e"
+                                                }}>
+                                                    {attachedDoc ? attachedDoc.status.replace("_", " ") : "Not provided"}
+                                                </span>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            {currentApp.status === "draft" && (
+                                <div style={{ marginTop: 12, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8, fontSize: 12, color: "#64748b" }}>
+                                    <span>
+                                        Uploaded: <strong>{(currentApp.documents || []).length}</strong> / {details.docs.length} required documents
+                                    </span>
+                                    {(currentApp.documents || []).length === 0 && (
+                                        <span style={{ color: "#c2410c", fontWeight: 600 }}>
+                                            ⚠️ Upload at least one document before submitting to Clerk.
+                                        </span>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* DASHBOARD CONTENT GRID */}
             <div className="scheme-dash-grid">
@@ -432,7 +705,7 @@ export default function SchemeDashboard() {
                             <div className="theory-card">
                                 <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.25rem", color: C.saffron, marginBottom: 4 }}>{t("sd_budget_title")}</h3>
                                 <p style={{ fontSize: "0.85rem", color: C.textMuted, marginBottom: 20 }}>{t("sd_budget_sub")}</p>
-                                
+
                                 <div style={{ width: "100%", height: 260 }}>
                                     <ResponsiveContainer>
                                         <BarChart data={details.stats} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -450,7 +723,7 @@ export default function SchemeDashboard() {
                             <div className="theory-card" style={{ marginTop: "1.25rem" }}>
                                 <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.25rem", color: C.green, marginBottom: 4 }}>{t("sd_ben_title")}</h3>
                                 <p style={{ fontSize: "0.85rem", color: C.textMuted, marginBottom: 20 }}>{t("sd_ben_sub")}</p>
-                                
+
                                 <div style={{ width: "100%", height: 260 }}>
                                     <ResponsiveContainer>
                                         <LineChart data={details.stats} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>

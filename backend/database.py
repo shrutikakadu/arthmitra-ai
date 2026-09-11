@@ -29,7 +29,7 @@ class User(Base):
     password = Column(String)
     state = Column(String)
     language = Column(String, default="English")
-    role = Column(String, default="user")  # "user", "clerk", "officer", "admin"
+    role = Column(String, default="user")  # "user", "clerk", "officer", "state_admin", "minister", "admin"
 
     # Profile fields
     age = Column(Integer, nullable=True)
@@ -50,16 +50,18 @@ class Document(Base):
     __tablename__ = "documents"
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    application_id = Column(Integer, ForeignKey("scheme_applications.id"), nullable=True, index=True)
     filename = Column(String, nullable=False)
     original_name = Column(String, nullable=False)
     doc_type = Column(String, nullable=False)
-    status = Column(String, default="pending_clerk")  # pending_clerk, pending_officer, verified, rejected
+    status = Column(String, default="uploaded")  # uploaded, draft, pending_clerk, pending_officer, verified, rejected
     uploaded_at = Column(DateTime, default=datetime.utcnow)
     reviewed_by = Column(Integer, nullable=True)
     review_note = Column(String, nullable=True)
     version = Column(Integer, default=1)  # Optimistic Locking version
 
     owner = relationship("User", back_populates="documents")
+    application = relationship("SchemeApplication", back_populates="documents")
 
 
 class Notification(Base):
@@ -95,8 +97,8 @@ class SchemeApplication(Base):
     category = Column(String, nullable=False)
     benefit = Column(String, nullable=True)
     reason_for_applying = Column(Text, nullable=True)
-    status = Column(String, default="pending_clerk")  # pending_clerk, pending_officer, verified, rejected
-    current_handler = Column(String, default="Local Admin (Clerk)")  # Local Admin (Clerk), Super Admin (Officer), System Admin
+    status = Column(String, default="SUBMITTED")  # SUBMITTED, CLERK_APPROVED, OFFICER_APPROVED, FINAL_VERIFICATION, APPROVED, REJECTED
+    current_handler = Column(String, default="Local Admin (Clerk)")
     applied_at = Column(DateTime, default=datetime.utcnow)
     reviewed_by = Column(Integer, nullable=True)
     review_note = Column(String, nullable=True)
@@ -105,7 +107,26 @@ class SchemeApplication(Base):
     raft_index = Column(Integer, nullable=True)
 
     user = relationship("User", back_populates="applications")
+    documents = relationship("Document", back_populates="application", cascade="all, delete-orphan")
+    audits = relationship("ApplicationAudit", back_populates="application", cascade="all, delete-orphan", order_by="ApplicationAudit.timestamp.asc()")
 
+
+class ApplicationAudit(Base):
+    """Immutable audit/history log for scheme application verification transitions."""
+    __tablename__ = "application_audits"
+    id = Column(Integer, primary_key=True, index=True)
+    application_id = Column(Integer, ForeignKey("scheme_applications.id"), nullable=False)
+    actor_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    actor_name = Column(String, nullable=False)
+    role = Column(String, nullable=False)  # citizen, clerk, officer, state_admin, admin, minister
+    action = Column(String, nullable=False)  # SUBMITTED, CLERK_APPROVED, OFFICER_APPROVED, SECRETARY_APPROVED, APPROVED, REJECTED
+    from_status = Column(String, nullable=True)
+    to_status = Column(String, nullable=False)
+    notes = Column(Text, nullable=True)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
+    application = relationship("SchemeApplication", back_populates="audits")
+    actor = relationship("User", foreign_keys=[actor_id])
 
 
 def get_db():
@@ -121,10 +142,78 @@ def get_db():
         db.close()
 
 
+def _migrate_documents_table(target_engine):
+    """Safe SQLite migration: ensures application_id column exists without deleting data."""
+    try:
+        with target_engine.connect() as conn:
+            cursor = conn.connection.cursor()
+            cursor.execute("PRAGMA table_info(documents)")
+            columns = [row[1] for row in cursor.fetchall()]
+            if columns and "application_id" not in columns:
+                cursor.execute("ALTER TABLE documents ADD COLUMN application_id INTEGER REFERENCES scheme_applications(id)")
+                conn.connection.commit()
+                print(f"Migrated {target_engine.url}: added application_id column to documents table.")
+    except Exception as e:
+        print(f"Migration note for {target_engine.url}: {e}")
+
+
+
+def _migrate_government_roles(target_session_factory):
+    """Repair existing demo government accounts without deleting any data."""
+    import bcrypt
+    db = target_session_factory()
+    try:
+        # Existing project versions created the Cabinet Minister as role=admin
+        # with password admin123. Convert that account to the real minister role.
+        minister = db.query(User).filter(User.mobile == "9999999999").first()
+        if minister:
+            changed = False
+            if minister.role != "minister":
+                minister.role = "minister"
+                changed = True
+            if minister.name != "Cabinet Minister":
+                minister.name = "Cabinet Minister"
+                changed = True
+            if minister.occupation != "ROLE_MINISTER (Apex Approver)":
+                minister.occupation = "ROLE_MINISTER (Apex Approver)"
+                changed = True
+            # Reset the demo password so the Login page's Minister quick-login works.
+            minister.password = bcrypt.hashpw(
+                b"minister123", bcrypt.gensalt()
+            ).decode("utf-8")
+            changed = True
+            if changed:
+                db.commit()
+                print("Migrated Cabinet Minister account to role=minister.")
+        else:
+            # If a partially populated database has no minister account, create it.
+            minister = User(
+                name="Cabinet Minister",
+                mobile="9999999999",
+                password=bcrypt.hashpw(b"minister123", bcrypt.gensalt()).decode("utf-8"),
+                state="Maharashtra",
+                language="English",
+                role="minister",
+                occupation="ROLE_MINISTER (Apex Approver)"
+            )
+            db.add(minister)
+            db.commit()
+            print("Created missing Cabinet Minister demo account.")
+    except Exception as e:
+        db.rollback()
+        print(f"Government role migration note: {e}")
+    finally:
+        db.close()
+
+
+
 def create_tables():
     Base.metadata.create_all(bind=engine)
+    _migrate_documents_table(engine)
     if not os.path.exists(REPLICA_DB_PATH):
         Base.metadata.create_all(bind=replica_engine)
+    else:
+        _migrate_documents_table(replica_engine)
 
         
     # Seed default demo users if users table is empty
@@ -153,13 +242,16 @@ def create_tables():
                 state="Maharashtra", language="English", role="state_admin", occupation="ROLE_STATE_ADMIN (Secretary)"
             )
             admin_user = User(
-                name="Cabinet Minister", mobile="9999999999", password=_hash("admin123"),
-                state="Maharashtra", language="English", role="admin", occupation="ROLE_SUPER_ADMIN (Minister)"
+                name="Cabinet Minister", mobile="9999999999", password=_hash("minister123"),
+                state="Maharashtra", language="English", role="minister", occupation="ROLE_MINISTER (Apex Approver)"
             )
             db.add_all([demo_user, clerk_user, officer_user, secretary_user, admin_user])
             db.commit()
             print("Database seeded with default 5-tier government hierarchy roles (Citizen, Clerk, DM, Secretary, Cabinet Minister).")
 
+        # Always repair the minister demo account, including existing databases
+        # that were created by an older version of the project.
+        _migrate_government_roles(SessionLocal)
 
         if db.query(SchemeApplication).count() == 0:
             user = db.query(User).filter(User.role == "user").first()

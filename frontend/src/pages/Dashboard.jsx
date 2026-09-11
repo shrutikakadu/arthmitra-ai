@@ -31,14 +31,14 @@ const DOC_TYPES = [
 ];
 
 const SIDEBAR_ITEMS = [
-  { key: "overview",      icon: "🏠", labelKey: "dash_overview" },
-  { key: "profile",       icon: "👤", labelKey: "dash_profile" },
-  { key: "schemes",       icon: "🎯", labelKey: "dash_schemes" },
-  { key: "applications",  icon: "📋", labelKey: "dash_applications" },
-  { key: "documents",     icon: "📄", labelKey: "dash_documents" },
-  { key: "verification",  icon: "✅", labelKey: "dash_verification" },
+  { key: "overview", icon: "🏠", labelKey: "dash_overview" },
+  { key: "profile", icon: "👤", labelKey: "dash_profile" },
+  { key: "schemes", icon: "🎯", labelKey: "dash_schemes" },
+  { key: "applications", icon: "📋", labelKey: "dash_applications" },
+  { key: "documents", icon: "📄", labelKey: "dash_documents" },
+  { key: "verification", icon: "✅", labelKey: "dash_verification" },
   { key: "notifications", icon: "🔔", labelKey: "dash_notifications" },
-  { key: "settings",      icon: "⚙️",  labelKey: "dash_settings" },
+  { key: "settings", icon: "⚙️", labelKey: "dash_settings" },
 ];
 
 export default function Dashboard() {
@@ -419,11 +419,11 @@ export default function Dashboard() {
 
   const initials = user.name
     ? user.name
-        .split(" ")
-        .map((w) => w[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2)
+      .split(" ")
+      .map((w) => w[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2)
     : "U";
 
   const docsVerified = documents.filter(
@@ -524,23 +524,23 @@ export default function Dashboard() {
 
     // ── Dynamic Financial Profile Progress ──
     // Profile completeness: count non-empty profile fields (9 total)
-    const PROFILE_FIELDS = ["name","age","income","occupation","state","caste","family_size","gender","education"];
+    const PROFILE_FIELDS = ["name", "age", "income", "occupation", "state", "caste", "family_size", "gender", "education"];
     const filledFields = PROFILE_FIELDS.filter(k => profile[k] && String(profile[k]).trim() !== "").length;
     // Docs score: each uploaded doc = 5pts, each verified doc = 10pts bonus (max 100 total)
-    const docUploadPts  = Math.min(documents.length * 5, 30);
-    const docVerifyPts  = Math.min(docsVerified * 10, 30);
-    const profilePct    = Math.round((filledFields / PROFILE_FIELDS.length) * 40); // 40% weight
+    const docUploadPts = Math.min(documents.length * 5, 30);
+    const docVerifyPts = Math.min(docsVerified * 10, 30);
+    const profilePct = Math.round((filledFields / PROFILE_FIELDS.length) * 40); // 40% weight
     const computedScore = Math.min(profilePct + docUploadPts + docVerifyPts, 100);
 
     const scoreLabel =
-      computedScore === 0   ? t("standing_needs_attention") :
-      computedScore < 30    ? t("standing_needs_attention") :
-      computedScore < 60    ? t("standing_moderate") :
-      computedScore < 80    ? t("standing_good") : t("standing_excellent");
+      computedScore === 0 ? t("standing_needs_attention") :
+        computedScore < 30 ? t("standing_needs_attention") :
+          computedScore < 60 ? t("standing_moderate") :
+            computedScore < 80 ? t("standing_good") : t("standing_excellent");
     const scoreColor =
-      computedScore < 30  ? "#EF4444" :
-      computedScore < 60  ? "#F59E0B" :
-      computedScore < 80  ? "#10B981" : "#2563EB";
+      computedScore < 30 ? "#EF4444" :
+        computedScore < 60 ? "#F59E0B" :
+          computedScore < 80 ? "#10B981" : "#2563EB";
 
     const healthScore = [{ name: "Score", value: computedScore || 1, fill: scoreColor }];
 
@@ -850,6 +850,8 @@ export default function Dashboard() {
               style={{
                 width: "100%"
               }}
+              onClick={() => navigate("/health")}
+              type="button"
             >
               {t("dash_view_plan")}
             </button>
@@ -918,8 +920,8 @@ export default function Dashboard() {
                           key={`cell-${index}`}
                           fill={
                             COLORS[
-                              index %
-                                COLORS.length
+                            index %
+                            COLORS.length
                             ]
                           }
                         />
@@ -969,8 +971,8 @@ export default function Dashboard() {
                           borderRadius: "50%",
                           background:
                             COLORS[
-                              index %
-                                COLORS.length
+                            index %
+                            COLORS.length
                             ]
                         }}
                       />
@@ -1049,9 +1051,9 @@ export default function Dashboard() {
                   done: documents.some(
                     (d) =>
                       d.doc_type ===
-                        "aadhaar" &&
+                      "aadhaar" &&
                       d.status ===
-                        "verified"
+                      "verified"
                   )
                 },
                 {
@@ -1186,7 +1188,7 @@ export default function Dashboard() {
         type: "select",
         options: [
           { value: "", label: t("select_state") },
-          ...["Maharashtra","Uttar Pradesh","Rajasthan","Madhya Pradesh","Bihar","Gujarat","West Bengal","Tamil Nadu","Karnataka","Andhra Pradesh","Kerala","Odisha","Punjab","Haryana","Jharkhand","Chhattisgarh","Assam","Telangana"].map(s => ({ value: s, label: s }))
+          ...["Maharashtra", "Uttar Pradesh", "Rajasthan", "Madhya Pradesh", "Bihar", "Gujarat", "West Bengal", "Tamil Nadu", "Karnataka", "Andhra Pradesh", "Kerala", "Odisha", "Punjab", "Haryana", "Jharkhand", "Chhattisgarh", "Assam", "Telangana"].map(s => ({ value: s, label: s }))
         ]
       },
       {
@@ -1331,11 +1333,10 @@ export default function Dashboard() {
           </div>
 
           <button
-            className={`btn ${
-              isListening
+            className={`btn ${isListening
                 ? "btn-danger"
                 : "btn-outline"
-            }`}
+              }`}
             onClick={
               startVoiceListening
             }
@@ -1578,12 +1579,11 @@ export default function Dashboard() {
                       "1.25rem",
                     border:
                       "1.5px solid #ede8e1",
-                    borderLeft: `5px solid ${
-                      s.match_probability >=
-                      85
+                    borderLeft: `5px solid ${s.match_probability >=
+                        85
                         ? "#138808"
                         : "#FF6B00"
-                    }`,
+                      }`,
                     borderRadius: 12,
                     background:
                       "#fafaf8",
@@ -1601,7 +1601,7 @@ export default function Dashboard() {
 
                     e.currentTarget.style.borderColor =
                       s.match_probability >=
-                      85
+                        85
                         ? "#bbf7d0"
                         : "#ffd4b8";
                   }}
@@ -1646,24 +1646,23 @@ export default function Dashboard() {
                         fontWeight: 700,
                         color:
                           s.match_probability >=
-                          85
+                            85
                             ? "#138808"
                             : "#FF6B00",
                         background:
                           s.match_probability >=
-                          85
+                            85
                             ? "#f0fdf4"
                             : "#fff3ed",
                         padding:
                           "2px 8px",
                         borderRadius:
                           100,
-                        border: `1px solid ${
-                          s.match_probability >=
-                          85
+                        border: `1px solid ${s.match_probability >=
+                            85
                             ? "#bbf7d0"
                             : "#ffd4b8"
-                        }`
+                          }`
                       }}
                     >
                       {s.match_probability}%
@@ -1982,7 +1981,7 @@ export default function Dashboard() {
                                   background:
                                     idx %
                                       2 ===
-                                    0
+                                      0
                                       ? "#FF6B00"
                                       : "#138808",
                                   borderRadius:
@@ -2007,146 +2006,145 @@ export default function Dashboard() {
                 .schemes?.[0]
                 ?.decision_path && (
 
-                <div className="dash-card">
+                  <div className="dash-card">
 
-                  <div className="dash-card-header">
+                    <div className="dash-card-header">
 
-                    <div>
+                      <div>
 
-                      <div className="dash-card-title">
-                        🌳 Matching Decision Path
+                        <div className="dash-card-title">
+                          🌳 Matching Decision Path
+                        </div>
+
+                        <div className="dash-card-subtitle">
+                          Stepping logic for top match:{" "}
+                          {
+                            schemeResults
+                              .schemes[0]
+                              .scheme_name
+                          }
+                        </div>
+
                       </div>
 
-                      <div className="dash-card-subtitle">
-                        Stepping logic for top match:{" "}
-                        {
-                          schemeResults
-                            .schemes[0]
-                            .scheme_name
-                        }
-                      </div>
+                    </div>
+
+                    <div
+                      style={{
+                        display:
+                          "flex",
+                        flexDirection:
+                          "column",
+                        gap: 10,
+                        paddingLeft: 8
+                      }}
+                    >
+
+                      {schemeResults
+                        .schemes[0]
+                        .decision_path
+                        .map(
+                          (
+                            path,
+                            idx
+                          ) => (
+
+                            <div
+                              key={idx}
+                              style={{
+                                display:
+                                  "flex",
+                                alignItems:
+                                  "center",
+                                gap: 8,
+                                position:
+                                  "relative"
+                              }}
+                            >
+
+                              <div
+                                style={{
+                                  width: 20,
+                                  height: 20,
+                                  borderRadius:
+                                    "50%",
+                                  background:
+                                    path.includes(
+                                      "NO"
+                                    )
+                                      ? "#fde2e2"
+                                      : "#f0fdf4",
+                                  border: `1.5px solid ${path.includes(
+                                    "NO"
+                                  )
+                                      ? "#fca5a5"
+                                      : "#bbf7d0"
+                                    }`,
+                                  display:
+                                    "flex",
+                                  alignItems:
+                                    "center",
+                                  justifyContent:
+                                    "center",
+                                  fontSize: 10,
+                                  fontWeight: 700,
+                                  color:
+                                    path.includes(
+                                      "NO"
+                                    )
+                                      ? "#b91c1c"
+                                      : "#166534"
+                                }}
+                              >
+                                {path.includes(
+                                  "NO"
+                                )
+                                  ? "✗"
+                                  : "✓"}
+                              </div>
+
+                              <span
+                                style={{
+                                  fontSize: 11,
+                                  color:
+                                    "#444",
+                                  fontWeight:
+                                    500
+                                }}
+                              >
+                                {path}
+                              </span>
+
+                              {idx <
+                                schemeResults
+                                  .schemes[0]
+                                  .decision_path
+                                  .length -
+                                1 && (
+                                  <div
+                                    style={{
+                                      position:
+                                        "absolute",
+                                      left: 9,
+                                      top: 20,
+                                      width: 2,
+                                      height: 12,
+                                      background:
+                                        "#ede8e1"
+                                    }}
+                                  />
+                                )}
+
+                            </div>
+
+                          )
+                        )}
 
                     </div>
 
                   </div>
 
-                  <div
-                    style={{
-                      display:
-                        "flex",
-                      flexDirection:
-                        "column",
-                      gap: 10,
-                      paddingLeft: 8
-                    }}
-                  >
-
-                    {schemeResults
-                      .schemes[0]
-                      .decision_path
-                      .map(
-                        (
-                          path,
-                          idx
-                        ) => (
-
-                          <div
-                            key={idx}
-                            style={{
-                              display:
-                                "flex",
-                              alignItems:
-                                "center",
-                              gap: 8,
-                              position:
-                                "relative"
-                            }}
-                          >
-
-                            <div
-                              style={{
-                                width: 20,
-                                height: 20,
-                                borderRadius:
-                                  "50%",
-                                background:
-                                  path.includes(
-                                    "NO"
-                                  )
-                                    ? "#fde2e2"
-                                    : "#f0fdf4",
-                                border: `1.5px solid ${
-                                  path.includes(
-                                    "NO"
-                                  )
-                                    ? "#fca5a5"
-                                    : "#bbf7d0"
-                                }`,
-                                display:
-                                  "flex",
-                                alignItems:
-                                  "center",
-                                justifyContent:
-                                  "center",
-                                fontSize: 10,
-                                fontWeight: 700,
-                                color:
-                                  path.includes(
-                                    "NO"
-                                  )
-                                    ? "#b91c1c"
-                                    : "#166534"
-                              }}
-                            >
-                              {path.includes(
-                                "NO"
-                              )
-                                ? "✗"
-                                : "✓"}
-                            </div>
-
-                            <span
-                              style={{
-                                fontSize: 11,
-                                color:
-                                  "#444",
-                                fontWeight:
-                                  500
-                              }}
-                            >
-                              {path}
-                            </span>
-
-                            {idx <
-                              schemeResults
-                                .schemes[0]
-                                .decision_path
-                                .length -
-                                1 && (
-                              <div
-                                style={{
-                                  position:
-                                    "absolute",
-                                  left: 9,
-                                  top: 20,
-                                  width: 2,
-                                  height: 12,
-                                  background:
-                                    "#ede8e1"
-                                }}
-                              />
-                            )}
-
-                          </div>
-
-                        )
-                      )}
-
-                  </div>
-
-                </div>
-
-              )}
+                )}
 
             </div>
 
@@ -2341,16 +2339,16 @@ export default function Dashboard() {
                         {isRejected
                           ? t("status_REJECTED")
                           : isVerified
-                          ? t("status_APPROVED")
-                          : app.status === "pending_clerk"
-                          ? t("status_PENDING_CLERK")
-                          : app.status === "pending_officer"
-                          ? t("status_PENDING_OFFICER")
-                          : app.status === "pending_secretary"
-                          ? t("status_PENDING_SECRETARY")
-                          : app.status === "pending_minister"
-                          ? t("status_PENDING_MINISTER")
-                          : t("status_PENDING_CLERK")}
+                            ? t("status_APPROVED")
+                            : app.status === "pending_clerk"
+                              ? t("status_PENDING_CLERK")
+                              : app.status === "pending_officer"
+                                ? t("status_PENDING_OFFICER")
+                                : app.status === "pending_secretary"
+                                  ? t("status_PENDING_SECRETARY")
+                                  : app.status === "pending_minister"
+                                    ? t("status_PENDING_MINISTER")
+                                    : t("status_PENDING_CLERK")}
                       </span>
 
                     </div>
@@ -2397,9 +2395,9 @@ export default function Dashboard() {
                           </strong>{" "}
                           {app.current_handler
                             ? app.current_handler.replace(
-                                "Rejected by ",
-                                ""
-                              )
+                              "Rejected by ",
+                              ""
+                            )
                             : "Administrator"}
                         </div>
 
@@ -2480,6 +2478,45 @@ export default function Dashboard() {
                         </div>
                       )}
 
+                    {/* ATTACHED DOCUMENTS FOR THIS APPLICATION */}
+                    {app.documents && app.documents.length > 0 && (
+                      <div style={{ marginTop: 12, borderTop: "1px solid #ede8e1", paddingTop: 10 }}>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: "#555", marginBottom: 6 }}>
+                          📄 Attached Documents ({app.documents.length}):
+                        </div>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                          {app.documents.map((d) => (
+                            <span key={d.id} style={{
+                              fontSize: 11, background: "#fff", border: "1px solid #e2e8f0",
+                              padding: "4px 8px", borderRadius: 6, display: "flex", alignItems: "center", gap: 6
+                            }}>
+                              <span>{getDocIcon(d.doc_type)}</span>
+                              <span>{getDocLabel(d.doc_type)}: {d.original_name}</span>
+                              <span style={{
+                                fontSize: 10, fontWeight: 700,
+                                color: d.status === "verified" ? "#16a34a" : d.status === "rejected" ? "#dc2626" : "#d97706"
+                              }}>
+                                ({d.status})
+                              </span>
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* DRAFT RESUME BUTTON */}
+                    {app.status === "draft" && (
+                      <div style={{ marginTop: 12 }}>
+                        <button
+                          className="btn btn-sm"
+                          style={{ background: "#FF6B00", color: "#fff", border: "none", cursor: "pointer" }}
+                          onClick={() => navigate(`/scheme/${encodeURIComponent(app.scheme_name)}`)}
+                        >
+                          📋 Upload Documents & Finalize Draft
+                        </button>
+                      </div>
+                    )}
+
                     {/* APPLICATION DATE */}
                     <div
                       style={{
@@ -2537,7 +2574,7 @@ export default function Dashboard() {
             </div>
 
             <div className="dash-card-subtitle">
-              {t("docs_sub")}
+              Personal locker documents. To apply for a scheme and verify documents, start a scheme application.
             </div>
 
           </div>
@@ -2551,12 +2588,11 @@ export default function Dashboard() {
 
               <div
                 key={dt.key}
-                className={`doc-type-chip ${
-                  selectedDocType ===
-                  dt.key
+                className={`doc-type-chip ${selectedDocType ===
+                    dt.key
                     ? "selected"
                     : ""
-                }`}
+                  }`}
                 onClick={() =>
                   setSelectedDocType(
                     dt.key
@@ -2611,10 +2647,10 @@ export default function Dashboard() {
             {uploading
               ? t("docs_uploading")
               : selectedDocType
-              ? `${t("dash_upload_doc")} ${getDocLabel(
+                ? `${t("dash_upload_doc")} ${getDocLabel(
                   selectedDocType
                 )}`
-              : t("docs_select_type")}
+                : t("docs_select_type")}
           </div>
 
           <div className="upload-zone-sub">
@@ -2644,7 +2680,7 @@ export default function Dashboard() {
         </div>
 
         {documents.length ===
-        0 ? (
+          0 ? (
 
           <p
             style={{
@@ -2749,7 +2785,7 @@ export default function Dashboard() {
       </div>
 
       {documents.length ===
-      0 ? (
+        0 ? (
 
         <div
           style={{
@@ -2933,33 +2969,31 @@ export default function Dashboard() {
               (d) => (
 
                 <div
-                  className={`verify-step ${
-                    d.status ===
-                    "verified"
+                  className={`verify-step ${d.status ===
+                      "verified"
                       ? "done"
                       : ""
-                  }`}
+                    }`}
                   key={d.id}
                 >
 
                   <div
-                    className={`verify-dot ${
-                      d.status ===
-                      "verified"
+                    className={`verify-dot ${d.status ===
+                        "verified"
                         ? "done"
                         : d.status ===
                           "pending"
-                        ? "pending"
-                        : "waiting"
-                    }`}
+                          ? "pending"
+                          : "waiting"
+                      }`}
                   >
                     {d.status ===
-                    "verified"
+                      "verified"
                       ? "✓"
                       : d.status ===
                         "rejected"
-                      ? "✗"
-                      : "⏳"}
+                        ? "✗"
+                        : "⏳"}
                   </div>
 
                   <div className="verify-info">
@@ -2989,10 +3023,9 @@ export default function Dashboard() {
 
                       {d.status ===
                         "rejected" &&
-                        `${t("status_REJECTED")}${
-                          d.review_note
-                            ? `: ${d.review_note}`
-                            : ""
+                        `${t("status_REJECTED")}${d.review_note
+                          ? `: ${d.review_note}`
+                          : ""
                         }`}
                     </p>
 
@@ -3064,7 +3097,7 @@ export default function Dashboard() {
       </div>
 
       {notifications.length ===
-      0 ? (
+        0 ? (
 
         <div
           style={{
@@ -3104,11 +3137,10 @@ export default function Dashboard() {
 
               <div
                 key={n.id}
-                className={`notif-item ${
-                  !n.read
+                className={`notif-item ${!n.read
                     ? "unread"
                     : ""
-                }`}
+                  }`}
                 onClick={() =>
                   !n.read &&
                   markNotifRead(
@@ -3447,11 +3479,10 @@ export default function Dashboard() {
       {/* ================= SIDEBAR ================= */}
 
       <aside
-        className={`dash-sidebar ${
-          collapsed
+        className={`dash-sidebar ${collapsed
             ? "collapsed"
             : ""
-        }`}
+          }`}
       >
 
         <div className="sidebar-brand">
@@ -3510,12 +3541,11 @@ export default function Dashboard() {
 
             <div
               key={item.key}
-              className={`sidebar-item ${
-                activeTab ===
-                item.key
+              className={`sidebar-item ${activeTab ===
+                  item.key
                   ? "active"
                   : ""
-              }`}
+                }`}
               onClick={() =>
                 setActiveTab(
                   item.key
@@ -3534,7 +3564,7 @@ export default function Dashboard() {
               {item.key ===
                 "notifications" &&
                 unreadCount >
-                  0 && (
+                0 && (
                   <span className="sidebar-badge">
                     {unreadCount}
                   </span>
@@ -3555,12 +3585,11 @@ export default function Dashboard() {
 
             <div
               key={item.key}
-              className={`sidebar-item ${
-                activeTab ===
-                item.key
+              className={`sidebar-item ${activeTab ===
+                  item.key
                   ? "active"
                   : ""
-              }`}
+                }`}
               onClick={() =>
                 setActiveTab(
                   item.key
@@ -3590,12 +3619,11 @@ export default function Dashboard() {
 
             <div
               key={item.key}
-              className={`sidebar-item ${
-                activeTab ===
-                item.key
+              className={`sidebar-item ${activeTab ===
+                  item.key
                   ? "active"
                   : ""
-              }`}
+                }`}
               onClick={() =>
                 setActiveTab(
                   item.key
@@ -3614,7 +3642,7 @@ export default function Dashboard() {
               {item.key ===
                 "notifications" &&
                 unreadCount >
-                  0 && (
+                0 && (
                   <span className="sidebar-badge">
                     {unreadCount}
                   </span>
@@ -3654,11 +3682,10 @@ export default function Dashboard() {
       {/* ================= MAIN CONTENT ================= */}
 
       <main
-        className={`dash-main ${
-          collapsed
+        className={`dash-main ${collapsed
             ? "expanded"
             : ""
-        }`}
+          }`}
       >
 
         <div className="dash-header">
@@ -3668,7 +3695,7 @@ export default function Dashboard() {
             <h2>
               {
                 tabTitles[
-                  activeTab
+                activeTab
                 ]?.[0] ||
                 "Dashboard"
               }
@@ -3677,7 +3704,7 @@ export default function Dashboard() {
             <p>
               {
                 tabTitles[
-                  activeTab
+                activeTab
                 ]?.[1] || ""
               }
             </p>
@@ -3698,8 +3725,8 @@ export default function Dashboard() {
 
               {unreadCount >
                 0 && (
-                <span className="header-notif-dot" />
-              )}
+                  <span className="header-notif-dot" />
+                )}
 
             </button>
 
@@ -3721,10 +3748,10 @@ export default function Dashboard() {
           {tabContent[
             activeTab
           ]?.() || (
-            <p>
-              Tab not found
-            </p>
-          )}
+              <p>
+                Tab not found
+              </p>
+            )}
 
         </div>
 

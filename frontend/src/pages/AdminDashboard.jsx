@@ -194,9 +194,9 @@ function SyncTracker() {
         {visibleLogs.map((line, i) => (
           <div key={i} style={{
             color: line.startsWith("[Sync]") ? "#38BDF8" :
-                   line.startsWith("[Lock]") ? "#FBBF24" :
-                   line.startsWith("[Bus]")  ? "#C084FC" :
-                   line.startsWith("[DB]")   ? "#34D399" : "#94A3B8",
+              line.startsWith("[Lock]") ? "#FBBF24" :
+                line.startsWith("[Bus]") ? "#C084FC" :
+                  line.startsWith("[DB]") ? "#34D399" : "#94A3B8",
             opacity: i === visibleLogs.length - 1 ? 1 : 0.55,
             transition: "opacity 0.5s",
             lineHeight: 1.7
@@ -329,7 +329,9 @@ export default function AdminDashboard() {
 
   if (!user) return <div style={{ padding: 40, color: "#fff" }}>{t("loading")}</div>;
 
+  // A document must NOT enter scheme verification without an associated application
   const pendingDocs = allDocs.filter(d => {
+    if (!d.application_id) return false;
     if (user?.role === "clerk") return d.status === "pending_clerk";
     if (user?.role === "officer") return d.status === "pending_officer";
     return d.status.startsWith("pending");
@@ -346,7 +348,7 @@ export default function AdminDashboard() {
 
   // ─── 1. DEDICATED CLERK / SECTION OFFICER DASHBOARD ───
   const renderClerkOverview = () => {
-    const clerkApps = allApps.filter(a => a.status === "pending_clerk");
+    const clerkApps = allApps.filter(a => a.status === "SUBMITTED");
     return (
       <>
         <div style={{ background: "rgba(245, 158, 11, 0.1)", border: "1px solid rgba(245, 158, 11, 0.3)", borderRadius: 12, padding: "16px 20px", marginBottom: 24, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -382,7 +384,7 @@ export default function AdminDashboard() {
           <div className="admin-card-header">
             <div>
               <div className="admin-card-title">📋 Level-1 Scheme Application Queue</div>
-              <div className="admin-card-sub">Check citizen scheme submissions and forward verified files to the District Collector (DM)</div>
+              <div className="admin-card-sub">Check citizen scheme submissions, verify attached documents, and forward verified files to the District Collector (DM)</div>
             </div>
             <button className="admin-btn admin-btn-outline" onClick={loadData}>🔄 {t("admin_refresh")}</button>
           </div>
@@ -392,35 +394,34 @@ export default function AdminDashboard() {
               🎉 {t("admin_no_pending_l1")}
             </p>
           ) : (
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>{t("admin_col_applicant")}</th>
-                  <th>{t("admin_col_scheme")}</th>
-                  <th>{t("admin_col_reason")}</th>
-                  <th>{t("admin_col_handler")}</th>
-                  <th>{t("admin_col_action")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {clerkApps.map((a) => (
-                  <tr key={a.id}>
-                    <td>
-                      <div style={{ fontWeight: 600 }}>{a.user_name}</div>
-                      <div style={{ fontSize: 11, color: "#888" }}>📱 {a.user_mobile} | 📍 {a.user_state}</div>
-                    </td>
-                    <td>
-                      <div style={{ fontWeight: 600, color: "#fbbf24" }}>{a.scheme_name}</div>
-                      <span style={{ fontSize: 11, background: "#f1f5f9", padding: "2px 6px", borderRadius: 4, color: "#475569" }}>{a.category}</span>
-                    </td>
-                    <td style={{ fontSize: 12, color: "#334155", maxWidth: 240, lineHeight: 1.4 }}>{a.reason_for_applying}</td>
-                    <td>
-                      <span style={{ fontSize: 12, background: "rgba(245, 158, 11, 0.15)", color: "#d97706", padding: "4px 8px", borderRadius: 6, fontWeight: 600 }}>
-                        {a.current_handler}
-                      </span>
-                    </td>
-                    <td>
-                      <div style={{ display: "flex", gap: 6 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              {clerkApps.map((a) => {
+                const attachedDocs = a.documents || [];
+                const allVerified = attachedDocs.length > 0 && attachedDocs.every(d => d.status === "verified");
+
+                return (
+                  <div key={a.id} style={{ border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.02)", borderRadius: 10, padding: "18px 20px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12, marginBottom: 14 }}>
+                      <div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                          <span style={{ fontSize: 11, background: "#fbbf24", color: "#000", fontWeight: 700, padding: "2px 8px", borderRadius: 4 }}>
+                            App ID #{a.id}
+                          </span>
+                          <span style={{ fontSize: 16, fontWeight: 700, color: "#fbbf24" }}>{a.scheme_name}</span>
+                          <span style={{ fontSize: 11, background: "rgba(255,255,255,0.06)", padding: "2px 6px", borderRadius: 4, color: "#cbd5e1" }}>{a.category}</span>
+                        </div>
+                        <div style={{ fontSize: 13, color: "#e2e8f0", fontWeight: 600 }}>
+                          Applicant: {a.user_name} (📱 {a.user_mobile} | 📍 {a.user_state} | 💼 {a.user_occupation || "Citizen"})
+                        </div>
+                        <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 4 }}>
+                          Benefit: <strong style={{ color: "#4ade80" }}>{a.benefit || "Standard Grant"}</strong> • Applied: {a.applied_at?.split("T")[0] || a.applied_at?.split(" ")[0]}
+                        </div>
+                        <div style={{ fontSize: 12, color: "#cbd5e1", marginTop: 4, fontStyle: "italic" }}>
+                          Reason: "{a.reason_for_applying}"
+                        </div>
+                      </div>
+
+                      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                         <button
                           className="admin-btn admin-btn-approve"
                           style={{ background: "#d97706", fontSize: 12, fontWeight: 700 }}
@@ -436,20 +437,95 @@ export default function AdminDashboard() {
                           ✗ {t("admin_reject")}
                         </button>
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    </div>
+
+                    {/* ATTACHED DOCUMENTS FOR THIS APPLICATION */}
+                    <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 12, marginTop: 10 }}>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: "#94a3b8", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                        Attached Scheme Documents ({attachedDocs.length})
+                      </div>
+
+                      {attachedDocs.length === 0 ? (
+                        <div style={{ fontSize: 12, color: "#ef4444", padding: "6px 0" }}>
+                          ⚠️ No documents attached to this application.
+                        </div>
+                      ) : (
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 10 }}>
+                          {attachedDocs.map((doc) => (
+                            <div key={doc.id} style={{
+                              background: "rgba(0,0,0,0.25)",
+                              border: `1px solid ${doc.status === "verified" ? "rgba(74, 222, 128, 0.3)" : doc.status === "rejected" ? "rgba(239, 68, 68, 0.3)" : "rgba(251, 191, 36, 0.3)"}`,
+                              borderRadius: 8,
+                              padding: "10px 12px",
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              gap: 8
+                            }}>
+                              <div style={{ overflow: "hidden" }}>
+                                <div style={{ fontSize: 12, fontWeight: 700, color: "#f8fafc", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                  {docLabels[doc.doc_type] || doc.doc_type}
+                                </div>
+                                <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                  <a
+                                    href={`http://127.0.0.1:8000/uploads/${doc.filename}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{ color: "#60a5fa", textDecoration: "underline" }}
+                                  >
+                                    📄 {doc.original_name}
+                                  </a>
+                                </div>
+                                <div style={{ fontSize: 10, marginTop: 3 }}>
+                                  <span style={{
+                                    padding: "2px 6px",
+                                    borderRadius: 4,
+                                    fontSize: 10,
+                                    fontWeight: 700,
+                                    background: doc.status === "verified" ? "rgba(74, 222, 128, 0.2)" : doc.status === "rejected" ? "rgba(239, 68, 68, 0.2)" : "rgba(251, 191, 36, 0.2)",
+                                    color: doc.status === "verified" ? "#4ade80" : doc.status === "rejected" ? "#f87171" : "#fbbf24"
+                                  }}>
+                                    ● {doc.status.replace("_", " ")}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div style={{ display: "flex", flexDirection: "column", gap: 4, flexShrink: 0 }}>
+                                <button
+                                  className="admin-btn admin-btn-approve"
+                                  style={{ padding: "4px 8px", fontSize: 11 }}
+                                  onClick={() => handleVerify(doc.id, "verified")}
+                                  disabled={doc.status === "verified"}
+                                >
+                                  ✓ Verify
+                                </button>
+                                <button
+                                  className="admin-btn admin-btn-reject"
+                                  style={{ padding: "4px 8px", fontSize: 11 }}
+                                  onClick={() => handleVerify(doc.id, "rejected")}
+                                  disabled={doc.status === "rejected"}
+                                >
+                                  ✗ Reject
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           )}
         </div>
 
-        {/* Citizen Proof Documents Queue */}
+        {/* Citizen Proof Documents Queue (Application-Linked Only) */}
         <div className="admin-card">
           <div className="admin-card-header">
             <div>
-              <div className="admin-card-title">📄 Citizen Proof Document Verification Desk</div>
-              <div className="admin-card-sub">Inspect uploaded Aadhaar, Income, Caste, and Land Record documents</div>
+              <div className="admin-card-title">📄 Scheme Proof Document Verification Desk</div>
+              <div className="admin-card-sub">Inspect individual documents submitted for scheme applications (Unlinked profile documents do not enter verification)</div>
             </div>
           </div>
           {pendingDocs.length === 0 ? (
@@ -459,6 +535,7 @@ export default function AdminDashboard() {
               <thead>
                 <tr>
                   <th>{t("admin_col_citizen")}</th>
+                  <th>Application & Scheme</th>
                   <th>{t("admin_col_doc_type")}</th>
                   <th>{t("admin_col_file")}</th>
                   <th>{t("admin_col_date")}</th>
@@ -469,8 +546,18 @@ export default function AdminDashboard() {
                 {pendingDocs.map((d) => (
                   <tr key={d.id}>
                     <td style={{ fontWeight: 600 }}>{d.user_name}</td>
+                    <td>
+                      <span style={{ fontSize: 11, background: "rgba(251, 191, 36, 0.15)", color: "#fbbf24", padding: "2px 6px", borderRadius: 4, fontWeight: 700 }}>
+                        App #{d.application_id}
+                      </span>
+                      <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 2 }}>{d.scheme_name || "Scheme Application"}</div>
+                    </td>
                     <td><span style={{ background: "rgba(59, 130, 246, 0.1)", color: "#2563eb", padding: "4px 8px", borderRadius: 6, fontSize: 12, fontWeight: 600 }}>{docLabels[d.doc_type] || d.doc_type}</span></td>
-                    <td style={{ fontSize: 12, color: "#888" }}>{d.original_name}</td>
+                    <td style={{ fontSize: 12, color: "#888" }}>
+                      <a href={`http://127.0.0.1:8000/uploads/${d.filename}`} target="_blank" rel="noopener noreferrer" style={{ color: "#60a5fa" }}>
+                        {d.original_name}
+                      </a>
+                    </td>
                     <td style={{ fontSize: 12, color: "#666" }}>{d.uploaded_at?.split("T")[0] || d.uploaded_at?.split(" ")[0]}</td>
                     <td>
                       <div style={{ display: "flex", gap: 6 }}>
@@ -490,7 +577,7 @@ export default function AdminDashboard() {
 
   // ─── 2. DEDICATED DISTRICT COLLECTOR / DM DASHBOARD ───
   const renderOfficerOverview = () => {
-    const officerApps = allApps.filter(a => a.status === "pending_district" || a.status === "pending_officer");
+    const officerApps = allApps.filter(a => a.status === "CLERK_APPROVED");
     return (
       <>
         <div style={{ background: "rgba(59, 130, 246, 0.1)", border: "1px solid rgba(59, 130, 246, 0.3)", borderRadius: 12, padding: "16px 20px", marginBottom: 24, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -595,7 +682,7 @@ export default function AdminDashboard() {
 
   // ─── 3. DEDICATED DEPARTMENT SECRETARY DASHBOARD ───
   const renderSecretaryOverview = () => {
-    const secretaryApps = allApps.filter(a => a.status === "pending_state");
+    const secretaryApps = allApps.filter(a => a.status === "OFFICER_APPROVED");
     return (
       <>
         <div style={{ background: "rgba(147, 51, 234, 0.1)", border: "1px solid rgba(147, 51, 234, 0.3)", borderRadius: 12, padding: "16px 20px", marginBottom: 24, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -699,7 +786,7 @@ export default function AdminDashboard() {
 
   // ─── 4. DEDICATED CABINET MINISTER DASHBOARD (Final Welfare Approval) ───
   const renderAdminOverview = () => {
-    const ministerApps = allApps.filter(a => a.status === "pending_minister" || a.status === "pending_officer");
+    const ministerApps = allApps.filter(a => a.status === "FINAL_VERIFICATION");
     return (
       <>
         <div style={{ background: "linear-gradient(90deg, rgba(239, 68, 68, 0.15) 0%, rgba(249, 115, 22, 0.15) 100%)", border: "1px solid rgba(239, 68, 68, 0.3)", borderRadius: 12, padding: "16px 20px", marginBottom: 24, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -889,9 +976,26 @@ export default function AdminDashboard() {
   const renderApplications = () => {
 
     const filteredApps = allApps.filter(app => {
-      if (viewPerspective === "clerk") return app.status === "pending_clerk";
-      if (viewPerspective === "officer") return app.status === "pending_officer";
-      return true; // master perspective shows everything
+      if (viewPerspective === "clerk") {
+        return app.status === "SUBMITTED";
+      }
+
+      if (viewPerspective === "officer") {
+        return app.status === "CLERK_APPROVED";
+      }
+
+      if (viewPerspective === "state_admin") {
+        return app.status === "OFFICER_APPROVED";
+      }
+
+      if (
+        viewPerspective === "minister" ||
+        user?.role === "minister"
+      ) {
+        return app.status === "FINAL_VERIFICATION";
+      }
+
+      return false;
     });
 
     return (
@@ -1040,87 +1144,95 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {filteredApps.map((app) => (
-                  <tr key={app.id}>
-                    <td style={{ color: "#666", fontSize: 12 }}>#{app.id}</td>
-                    <td>
-                      <div style={{ fontWeight: 600, color: "#1e293b" }}>{app.user_name}</div>
-                      <div style={{ fontSize: 11, color: "#64748b" }}>📱 {app.user_mobile} | 📍 {app.user_state}</div>
-                    </td>
-                    <td>
-                      <div style={{ fontWeight: 600, color: "#0f172a" }}>{app.scheme_name}</div>
-                      <span style={{ fontSize: 11, background: "#f1f5f9", padding: "2px 6px", borderRadius: 4, color: "#475569" }}>{app.category}</span>
-                    </td>
-                    <td style={{ fontSize: 12, color: "#334155", maxWidth: 220, lineHeight: 1.4 }}>
-                      {app.reason_for_applying}
-                    </td>
-                    <td>
-                      <span style={{
-                        fontSize: 12,
-                        fontWeight: 600,
-                        padding: "4px 8px",
-                        borderRadius: 6,
-                        background: app.current_handler?.includes("Approved") ? "rgba(34, 197, 94, 0.15)" : app.current_handler?.includes("Super") ? "rgba(59, 130, 246, 0.15)" : "rgba(245, 158, 11, 0.15)",
-                        color: app.current_handler?.includes("Approved") ? "#16a34a" : app.current_handler?.includes("Super") ? "#2563eb" : "#d97706"
-                      }}>
-                        {app.current_handler}
-                      </span>
-                    </td>
-                    <td>
-                      <span className={`admin-status ${app.status}`}>{app.status}</span>
-                    </td>
-                    <td style={{ fontSize: 11, color: "#64748b" }}>
-                      <div>v{app.version || 1} (Redlock)</div>
-                      {app.raft_term && (
-                        <div style={{ color: "#0284c7", fontWeight: 600 }}>Raft T:{app.raft_term} | I:{app.raft_index}</div>
-                      )}
-                    </td>
-                    <td>
-                      {app.status === "pending_clerk" && (
-                        <div style={{ display: "flex", gap: 6 }}>
-                          <button
-                            className="admin-btn admin-btn-approve"
-                            style={{ background: "#d97706", fontSize: 12 }}
-                            onClick={() => handleVerifyApplication(app.id, "verified")}
-                          >
-                            ✓ Pass to Super Admin
-                          </button>
-                          <button
-                            className="admin-btn admin-btn-reject"
-                            style={{ fontSize: 12 }}
-                            onClick={() => handleVerifyApplication(app.id, "rejected")}
-                          >
-                            ✗
-                          </button>
-                        </div>
-                      )}
-                      {app.status === "pending_officer" && (
-                        <div style={{ display: "flex", gap: 6 }}>
-                          <button
-                            className="admin-btn admin-btn-approve"
-                            style={{ background: "linear-gradient(90deg, #16a34a 0%, #059669 100%)", fontSize: 12, fontWeight: 700 }}
-                            onClick={() => handleVerifyApplication(app.id, "verified")}
-                          >
-                            ⚡ Raft Quorum Approve
-                          </button>
-                          <button
-                            className="admin-btn admin-btn-reject"
-                            style={{ fontSize: 12 }}
-                            onClick={() => handleVerifyApplication(app.id, "rejected")}
-                          >
-                            ✗
-                          </button>
-                        </div>
-                      )}
-                      {app.status === "verified" && (
-                        <span style={{ fontSize: 12, color: "#16a34a", fontWeight: 600 }}>✅ Disbursed</span>
-                      )}
-                      {app.status === "rejected" && (
-                        <span style={{ fontSize: 12, color: "#ef4444", fontWeight: 600 }}>❌ Rejected</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                {filteredApps.map((app) => {
+                  const canApproveApplication =
+                    (user?.role === "clerk" &&
+                      app.status === "SUBMITTED") ||
+
+                    (user?.role === "officer" &&
+                      app.status === "CLERK_APPROVED") ||
+
+                    (user?.role === "state_admin" &&
+                      app.status === "OFFICER_APPROVED") ||
+
+                    (user?.role === "minister" &&
+                      app.status === "FINAL_VERIFICATION");
+
+                  return (
+                    <tr key={app.id}>
+                      <td style={{ color: "#666", fontSize: 12 }}>#{app.id}</td>
+                      <td>
+                        <div style={{ fontWeight: 600, color: "#1e293b" }}>{app.user_name}</div>
+                        <div style={{ fontSize: 11, color: "#64748b" }}>📱 {app.user_mobile} | 📍 {app.user_state}</div>
+                      </td>
+                      <td>
+                        <div style={{ fontWeight: 600, color: "#0f172a" }}>{app.scheme_name}</div>
+                        <span style={{ fontSize: 11, background: "#f1f5f9", padding: "2px 6px", borderRadius: 4, color: "#475569" }}>{app.category}</span>
+                      </td>
+                      <td style={{ fontSize: 12, color: "#334155", maxWidth: 220, lineHeight: 1.4 }}>
+                        {app.reason_for_applying}
+                      </td>
+                      <td>
+                        <span style={{
+                          fontSize: 12,
+                          fontWeight: 600,
+                          padding: "4px 8px",
+                          borderRadius: 6,
+                          background: app.current_handler?.includes("Approved") ? "rgba(34, 197, 94, 0.15)" : app.current_handler?.includes("Super") ? "rgba(59, 130, 246, 0.15)" : "rgba(245, 158, 11, 0.15)",
+                          color: app.current_handler?.includes("Approved") ? "#16a34a" : app.current_handler?.includes("Super") ? "#2563eb" : "#d97706"
+                        }}>
+                          {app.current_handler}
+                        </span>
+                      </td>
+                      <td>
+                        <span className={`admin-status ${app.status}`}>{app.status}</span>
+                      </td>
+                      <td style={{ fontSize: 11, color: "#64748b" }}>
+                        <div>v{app.version || 1} (Redlock)</div>
+                        {app.raft_term && (
+                          <div style={{ color: "#0284c7", fontWeight: 600 }}>Raft T:{app.raft_term} | I:{app.raft_index}</div>
+                        )}
+                      </td>
+                      <td>
+                        {canApproveApplication && (
+                          <div style={{ display: "flex", gap: 6 }}>
+                            <button
+                              className="admin-btn admin-btn-approve"
+                              style={{ fontSize: 12 }}
+                              onClick={() =>
+                                handleVerifyApplication(app.id, "verified")
+                              }
+                            >
+                              Approve
+                            </button>
+
+                            <button
+                              className="admin-btn admin-btn-reject"
+                              style={{ fontSize: 12 }}
+                              onClick={() =>
+                                handleVerifyApplication(app.id, "rejected")
+                              }
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        )}
+
+                        {app.status === "APPROVED" && (
+                          <span style={{ fontSize: 12, color: "#16a34a", fontWeight: 600 }}>
+                            ✅ Approved
+                          </span>
+                        )}
+
+                        {app.status === "REJECTED" && (
+                          <span style={{ fontSize: 12, color: "#ef4444", fontWeight: 600 }}>
+                            ❌ Rejected
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           )}
@@ -1259,12 +1371,12 @@ export default function AdminDashboard() {
       {dcMetrics && (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12, marginBottom: 20 }}>
           {[
-            { label: "Active Nodes",   value: `${dcMetrics.active_nodes}/${dcMetrics.total_nodes}`, bg: "#00ff88" },
-            { label: "Avg Latency",    value: `${dcMetrics.avg_latency_ms}ms`,                     bg: "#00d4ff" },
-            { label: "Throughput",     value: `${dcMetrics.throughput_rps} rps`,                   bg: "#c084fc" },
-            { label: "Cache Hit Rate", value: `${dcMetrics.cache_hit_rate_pct}%`,                  bg: "#fbbf24" },
-            { label: "Error Rate",     value: `${dcMetrics.error_rate_pct}%`,                      bg: dcMetrics.error_rate_pct < 1 ? "#00ff88" : "#ff3355" },
-            { label: "Uptime",         value: `${dcMetrics.uptime_pct}%`,                          bg: "#00ff88" },
+            { label: "Active Nodes", value: `${dcMetrics.active_nodes}/${dcMetrics.total_nodes}`, bg: "#00ff88" },
+            { label: "Avg Latency", value: `${dcMetrics.avg_latency_ms}ms`, bg: "#00d4ff" },
+            { label: "Throughput", value: `${dcMetrics.throughput_rps} rps`, bg: "#c084fc" },
+            { label: "Cache Hit Rate", value: `${dcMetrics.cache_hit_rate_pct}%`, bg: "#fbbf24" },
+            { label: "Error Rate", value: `${dcMetrics.error_rate_pct}%`, bg: dcMetrics.error_rate_pct < 1 ? "#00ff88" : "#ff3355" },
+            { label: "Uptime", value: `${dcMetrics.uptime_pct}%`, bg: "#00ff88" },
           ].map((m, i) => (
             <div key={i} style={{ background: "#0a1628", border: "1px solid rgba(0,212,255,0.15)", borderRadius: 10, padding: "14px 16px" }}>
               <div style={{ fontFamily: "monospace", fontSize: 9, letterSpacing: 1.5, color: "rgba(226,232,240,0.4)", textTransform: "uppercase", marginBottom: 6 }}>{m.label}</div>
@@ -1298,8 +1410,8 @@ export default function AdminDashboard() {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
                 {[
                   { l: "LATENCY", v: `${node.latency_ms}ms` },
-                  { l: "CPU",     v: `${node.cpu_pct}%` },
-                  { l: "REQ/S",   v: node.requests_per_sec },
+                  { l: "CPU", v: `${node.cpu_pct}%` },
+                  { l: "REQ/S", v: node.requests_per_sec },
                 ].map((stat, i) => (
                   <div key={i} style={{ background: "rgba(255,255,255,0.03)", borderRadius: 6, padding: "8px 6px", textAlign: "center" }}>
                     <div style={{ fontFamily: "monospace", fontSize: 8, color: "rgba(226,232,240,0.35)", letterSpacing: 1, marginBottom: 3 }}>{stat.l}</div>
@@ -1339,19 +1451,19 @@ export default function AdminDashboard() {
   };
 
   const tabTitles = {
-    overview:     [getRoleTitle(), t("admin_tab_overview_sub")],
+    overview: [getRoleTitle(), t("admin_tab_overview_sub")],
     applications: [t("admin_tab_apps"), t("admin_tab_apps_sub")],
-    documents:    [t("admin_tab_docs"),    t("admin_tab_docs_sub")],
-    users:        [t("admin_tab_users"),   t("admin_tab_users_sub")],
-    dcmonitor:    [t("admin_dc_monitor"), t("admin_tab_dc_sub")],
+    documents: [t("admin_tab_docs"), t("admin_tab_docs_sub")],
+    users: [t("admin_tab_users"), t("admin_tab_users_sub")],
+    dcmonitor: [t("admin_dc_monitor"), t("admin_tab_dc_sub")],
   };
 
   const tabContent = {
-    overview:     renderOverview,
+    overview: renderOverview,
     applications: renderApplications,
-    documents:    renderDocuments,
-    users:        renderUsers,
-    dcmonitor:    renderDCMonitor,
+    documents: renderDocuments,
+    users: renderUsers,
+    dcmonitor: renderDCMonitor,
   };
 
   const badge = getRoleBadge();
