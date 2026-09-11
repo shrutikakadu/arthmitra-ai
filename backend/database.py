@@ -111,6 +111,33 @@ class SchemeApplication(Base):
     audits = relationship("ApplicationAudit", back_populates="application", cascade="all, delete-orphan", order_by="ApplicationAudit.timestamp.asc()")
 
 
+class LiveScheme(Base):
+    """Live curated government scheme catalog — updated by the ingestion pipeline."""
+    __tablename__ = "live_schemes"
+    id = Column(Integer, primary_key=True, index=True)
+    scheme_name = Column(String, nullable=False, index=True)
+    sponsoring_body = Column(String, nullable=False)
+    category = Column(String, nullable=False)          # Agriculture, Health, Education, Housing, Social Welfare
+    state = Column(String, nullable=True)              # None = Central / All India
+    eligibility_caste = Column(String, nullable=True)  # ALL | OBC | SC | ST | EWS | SC,ST | OBC,EWS
+    eligibility_income_max = Column(Float, nullable=True)   # Annual income ceiling in INR
+    eligibility_education = Column(String, nullable=True)   # e.g. "10th Pass", "Graduate"
+    eligibility_gender = Column(String, nullable=True)      # ALL | Male | Female
+    eligibility_age_min = Column(Integer, nullable=True)
+    eligibility_age_max = Column(Integer, nullable=True)
+    eligibility_occupation = Column(String, nullable=True)  # Farmer, Student, etc.
+    benefit_amount = Column(String, nullable=True)     # Human-readable e.g. "₹6,000/year"
+    benefit_type = Column(String, nullable=True)       # DBT | Insurance | Scholarship | Subsidy | Loan
+    deadline = Column(String, nullable=True)           # "Ongoing" or "DD-MMM-YYYY"
+    official_link = Column(String, nullable=True)
+    source_portal = Column(String, nullable=True)      # "NSP" | "MahaDBT" | "Central"
+    description = Column(Text, nullable=True)
+    required_docs = Column(Text, nullable=True)        # JSON-encoded list
+    faq_json = Column(Text, nullable=True)             # JSON-encoded [{q,a}] list
+    last_synced = Column(DateTime, default=datetime.utcnow)
+    is_active = Column(Boolean, default=True)
+
+
 class ApplicationAudit(Base):
     """Immutable audit/history log for scheme application verification transitions."""
     __tablename__ = "application_audits"
@@ -159,46 +186,89 @@ def _migrate_documents_table(target_engine):
 
 
 def _migrate_government_roles(target_session_factory):
-    """Repair existing demo government accounts without deleting any data."""
+    """Repair and sync all demo government accounts & passwords without deleting data."""
     import bcrypt
     db = target_session_factory()
+    demo_accounts = [
+        {
+            "mobile": "9876543210",
+            "name": "Ramesh Khedkar",
+            "password": "pass123",
+            "role": "user",
+            "occupation": "Farmer",
+            "age": 35,
+            "caste": "OBC",
+            "income": "₹50,000 - ₹1,000,000",
+            "family_size": 4,
+            "gender": "Male",
+            "education": "10th Pass",
+        },
+        {
+            "mobile": "1111111111",
+            "name": "Section Officer / Front Desk Clerk",
+            "password": "clerk123",
+            "role": "clerk",
+            "occupation": "ROLE_VERIFIER (Clerk)",
+        },
+        {
+            "mobile": "2222222222",
+            "name": "District Collector / DM",
+            "password": "officer123",
+            "role": "officer",
+            "occupation": "ROLE_DISTRICT_ADMIN (DM)",
+        },
+        {
+            "mobile": "3333333333",
+            "name": "Department Secretary",
+            "password": "secretary123",
+            "role": "state_admin",
+            "occupation": "ROLE_STATE_ADMIN (Secretary)",
+        },
+        {
+            "mobile": "9999999999",
+            "name": "Cabinet Minister",
+            "password": "minister123",
+            "role": "minister",
+            "occupation": "ROLE_MINISTER (Apex Approver)",
+        },
+        {
+            "mobile": "5555555555",
+            "name": "System Administrator",
+            "password": "sysadmin123",
+            "role": "admin",
+            "occupation": "ROLE_SYSADMIN (DC Monitor)",
+        },
+    ]
+
     try:
-        # Existing project versions created the Cabinet Minister as role=admin
-        # with password admin123. Convert that account to the real minister role.
-        minister = db.query(User).filter(User.mobile == "9999999999").first()
-        if minister:
-            changed = False
-            if minister.role != "minister":
-                minister.role = "minister"
-                changed = True
-            if minister.name != "Cabinet Minister":
-                minister.name = "Cabinet Minister"
-                changed = True
-            if minister.occupation != "ROLE_MINISTER (Apex Approver)":
-                minister.occupation = "ROLE_MINISTER (Apex Approver)"
-                changed = True
-            # Reset the demo password so the Login page's Minister quick-login works.
-            minister.password = bcrypt.hashpw(
-                b"minister123", bcrypt.gensalt()
-            ).decode("utf-8")
-            changed = True
-            if changed:
-                db.commit()
-                print("Migrated Cabinet Minister account to role=minister.")
-        else:
-            # If a partially populated database has no minister account, create it.
-            minister = User(
-                name="Cabinet Minister",
-                mobile="9999999999",
-                password=bcrypt.hashpw(b"minister123", bcrypt.gensalt()).decode("utf-8"),
-                state="Maharashtra",
-                language="English",
-                role="minister",
-                occupation="ROLE_MINISTER (Apex Approver)"
-            )
-            db.add(minister)
-            db.commit()
-            print("Created missing Cabinet Minister demo account.")
+        for acc in demo_accounts:
+            u = db.query(User).filter(User.mobile == acc["mobile"]).first()
+            hashed_pw = bcrypt.hashpw(acc["password"].encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+            if u:
+                u.password = hashed_pw
+                u.role = acc["role"]
+                u.name = acc["name"]
+                if "occupation" in acc:
+                    u.occupation = acc["occupation"]
+            else:
+                new_u = User(
+                    mobile=acc["mobile"],
+                    name=acc["name"],
+                    password=hashed_pw,
+                    role=acc["role"],
+                    state="Maharashtra",
+                    language="English",
+                    occupation=acc.get("occupation", ""),
+                    age=acc.get("age"),
+                    caste=acc.get("caste"),
+                    income=acc.get("income"),
+                    family_size=acc.get("family_size"),
+                    gender=acc.get("gender"),
+                    education=acc.get("education"),
+                )
+                db.add(new_u)
+        db.commit()
+        print("Demo accounts and government hierarchy roles synced successfully.")
     except Exception as e:
         db.rollback()
         print(f"Government role migration note: {e}")
@@ -214,6 +284,15 @@ def create_tables():
         Base.metadata.create_all(bind=replica_engine)
     else:
         _migrate_documents_table(replica_engine)
+    _migrate_live_schemes_table(engine)
+
+
+def _migrate_live_schemes_table(target_engine):
+    """Ensure live_schemes table exists (non-destructive)."""
+    try:
+        Base.metadata.create_all(bind=target_engine, tables=[LiveScheme.__table__], checkfirst=True)
+    except Exception as e:
+        print(f"LiveScheme migration note: {e}")
 
         
     # Seed default demo users if users table is empty

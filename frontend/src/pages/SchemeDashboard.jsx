@@ -6,6 +6,7 @@ import { ArrowLeft, ExternalLink, CheckCircle, XCircle, AlertCircle, FileText, T
 import API from "../api/axios";
 import "./SchemeDashboard.css";
 import { useLanguage } from "../LanguageContext";
+import SchemeChatBot from "../components/SchemeChatBot";
 
 // ─── 3D TILT CARD COMPONENT ──────────────────────────────────────────────────
 function TiltCard({ children, style, className }) {
@@ -336,6 +337,7 @@ export default function SchemeDashboard() {
     };
 
     return (
+        <>
         <div className="scheme-dash-layout">
             {/* Spinning decorative Ashoka Chakra in background */}
             <div className="scheme-dash-bg-chakra">
@@ -812,5 +814,8 @@ export default function SchemeDashboard() {
                 </div>
             </div>
         </div>
+        {/* ── Helper AI Chatbot Widget ── */}
+        <SchemeChatBot schemeName={schemeName} />
+        </>
     );
 }

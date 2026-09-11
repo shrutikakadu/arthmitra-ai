@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from routes import scheme_routes, health_routes, savings_routes, voice_routes, internal_routes
 from routes import auth_routes, document_routes, notification_routes, dc_routes
+from routes import live_scheme_routes, chat_routes
 from database import create_tables
 from message_bus import notification_worker
 from db_replicator import start_replication
@@ -17,8 +18,10 @@ async def lifespan(app: FastAPI):
     start_replication()
     # Startup: Start Message Queue Workers (Multi-topic Message Passing)
     from message_bus import doc_submitted_worker
+    from scheme_ingestion import ingestion_loop
     asyncio.create_task(notification_worker())
     asyncio.create_task(doc_submitted_worker())
+    asyncio.create_task(ingestion_loop())
     yield
     # Shutdown logic can go here
 
@@ -52,6 +55,8 @@ app.include_router(notification_routes.router, prefix="/api")
 app.include_router(dc_routes.router, prefix="/api")
 app.include_router(internal_routes.router, prefix="/api")
 app.include_router(application_routes.router, prefix="/api")
+app.include_router(live_scheme_routes.router, prefix="/api")
+app.include_router(chat_routes.router, prefix="/api")
 
 
 

@@ -18,6 +18,9 @@ import {
 import API from "../api/axios";
 import "./Dashboard.css";
 import { useLanguage } from "../LanguageContext";
+import VoiceFormFiller from "../components/VoiceFormFiller";
+import ApplicationStatusStepper from "../components/ApplicationStatusStepper";
+import SchemeChatBot from "../components/SchemeChatBot";
 
 const DOC_TYPES = [
   { key: "aadhaar", label: "Aadhaar Card", icon: "🪪" },
@@ -468,68 +471,32 @@ export default function Dashboard() {
   // OVERVIEW
   // =========================
   const renderOverview = () => {
-    const benefitData = [
-      {
-        year: "2026",
-        schemes: 12000,
-        direct_benefit: 5000
-      },
-      {
-        year: "2027",
-        schemes: 25000,
-        direct_benefit: 12000
-      },
-      {
-        year: "2028",
-        schemes: 38000,
-        direct_benefit: 21000
-      },
-      {
-        year: "2029",
-        schemes: 52000,
-        direct_benefit: 32000
-      },
-      {
-        year: "2030",
-        schemes: 68000,
-        direct_benefit: 45000
-      }
-    ];
-
-    const pieData = [
-      {
-        name: t("cat_agri"),
-        value: 45
-      },
-      {
-        name: t("cat_health"),
-        value: 30
-      },
-      {
-        name: t("cat_edu"),
-        value: 15
-      },
-      {
-        name: t("cat_housing"),
-        value: 10
-      }
-    ];
-
-    const COLORS = [
-      "#FF6B00",
-      "#138808",
-      "#3b82f6",
-      "#8b5cf6"
-    ];
-
-    // ── Dynamic Financial Profile Progress ──
-    // Profile completeness: count non-empty profile fields (9 total)
+    // ── Dynamic profile completion chart ──────────────────────────────────
     const PROFILE_FIELDS = ["name", "age", "income", "occupation", "state", "caste", "family_size", "gender", "education"];
     const filledFields = PROFILE_FIELDS.filter(k => profile[k] && String(profile[k]).trim() !== "").length;
-    // Docs score: each uploaded doc = 5pts, each verified doc = 10pts bonus (max 100 total)
+    const isProfileEmpty = filledFields === 0;
+
+    // Build bar chart from real profile + doc data
+    const profileCompletionData = [
+      { label: "Profile",   value: Math.round((filledFields / PROFILE_FIELDS.length) * 100), fill: "#FF6B00" },
+      { label: "Docs",      value: documents.length > 0 ? Math.min(documents.length * 12, 100) : 0, fill: "#138808" },
+      { label: "Verified",  value: docsVerified > 0 ? Math.min(docsVerified * 20, 100) : 0, fill: "#3b82f6" },
+      { label: "Apps",      value: applications.length > 0 ? Math.min(applications.length * 25, 100) : 0, fill: "#8b5cf6" },
+    ];
+
+    // Doc status pie (only render if docs exist)
+    const pieData = documents.length > 0 ? [
+      { name: t("admin_status_approved"), value: Math.max(docsVerified, 0) },
+      { name: t("docs_pending"),          value: Math.max(docsPending, 0) },
+      { name: t("sd_rejected"),           value: Math.max(docsRejected, 0) },
+    ].filter(d => d.value > 0) : [];
+
+    const COLORS = ["#138808", "#FF6B00", "#EF4444"];
+
+    // ── Financial Health Score (dynamic) ──────────────────────────────────
     const docUploadPts = Math.min(documents.length * 5, 30);
     const docVerifyPts = Math.min(docsVerified * 10, 30);
-    const profilePct = Math.round((filledFields / PROFILE_FIELDS.length) * 40); // 40% weight
+    const profilePct = Math.round((filledFields / PROFILE_FIELDS.length) * 40);
     const computedScore = Math.min(profilePct + docUploadPts + docVerifyPts, 100);
 
     const scoreLabel =
@@ -544,13 +511,46 @@ export default function Dashboard() {
 
     const healthScore = [{ name: "Score", value: computedScore || 1, fill: scoreColor }];
 
-    // ── Profile completion % shown in onboarding ──
-    const profileCompletionPct = Math.round((filledFields / PROFILE_FIELDS.length) * 100);
-
     return (
       <div className="animate-in">
 
         <div className="stat-grid">
+
+          {/* ─── Empty State Onboarding Banner ─── */}
+          {filledFields === 0 && (
+            <div style={{
+              gridColumn: "1 / -1",
+              background: "linear-gradient(135deg, #FFF3ED 0%, #FFFBF5 100%)",
+              border: "2px dashed #FED7AA",
+              borderRadius: 16,
+              padding: "24px 28px",
+              display: "flex",
+              alignItems: "center",
+              gap: 20,
+              marginBottom: 4,
+            }}>
+              <div style={{ fontSize: 44 }}>📋</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 16, fontWeight: 800, color: "#C2410C", marginBottom: 6 }}>
+                  {t("lang") === "mr" ? "प्रोफाइल पूर्ण करा — योजना सुचवणी पाहण्यासाठी" :
+                   t("lang") === "hi" ? "प्रोफाइल पूरा करें — योजना सुझाव देखने के लिए" :
+                   "Complete your profile to view eligibility insights & analytics"}
+                </div>
+                <div style={{ fontSize: 13, color: "#92400E", lineHeight: 1.5 }}>
+                  {t("lang") === "mr" ? "तुमचे उत्पन्न, जात, शिक्षण आणि व्यवसाय भरा. आम्ही तुमच्यासाठी योग्य सरकारी योजना सुचवू." :
+                   t("lang") === "hi" ? "अपनी आय, जाति, शिक्षा और व्यवसाय दर्ज करें। हम आपके लिए उपयुक्त सरकारी योजनाएं सुझाएंगे।" :
+                   "Add your income, caste, education, and occupation. We'll match you with the right government schemes automatically."}
+                </div>
+              </div>
+              <button
+                className="btn btn-primary"
+                onClick={() => setActiveTab("profile")}
+                style={{ flexShrink: 0, padding: "10px 20px", fontSize: 13 }}
+              >
+                👤 Complete Profile
+              </button>
+            </div>
+          )}
 
           <div className="stat-card saffron animate-in">
             <div className="stat-icon saffron">
@@ -560,12 +560,18 @@ export default function Dashboard() {
             <div className="stat-value">
               {schemeResults
                 ? schemeResults.total_schemes
-                : "15"}
+                : (filledFields >= 3 ? "—" : "—")}
             </div>
 
             <div className="stat-label">
               {t("dash_eligible_schemes")}
             </div>
+
+            {filledFields < 3 && (
+              <div style={{ fontSize: 10, color: "#999", marginTop: 4, fontStyle: "italic" }}>
+                Run Scheme Matcher to see count
+              </div>
+            )}
           </div>
 
           <div className="stat-card green animate-in">
@@ -626,112 +632,49 @@ export default function Dashboard() {
             <div className="dash-card-header">
               <div>
                 <div className="dash-card-title">
-                  {t("dash_projected_welfare")}
+                  📊 Profile & Readiness Progress
                 </div>
 
                 <div className="dash-card-subtitle">
-                  {t("dash_projected_welfare_sub")}
+                  Based on your profile, documents, and applications
                 </div>
               </div>
             </div>
 
-            <div
-              style={{
-                width: "100%",
-                height: 280,
-                minHeight: 250,
-                position: "relative"
-              }}
-            >
-              <ResponsiveContainer
-                width="100%"
-                height="100%"
-                minWidth={100}
-                minHeight={200}
+            {isProfileEmpty ? (
+              <div style={{ textAlign: "center", padding: "40px 20px", color: "#94A3B8" }}>
+                <div style={{ fontSize: 36, marginBottom: 12 }}>🌱</div>
+                <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 6 }}>No data yet</div>
+                <div style={{ fontSize: 12 }}>Complete your profile to see analytics here</div>
+              </div>
+            ) : (
+              <div
+                style={{
+                  width: "100%",
+                  height: 280,
+                  minHeight: 250,
+                  position: "relative"
+                }}
               >
-                <BarChart
-                  data={benefitData}
-                  margin={{
-                    top: 10,
-                    right: 10,
-                    left: -20,
-                    bottom: 0
-                  }}
-                >
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    vertical={false}
-                    stroke="#ede8e1"
-                  />
-
-                  <XAxis
-                    dataKey="year"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{
-                      fontSize: 12,
-                      fill: "#666"
-                    }}
-                    dy={10}
-                  />
-
-                  <YAxis
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{
-                      fontSize: 12,
-                      fill: "#666"
-                    }}
-                  />
-
-                  <RechartsTooltip
-                    cursor={{
-                      fill: "#f8f4ef"
-                    }}
-                    contentStyle={{
-                      borderRadius: 8,
-                      border: "1px solid #ede8e1"
-                    }}
-                  />
-
-                  <Legend
-                    iconType="circle"
-                    wrapperStyle={{
-                      fontSize: 12,
-                      paddingTop: 10
-                    }}
-                  />
-
-                  <Bar
-                    dataKey="schemes"
-                    name={t("cat_subsidies")}
-                    stackId="a"
-                    fill="#FF6B00"
-                    radius={[
-                      0,
-                      0,
-                      4,
-                      4
-                    ]}
-                    barSize={32}
-                  />
-
-                  <Bar
-                    dataKey="direct_benefit"
-                    name={t("cat_dbt")}
-                    stackId="a"
-                    fill="#138808"
-                    radius={[
-                      4,
-                      4,
-                      0,
-                      0
-                    ]}
-                  />
-
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+                <ResponsiveContainer width="100%" height="100%" minWidth={100} minHeight={200}>
+                  <BarChart data={profileCompletionData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ede8e1" />
+                    <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: "#666" }} dy={10} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: "#666" }} domain={[0, 100]} tickFormatter={v => `${v}%`} />
+                    <RechartsTooltip
+                      cursor={{ fill: "#f8f4ef" }}
+                      contentStyle={{ borderRadius: 8, border: "1px solid #ede8e1" }}
+                      formatter={(val) => [`${val}%`, "Completion"]}
+                    />
+                    <Bar dataKey="value" radius={[6, 6, 0, 0]} barSize={40}>
+                      {profileCompletionData.map((entry, i) => (
+                        <Cell key={i} fill={entry.fill} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
           </div>
 
           <div
@@ -893,116 +836,49 @@ export default function Dashboard() {
                 alignItems: "center"
               }}
             >
-
-              <ResponsiveContainer
-                width="50%"
-                height="100%"
-                minWidth={100}
-                minHeight={160}
-              >
-
-                <PieChart>
-
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={50}
-                    outerRadius={80}
-                    paddingAngle={2}
-                    dataKey="value"
-                    stroke="none"
+              {pieData.length > 0 ? (
+                <>
+                  <ResponsiveContainer
+                    width="50%"
+                    height="100%"
+                    minWidth={100}
+                    minHeight={160}
                   >
-
-                    {pieData.map(
-                      (entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={
-                            COLORS[
-                            index %
-                            COLORS.length
-                            ]
-                          }
-                        />
-                      )
-                    )}
-
-                  </Pie>
-
-                  <RechartsTooltip
-                    contentStyle={{
-                      borderRadius: 8,
-                      border:
-                        "1px solid #ede8e1",
-                      fontSize: 12
-                    }}
-                  />
-
-                </PieChart>
-
-              </ResponsiveContainer>
-
-              <div
-                style={{
-                  width: "50%",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 12
-                }}
-              >
-
-                {pieData.map(
-                  (entry, index) => (
-                    <div
-                      key={entry.name}
-                      style={{
-                        display: "flex",
-                        alignItems:
-                          "center",
-                        gap: 8
-                      }}
-                    >
-
-                      <div
-                        style={{
-                          width: 10,
-                          height: 10,
-                          borderRadius: "50%",
-                          background:
-                            COLORS[
-                            index %
-                            COLORS.length
-                            ]
-                        }}
-                      />
-
-                      <span
-                        style={{
-                          fontSize: 13,
-                          color: "#444",
-                          flex: 1
-                        }}
+                    <PieChart>
+                      <Pie
+                        data={pieData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={50}
+                        outerRadius={80}
+                        paddingAngle={2}
+                        dataKey="value"
+                        stroke="none"
                       >
-                        {entry.name}
-                      </span>
+                        {pieData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <RechartsTooltip contentStyle={{ borderRadius: 8, border: "1px solid #ede8e1", fontSize: 12 }} />
+                    </PieChart>
+                  </ResponsiveContainer>
 
-                      <span
-                        style={{
-                          fontSize: 13,
-                          fontWeight: 600,
-                          color: "#1a1a1a"
-                        }}
-                      >
-                        {entry.value}%
-                      </span>
-
-                    </div>
-                  )
-                )}
-
-              </div>
-
+                  <div style={{ width: "50%", display: "flex", flexDirection: "column", gap: 12 }}>
+                    {pieData.map((entry, index) => (
+                      <div key={entry.name} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <div style={{ width: 10, height: 10, borderRadius: "50%", background: COLORS[index % COLORS.length] }} />
+                        <span style={{ fontSize: 13, color: "#444", flex: 1 }}>{entry.name}</span>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: "#1a1a1a" }}>{entry.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <div style={{ textAlign: "center", width: "100%", color: "#94A3B8", padding: "20px 0" }}>
+                  <div style={{ fontSize: 32, marginBottom: 8 }}>📄</div>
+                  <div style={{ fontSize: 13 }}>Upload documents to see verification breakdown</div>
+                </div>
+              )}
             </div>
 
           </div>
@@ -1212,27 +1088,48 @@ export default function Dashboard() {
             <div className="dash-card-subtitle">{t("dash_profile_sub")}</div>
           </div>
 
-          {profileSaved && (
-            <span
-              style={{
-                background: "#f0fdf4",
-                color: "#166534",
-                padding: "5px 14px",
-                borderRadius: 100,
-                fontSize: 12,
-                fontWeight: 600,
-                border: "1px solid #bbf7d0"
-              }}
-            >
-              ✅ {t("dash_saved")}
-            </span>
-          )}
+          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            {/* Guided voice form filler */}
+            <VoiceFormFiller
+              mode="guided"
+              fieldKeys={["name","age","occupation","income","state","caste","family_size","gender"]}
+              lang={lang}
+              onFieldUpdate={(key, val) => setProfile(p => ({ ...p, [key]: val }))}
+            />
+
+            {profileSaved && (
+              <span
+                style={{
+                  background: "#f0fdf4",
+                  color: "#166534",
+                  padding: "5px 14px",
+                  borderRadius: 100,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  border: "1px solid #bbf7d0"
+                }}
+              >
+                ✅ {t("dash_saved")}
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="form-grid">
           {profileFields.map((field) => (
             <div className="form-group" key={field.key}>
-              <label className="form-label">{field.label}</label>
+              <label className="form-label" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                {field.label}
+                {/* Per-field voice mic — only on text/number inputs */}
+                {field.type !== "select" && (
+                  <VoiceFormFiller
+                    mode="single"
+                    fieldKey={field.key}
+                    lang={lang}
+                    onResult={(val) => setProfile(p => ({ ...p, [field.key]: val }))}
+                  />
+                )}
+              </label>
 
               {field.type === "select" ? (
                 <select
@@ -1726,23 +1623,72 @@ export default function Dashboard() {
 
                   </div>
 
-                  <div
-                    style={{
-                      marginTop: 12,
-                      fontSize: 11,
-                      color: "#999",
-                      display:
-                        "flex",
-                      alignItems:
-                        "center",
-                      gap: 4
-                    }}
-                  >
-                    <span>
-                      {t("click_to_open_scheme")}
-                    </span>{" "}
-                    ➔
-                  </div>
+                  {(() => {
+                    const isAlreadyApplied = applications.some(app => app.scheme_name && app.scheme_name.toLowerCase() === s.scheme_name.toLowerCase());
+                    return (
+                      <div
+                        style={{
+                          marginTop: 12,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 10,
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        {isAlreadyApplied ? (
+                          <>
+                            <span style={{ fontSize: 11, fontWeight: 700, color: "#166534", background: "#f0fdf4", border: "1px solid #bbf7d0", padding: "3px 10px", borderRadius: 100 }}>
+                              ✓ {t("status_APPROVED") ? "Already Applied" : "Already Applied"}
+                            </span>
+                            <button
+                              className="btn btn-sm"
+                              style={{
+                                background: "#138808",
+                                color: "#fff",
+                                border: "none",
+                                cursor: "pointer",
+                                padding: "5px 14px",
+                                borderRadius: 8,
+                                fontSize: 12,
+                                fontWeight: 700,
+                              }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setActiveTab("applications");
+                              }}
+                            >
+                              📋 Track Application
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <span style={{ fontSize: 11, color: "#999" }}>
+                              {t("click_to_open_scheme")} ➔
+                            </span>
+                            <button
+                              className="btn btn-sm"
+                              style={{
+                                background: "linear-gradient(135deg, #FF6B00, #FF8C38)",
+                                color: "#fff",
+                                border: "none",
+                                cursor: "pointer",
+                                padding: "5px 14px",
+                                borderRadius: 8,
+                                fontSize: 12,
+                                fontWeight: 700,
+                              }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/scheme/${encodeURIComponent(s.scheme_name)}`);
+                              }}
+                            >
+                              🚀 {t("dash_apply")}
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    );
+                  })()}
 
                 </div>
 
@@ -2299,6 +2245,11 @@ export default function Dashboard() {
 
                       <div>
 
+                        {/* APP-ID badge */}
+                        <div style={{ fontSize: 10, fontWeight: 700, color: "#94A3B8", marginBottom: 4, letterSpacing: 0.5 }}>
+                          APP-{String(app.id).padStart(5, "0")}
+                        </div>
+
                         <div
                           style={{
                             fontSize: 16,
@@ -2351,6 +2302,11 @@ export default function Dashboard() {
                                     : t("status_PENDING_CLERK")}
                       </span>
 
+                    </div>
+
+                    {/* STATUS STEPPER */}
+                    <div style={{ marginTop: 14 }}>
+                      <ApplicationStatusStepper status={app.status} lang={lang} />
                     </div>
 
                     {/* REJECTION DETAILS */}
@@ -2525,7 +2481,7 @@ export default function Dashboard() {
                         color: "#999"
                       }}
                     >
-                      Applied:{" "}
+                      📅 {t("apps_date")}:{" "}
                       {app.applied_at
                         ?.split(
                           "T"
@@ -3757,6 +3713,7 @@ export default function Dashboard() {
 
       </main>
 
+      <SchemeChatBot />
     </div>
   );
 }

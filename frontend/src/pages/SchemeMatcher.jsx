@@ -4,15 +4,17 @@ import SchemeCard from "../components/SchemeCard";
 import Loader from "../components/Loader";
 import Footer from "../components/Footer";
 import { useLanguage } from "../LanguageContext";
+import SchemeChatBot from "../components/SchemeChatBot";
 
 export default function SchemeMatcher() {
   const { t } = useLanguage();
   const [form, setForm] = useState({
-    name: "", age: "35", occupation: "Farmer", income: "60000",
-    state: "Maharashtra", caste: "OBC", family_size: "4", gender: "Male"
+    name: "", age: "", occupation: "",
+    income: "", state: "", caste: "", family_size: "", gender: ""
   });
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState(null);
+  const [appliedSchemeNames, setAppliedSchemeNames] = useState([]);
 
   useEffect(() => {
     const stored = localStorage.getItem("user");
@@ -21,15 +23,23 @@ export default function SchemeMatcher() {
         const u = JSON.parse(stored);
         setForm(prev => ({
           ...prev,
-          name: u.name || prev.name,
-          state: u.state || prev.state,
-          occupation: u.occupation || prev.occupation,
-          income: u.income || prev.income,
-          age: u.age ? String(u.age) : prev.age,
-          caste: u.caste || prev.caste,
-          family_size: u.family_size ? String(u.family_size) : prev.family_size,
-          gender: u.gender || prev.gender
+          name: u.name || "",
+          state: u.state || "",
+          occupation: u.occupation || "",
+          income: u.income || "",
+          age: u.age ? String(u.age) : "",
+          caste: u.caste || "",
+          family_size: u.family_size ? String(u.family_size) : "",
+          gender: u.gender || ""
         }));
+        if (u.id) {
+          API.get(`/applications/my/${u.id}`)
+            .then(res => {
+              const names = (res.data || []).map(a => (a.scheme_name || "").toLowerCase());
+              setAppliedSchemeNames(names);
+            })
+            .catch(e => console.error("Error loading applied schemes:", e));
+        }
       } catch (e) {}
     }
   }, []);
@@ -123,11 +133,16 @@ export default function SchemeMatcher() {
               </span>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 20 }}>
-              {(results.schemes || []).map((s, idx) => (<SchemeCard key={idx} scheme={s} />))}
+              {(results.schemes || []).map((s, idx) => {
+                const sName = (s.scheme_name || s.name || "").toLowerCase();
+                const isApplied = appliedSchemeNames.includes(sName);
+                return <SchemeCard key={idx} scheme={s} isApplied={isApplied} />;
+              })}
             </div>
           </div>
         )}
       </div>
+      <SchemeChatBot />
       <Footer />
     </div>
   );

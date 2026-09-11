@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../LanguageContext";
 
-export default function SchemeCard({ scheme, onClick }) {
+export default function SchemeCard({ scheme, onClick, isApplied }) {
   const navigate = useNavigate();
   const { t } = useLanguage();
   if (!scheme) return null;
@@ -26,9 +26,16 @@ export default function SchemeCard({ scheme, onClick }) {
       <div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8, gap: 12 }}>
           <div style={{ fontSize: "16px", fontWeight: 700, color: "#0f172a" }}>{schemeName}</div>
-          <span style={{ fontSize: "12px", fontWeight: 700, color: match >= 85 ? "#138808" : "#FF6B00", background: match >= 85 ? "rgba(19, 136, 8, 0.08)" : "rgba(255, 107, 0, 0.08)", padding: "3px 10px", borderRadius: "100px", whiteSpace: "nowrap" }}>
-            {match}% {t("card_match")}
-          </span>
+          <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+            {isApplied && (
+              <span style={{ fontSize: "11px", fontWeight: 700, color: "#15803d", background: "#dcfce7", border: "1px solid #86efac", padding: "3px 8px", borderRadius: "100px", whiteSpace: "nowrap" }}>
+                ✓ Applied
+              </span>
+            )}
+            <span style={{ fontSize: "12px", fontWeight: 700, color: match >= 85 ? "#138808" : "#FF6B00", background: match >= 85 ? "rgba(19, 136, 8, 0.08)" : "rgba(255, 107, 0, 0.08)", padding: "3px 10px", borderRadius: "100px", whiteSpace: "nowrap" }}>
+              {match}% {t("card_match")}
+            </span>
+          </div>
         </div>
 
         <div style={{ fontSize: "12px", color: "#64748b", marginBottom: 8 }}>
@@ -45,7 +52,7 @@ export default function SchemeCard({ scheme, onClick }) {
       </div>
 
       <div style={{ marginTop: 16, paddingTop: 12, borderTop: "1px solid #f1f5f9", display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "12px", color: "#ff6b00", fontWeight: 600 }}>
-        <span>{t("card_view")}</span>
+        <span>{isApplied ? "View Application Status" : t("card_view")}</span>
         <span>→</span>
       </div>
     </div>
