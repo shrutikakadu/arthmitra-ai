@@ -39,7 +39,7 @@ export default function VoiceInput() {
   const startListening = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      alert("Voice speech recognition is not supported in this browser. Please use Google Chrome or Microsoft Edge.");
+      alert(t("voice_not_supported"));
       return;
     }
 
@@ -95,13 +95,13 @@ export default function VoiceInput() {
         <div style={{ background: "linear-gradient(135deg, #0b192c 0%, #1e293b 100%)", color: "#ffffff", padding: "50px 24px", textAlign: "center" }}>
           <div style={{ maxWidth: 900, margin: "0 auto" }}>
             <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(168, 85, 247, 0.15)", border: "1px solid rgba(168, 85, 247, 0.3)", padding: "4px 14px", borderRadius: 20, color: "#c084fc", fontSize: 13, fontWeight: 600, marginBottom: 16 }}>
-              🎙️ Voice Assistant Showcase
+              {t("voice_vis_badge")}
             </div>
             <h1 style={{ fontSize: "36px", fontWeight: 900, marginBottom: 10 }}>
-              Multilingual <span style={{ color: "#c084fc" }}>Voice-Assisted Form Filling</span>
+              {t("voice_vis_title")} <span style={{ color: "#c084fc" }}>{t("voice_vis_title_hl")}</span>
             </h1>
             <p style={{ fontSize: "16px", color: "#94a3b8", maxWidth: 650, margin: "0 auto", lineHeight: 1.6 }}>
-              No typing required. Speak naturally in your native language to let ArthMitra's AI automatically extract profile fields and find your schemes.
+              {t("voice_vis_subtitle")}
             </p>
           </div>
         </div>
@@ -110,16 +110,16 @@ export default function VoiceInput() {
           
           {/* Supported Languages Showcase */}
           <div style={{ textAlign: "center", marginBottom: 36 }}>
-            <h2 style={{ fontSize: 22, fontWeight: 800, color: "#0f172a", marginBottom: 12 }}>Supported Indian Languages</h2>
+            <h2 style={{ fontSize: 22, fontWeight: 800, color: "#0f172a", marginBottom: 12 }}>{t("voice_vis_langs_title")}</h2>
             <div style={{ display: "flex", justifyContent: "center", gap: 16, flexWrap: "wrap" }}>
               <span style={{ background: "#ffffff", border: "1px solid #e2e8f0", padding: "10px 20px", borderRadius: 12, fontSize: 15, fontWeight: 700, color: "#0f172a", boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
-                🇬🇧 English (en-IN)
+                {t("voice_vis_lang_en")}
               </span>
               <span style={{ background: "#ffffff", border: "1px solid #e2e8f0", padding: "10px 20px", borderRadius: 12, fontSize: 15, fontWeight: 700, color: "#ff6b00", boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
-                🇮🇳 हिन्दी (hi-IN)
+                {t("voice_vis_lang_hi")}
               </span>
               <span style={{ background: "#ffffff", border: "1px solid #e2e8f0", padding: "10px 20px", borderRadius: 12, fontSize: 15, fontWeight: 700, color: "#0284c7", boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
-                🚩 मराठी (mr-IN)
+                {t("voice_vis_lang_mr")}
               </span>
             </div>
           </div>
@@ -129,9 +129,9 @@ export default function VoiceInput() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
               <div>
                 <span style={{ fontSize: 12, fontWeight: 700, color: "#a855f7", background: "#f3e8ff", border: "1px solid #d8b4fe", padding: "4px 12px", borderRadius: 20, textTransform: "uppercase" }}>
-                  💡 Interactive Voice Flow Mockup
+                  {t("voice_vis_mock_badge")}
                 </span>
-                <h3 style={{ fontSize: "22px", fontWeight: 800, color: "#0f172a", marginTop: 8 }}>How Voice Form Filling Works</h3>
+                <h3 style={{ fontSize: "22px", fontWeight: 800, color: "#0f172a", marginTop: 8 }}>{t("voice_vis_mock_title")}</h3>
               </div>
             </div>
 
@@ -143,7 +143,7 @@ export default function VoiceInput() {
                   AI
                 </div>
                 <div style={{ background: "#f1f5f9", borderRadius: "0 16px 16px 16px", padding: "14px 18px", fontSize: 14, color: "#0f172a", lineHeight: 1.5 }}>
-                  "Hello! What is your name, state, income, and occupation?"
+                  {t("voice_vis_ai_q")}
                 </div>
               </div>
 
@@ -153,7 +153,7 @@ export default function VoiceInput() {
                   👤
                 </div>
                 <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: "16px 0 16px 16px", padding: "14px 18px", fontSize: 14, color: "#1e40af", lineHeight: 1.5 }}>
-                  🎙️ <em>"Main Sunita Pawar hoon, Maharashtra se, kheti karti hoon aur meri aamdani 60,000 rupaye hai."</em>
+                  {t("voice_vis_user_a")}
                 </div>
               </div>
 
@@ -163,7 +163,7 @@ export default function VoiceInput() {
                   ✓
                 </div>
                 <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "0 16px 16px 16px", padding: "16px 20px", fontSize: 14, color: "#166534", width: "100%" }}>
-                  <div style={{ fontWeight: 800, marginBottom: 8, fontSize: 15 }}>🧠 Form Fields Extracted Automatically:</div>
+                  <div style={{ fontWeight: 800, marginBottom: 8, fontSize: 15 }}>{t("voice_vis_extracted")}</div>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 10 }}>
                     <div style={{ background: "#ffffff", padding: "8px 12px", borderRadius: 8, border: "1px solid #dcfce7" }}>
                       <span style={{ fontSize: 11, color: "#64748b" }}>NAME</span>
@@ -189,9 +189,9 @@ export default function VoiceInput() {
 
           {/* CTA Banner */}
           <div style={{ background: "linear-gradient(90deg, #a855f7 0%, #6366f1 100%)", color: "#ffffff", padding: "36px 28px", borderRadius: 16, textAlign: "center" }}>
-            <h3 style={{ fontSize: "24px", fontWeight: 800, marginBottom: 8 }}>Try multilingual voice-assisted form filling</h3>
+            <h3 style={{ fontSize: "24px", fontWeight: 800, marginBottom: 8 }}>{t("voice_vis_cta_title")}</h3>
             <p style={{ fontSize: 15, color: "rgba(255,255,255,0.9)", maxWidth: 600, margin: "0 auto 20px auto" }}>
-              Sign in to use your microphone and let our real NLP engine parse your spoken words into scheme applications.
+              {t("voice_vis_cta_desc")}
             </p>
             <Link
               to="/login"
@@ -207,7 +207,7 @@ export default function VoiceInput() {
                 boxShadow: "0 4px 14px rgba(0,0,0,0.15)"
               }}
             >
-              Login to Use Multilingual Voice Assistant →
+              {t("voice_vis_cta_btn")}
             </Link>
           </div>
         </div>

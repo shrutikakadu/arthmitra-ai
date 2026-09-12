@@ -1,4 +1,10 @@
+// ArthMitra AI — LanguageContext
+// Bridges the app's custom lang/setLang API with react-i18next.
+// All components continue to use: const { lang, setLang, t } = useLanguage();
+// Internally, setLang also calls i18next.changeLanguage() to keep react-i18next in sync.
+
 import { createContext, useContext, useState, useCallback, useMemo } from "react";
+import i18n from "./i18n.config.js";
 import translations from "./i18n";
 
 const LanguageContext = createContext(null);
@@ -11,6 +17,10 @@ export function LanguageProvider({ children }) {
   const setLang = useCallback((newLang) => {
     localStorage.setItem("arthmitra_lang", newLang);
     setLangState(newLang);
+    // Sync react-i18next so any useTranslation() hooks also update
+    if (i18n.language !== newLang) {
+      i18n.changeLanguage(newLang);
+    }
   }, []);
 
   const getTranslation = useCallback(

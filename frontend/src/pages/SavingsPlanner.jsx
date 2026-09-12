@@ -83,13 +83,13 @@ export default function SavingsPlanner({ embedded = false }) {
         <div style={{ background: "linear-gradient(135deg, #0b192c 0%, #1e293b 100%)", color: "#ffffff", padding: "50px 24px", textAlign: "center" }}>
           <div style={{ maxWidth: 900, margin: "0 auto" }}>
             <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(37, 99, 235, 0.15)", border: "1px solid rgba(37, 99, 235, 0.3)", padding: "4px 14px", borderRadius: 20, color: "#60a5fa", fontSize: 13, fontWeight: 600, marginBottom: 16 }}>
-              🐷 Micro-Savings Planner Showcase
+              {t("savings_vis_badge")}
             </div>
             <h1 style={{ fontSize: "36px", fontWeight: 900, marginBottom: 10 }}>
-              How ArthMitra Helps Citizens <span style={{ color: "#60a5fa" }}>Save & Grow Funds</span>
+              {t("savings_vis_title_1")}<span style={{ color: "#60a5fa" }}>{t("savings_vis_title_hl")}</span>{t("savings_vis_title_2")}
             </h1>
             <p style={{ fontSize: "16px", color: "#94a3b8", maxWidth: 650, margin: "0 auto", lineHeight: 1.6 }}>
-              Discover how small disciplined monthly savings in Post Office RD, Jan Dhan SIPs, and Sukanya Samriddhi create long-term financial security for your family.
+              {t("savings_vis_subtitle")}
             </p>
           </div>
         </div>
@@ -100,32 +100,29 @@ export default function SavingsPlanner({ embedded = false }) {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
             <div>
               <span style={{ fontSize: 12, fontWeight: 700, color: "#ef4444", background: "#fef2f2", border: "1px solid #fca5a5", padding: "4px 12px", borderRadius: 20, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                ⚠️ Example Demo Projections
+                ⚠️ Demo Projections
               </span>
-              <h3 style={{ fontSize: "22px", fontWeight: 800, color: "#0f172a", marginTop: 8 }}>Sample Citizen Savings Plan</h3>
+              <h3 style={{ fontSize: "22px", fontWeight: 800, color: "#0f172a", marginTop: 8 }}>{t("savings_vis_sample_title")}</h3>
             </div>
             <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 10, padding: "8px 16px", fontSize: 13, color: "#1e40af" }}>
-              Monthly Income: <strong>₹20,000</strong> | Recommended Savings: <strong>₹2,000/month</strong>
+              {t("savings_vis_sample_income")}
             </div>
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 20, marginBottom: 32 }}>
             <div style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 14, padding: "20px", boxShadow: "0 2px 10px rgba(0,0,0,0.02)" }}>
-              <div style={{ fontSize: 13, color: "#64748b", fontWeight: 500 }}>Example Monthly Income</div>
-              <div style={{ fontSize: 26, fontWeight: 800, color: "#0f172a", marginTop: 4 }}>₹20,000</div>
-              <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 2 }}>Sample baseline income</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#0f172a" }}>{t("savings_vis_plan1_title")}</div>
+              <div style={{ fontSize: 13, color: "#64748b", marginTop: 6, lineHeight: 1.5 }}>{t("savings_vis_plan1_desc")}</div>
             </div>
 
             <div style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 14, padding: "20px", boxShadow: "0 2px 10px rgba(0,0,0,0.02)" }}>
-              <div style={{ fontSize: 13, color: "#64748b", fontWeight: 500 }}>Example Monthly Savings</div>
-              <div style={{ fontSize: 26, fontWeight: 800, color: "#138808", marginTop: 4 }}>₹2,000 <span style={{ fontSize: 13, color: "#64748b" }}>/mo</span></div>
-              <div style={{ fontSize: 12, color: "#166534", marginTop: 2 }}>10% recommended allocation</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#138808" }}>{t("savings_vis_plan2_title")}</div>
+              <div style={{ fontSize: 13, color: "#64748b", marginTop: 6, lineHeight: 1.5 }}>{t("savings_vis_plan2_desc")}</div>
             </div>
 
             <div style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 14, padding: "20px", boxShadow: "0 2px 10px rgba(0,0,0,0.02)" }}>
-              <div style={{ fontSize: 13, color: "#64748b", fontWeight: 500 }}>Example Recommended Scheme</div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: "#2563eb", marginTop: 4 }}>Post Office RD & SSY</div>
-              <div style={{ fontSize: 12, color: "#1e40af", marginTop: 2 }}>High yield government backer</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#2563eb" }}>{t("savings_vis_plan3_title")}</div>
+              <div style={{ fontSize: 13, color: "#64748b", marginTop: 6, lineHeight: 1.5 }}>{t("savings_vis_plan3_desc")}</div>
             </div>
           </div>
 
@@ -133,20 +130,20 @@ export default function SavingsPlanner({ embedded = false }) {
           <div style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 16, padding: "24px", boxShadow: "0 4px 20px rgba(0,0,0,0.03)", marginBottom: 36 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
               <div>
-                <h3 style={{ fontSize: 18, fontWeight: 800, color: "#0f172a", margin: 0 }}>Example 5-Year Savings Growth Chart</h3>
-                <p style={{ fontSize: 13, color: "#64748b", margin: "4px 0 0 0" }}>Projected growth of ₹2,000/month across Post Office RD, Jan Dhan SIP, and Sukanya Samriddhi</p>
+                <h3 style={{ fontSize: 18, fontWeight: 800, color: "#0f172a", margin: 0 }}>{t("savings_vis_sample_title")}</h3>
+                <p style={{ fontSize: 13, color: "#64748b", margin: "4px 0 0 0" }}>{t("savings_vis_subtitle")}</p>
               </div>
-              <span style={{ fontSize: 11, background: "#fef3c7", color: "#92400e", padding: "4px 10px", borderRadius: 6, fontWeight: 700 }}>DEMO CHART</span>
+              <span style={{ fontSize: 11, background: "#fef3c7", color: "#92400e", padding: "4px 10px", borderRadius: 6, fontWeight: 700 }}>{t("demo_chart_badge")}</span>
             </div>
 
-            <SavingsChart title="Sample 1, 3, and 5 Year Growth Projections" />
+            <SavingsChart title="Sample Growth Projections" />
           </div>
 
           {/* CTA Banner */}
           <div style={{ background: "linear-gradient(90deg, #2563eb 0%, #1d4ed8 100%)", color: "#ffffff", padding: "36px 28px", borderRadius: 16, textAlign: "center" }}>
-            <h3 style={{ fontSize: "24px", fontWeight: 800, marginBottom: 8 }}>Calculate your personalized savings plan</h3>
+            <h3 style={{ fontSize: "24px", fontWeight: 800, marginBottom: 8 }}>{t("savings_vis_cta_title")}</h3>
             <p style={{ fontSize: 15, color: "rgba(255,255,255,0.9)", maxWidth: 600, margin: "0 auto 20px auto" }}>
-              Sign in to input your actual monthly income, family size, and age to receive customized government savings recommendations.
+              {t("savings_vis_cta_desc")}
             </p>
             <Link
               to="/login"
@@ -162,7 +159,7 @@ export default function SavingsPlanner({ embedded = false }) {
                 boxShadow: "0 4px 14px rgba(0,0,0,0.15)"
               }}
             >
-              Login to Calculate Your Savings Plan →
+              {t("savings_vis_cta_title")} →
             </Link>
           </div>
         </div>
@@ -233,12 +230,12 @@ export default function SavingsPlanner({ embedded = false }) {
           }}
         >
           <div style={{ fontSize: 14, fontWeight: 700, color: "#0f172a", marginBottom: 12 }}>
-            🐷 Personalized Savings Parameters (Based on Profile)
+            {t("savings_params_title")}
           </div>
           <form onSubmit={handleCalculate} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 14, alignItems: "end" }}>
             <div>
               <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#64748b", marginBottom: 4 }}>
-                Monthly Income (₹)
+                {t("field_income")}
               </label>
               <input
                 type="number"
@@ -249,7 +246,7 @@ export default function SavingsPlanner({ embedded = false }) {
             </div>
             <div>
               <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#64748b", marginBottom: 4 }}>
-                Age
+                {t("field_age")}
               </label>
               <input
                 type="number"
@@ -260,7 +257,7 @@ export default function SavingsPlanner({ embedded = false }) {
             </div>
             <div>
               <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#64748b", marginBottom: 4 }}>
-                Occupation
+                {t("field_occupation")}
               </label>
               <input
                 type="text"
@@ -271,7 +268,7 @@ export default function SavingsPlanner({ embedded = false }) {
             </div>
             <div>
               <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#64748b", marginBottom: 4 }}>
-                Family Size
+                {t("field_family_size")}
               </label>
               <input
                 type="number"
@@ -293,7 +290,7 @@ export default function SavingsPlanner({ embedded = false }) {
                 cursor: "pointer"
               }}
             >
-              🔄 Recalculate
+              {t("btn_recalculate")}
             </button>
           </form>
         </div>
@@ -336,7 +333,7 @@ export default function SavingsPlanner({ embedded = false }) {
                 boxShadow: "0 4px 20px rgba(0,0,0,0.03)"
               }}
             >
-              <SavingsChart title="1, 3, and 5 Year Growth Projections across Recommended Instruments" />
+              <SavingsChart title={t("chart_5yr_projections")} />
             </div>
 
             {/* Instruments */}

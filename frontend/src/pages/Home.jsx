@@ -138,46 +138,14 @@ function Tiranga3DBackground() {
 }
 
 const WHY_CHOOSE_FEATURES = [
-  {
-    icon: "🎯",
-    title: "AI Scheme Matching",
-    desc: "MapReduce AI algorithms check household profile criteria against 500+ central & state government welfare schemes."
-  },
-  {
-    icon: "🎙️",
-    title: "Voice-Based Form Filling",
-    desc: "Speak naturally in Hindi, Marathi, or English to fill application details without complex manual typing."
-  },
-  {
-    icon: "📊",
-    title: "Financial Health Analysis",
-    desc: "Evaluate 5 core social security dimensions to calculate your household's overall financial health rating."
-  },
-  {
-    icon: "🐷",
-    title: "Savings Recommendations",
-    desc: "Personalized guidance for government micro-savings instruments like Post Office RD, Jan Dhan SIP, and Sukanya Samriddhi."
-  },
-  {
-    icon: "📜",
-    title: "Secure Document Verification",
-    desc: "Multi-level verification pipeline ensuring verified document security for fast welfare benefit disbursement."
-  },
-  {
-    icon: "📋",
-    title: "Application Tracking",
-    desc: "Real-time transparent updates tracking your application from Section Officer review to Cabinet Minister sanction."
-  },
-  {
-    icon: "🗣️",
-    title: "Multilingual Support",
-    desc: "Seamless switching across English, हिन्दी, and मराठी to make government welfare accessible to every citizen."
-  },
-  {
-    icon: "🏛️",
-    title: "Government Welfare Discovery",
-    desc: "Comprehensive public portal providing transparent details on financial aid, health insurance, and subsidies."
-  }
+  { icon: "🎯", titleKey: "why_feat_1_title", descKey: "why_feat_1_desc" },
+  { icon: "🎙️", titleKey: "why_feat_2_title", descKey: "why_feat_2_desc" },
+  { icon: "📊", titleKey: "why_feat_3_title", descKey: "why_feat_3_desc" },
+  { icon: "🐷", titleKey: "why_feat_4_title", descKey: "why_feat_4_desc" },
+  { icon: "📜", titleKey: "why_feat_5_title", descKey: "why_feat_5_desc" },
+  { icon: "📋", titleKey: "why_feat_6_title", descKey: "why_feat_6_desc" },
+  { icon: "🗣️", titleKey: "why_feat_7_title", descKey: "why_feat_7_desc" },
+  { icon: "🏛️", titleKey: "why_feat_8_title", descKey: "why_feat_8_desc" }
 ];
 
 export default function Home() {
@@ -227,7 +195,7 @@ export default function Home() {
           fontWeight: 600,
           marginBottom: 24
         }}>
-          🇮🇳 Official Government Welfare & Public Information Portal
+          {t("hero_badge")}
         </div>
 
         <h1 style={{
@@ -238,7 +206,7 @@ export default function Home() {
           color: "#0f172a",
           marginBottom: 20
         }}>
-          Arth<span style={{ color: "#ff6b00" }}>Mitra</span> AI — Empowering Citizens with <span style={{ background: "linear-gradient(90deg, #ff6b00 0%, #138808 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>AI-Driven Welfare Discovery</span>
+          {t("hero_title_1")}<span style={{ color: "#ff6b00" }}>Mitra</span>{t("hero_title_2")}<span style={{ background: "linear-gradient(90deg, #ff6b00 0%, #138808 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{t("hero_title_hl")}</span>
         </h1>
 
         <p style={{
@@ -248,7 +216,7 @@ export default function Home() {
           margin: "0 auto 36px auto",
           lineHeight: 1.6
         }}>
-          Discover government welfare schemes, health coverage, agricultural subsidies, and financial security plans tailored to your family's needs.
+          {t("hero_subtitle")}
         </p>
 
         {/* Action Buttons */}
@@ -268,7 +236,7 @@ export default function Home() {
                 boxShadow: "0 6px 20px rgba(19, 136, 8, 0.35)"
               }}
             >
-              Go to Citizen Dashboard →
+              {t("hero_cta_dashboard")}
             </button>
           ) : (
             <>
@@ -285,7 +253,7 @@ export default function Home() {
                   boxShadow: "0 6px 20px rgba(255, 107, 0, 0.35)"
                 }}
               >
-                Get Started →
+                {t("hero_cta_get_started")}
               </Link>
               <Link
                 to="/login"
@@ -301,7 +269,7 @@ export default function Home() {
                   boxShadow: "0 4px 12px rgba(0,0,0,0.05)"
                 }}
               >
-                Sign In
+                {t("hero_cta_sign_in")}
               </Link>
             </>
           )}
@@ -321,19 +289,19 @@ export default function Home() {
         }}>
           <div>
             <div style={{ fontSize: "28px", fontWeight: 800, color: "#138808" }}>₹50,000+ Cr</div>
-            <div style={{ fontSize: 13, color: "#64748b" }}>Welfare Benefits Tracked</div>
+            <div style={{ fontSize: 13, color: "#64748b" }}>{t("trust_benefits_tracked")}</div>
           </div>
           <div>
             <div style={{ fontSize: "28px", fontWeight: 800, color: "#ff6b00" }}>500+</div>
-            <div style={{ fontSize: 13, color: "#64748b" }}>Central & State Schemes</div>
+            <div style={{ fontSize: 13, color: "#64748b" }}>{t("trust_schemes_count")}</div>
           </div>
           <div>
             <div style={{ fontSize: "28px", fontWeight: 800, color: "#0284c7" }}>3</div>
-            <div style={{ fontSize: 13, color: "#64748b" }}>Indian Languages</div>
+            <div style={{ fontSize: 13, color: "#64748b" }}>{t("trust_languages_count")}</div>
           </div>
           <div>
             <div style={{ fontSize: "28px", fontWeight: 800, color: "#16a34a" }}>99.4%</div>
-            <div style={{ fontSize: 13, color: "#64748b" }}>Matching Accuracy</div>
+            <div style={{ fontSize: 13, color: "#64748b" }}>{t("trust_matching_accuracy")}</div>
           </div>
         </div>
       </section>
@@ -342,42 +310,42 @@ export default function Home() {
       <section style={{ background: "rgba(248, 250, 252, 0.9)", padding: "64px 24px", borderTop: "1px solid #e2e8f0", borderBottom: "1px solid #e2e8f0", position: "relative", zIndex: 1 }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 40 }}>
-            <h2 style={{ fontSize: "32px", fontWeight: 800, color: "#0f172a" }}>About ArthMitra AI</h2>
+            <h2 style={{ fontSize: "32px", fontWeight: 800, color: "#0f172a" }}>{t("about_title")}</h2>
             <p style={{ fontSize: 16, color: "#64748b", marginTop: 8, maxWidth: 700, margin: "8px auto 0 auto" }}>
-              ArthMitra AI is a multilingual AI-powered Government Welfare Management System engineered to simplify public welfare discovery, application tracking, and micro-financial planning for every Indian household.
+              {t("about_subtitle")}
             </p>
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
             <div style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 14, padding: "24px" }}>
               <div style={{ fontSize: "32px", marginBottom: 12 }}>🤖</div>
-              <h3 style={{ fontSize: "18px", fontWeight: 700, color: "#0f172a", marginBottom: 8 }}>AI Assistance</h3>
+              <h3 style={{ fontSize: "18px", fontWeight: 700, color: "#0f172a", marginBottom: 8 }}>{t("about_ai_title")}</h3>
               <p style={{ fontSize: 14, color: "#64748b", lineHeight: 1.5, margin: 0 }}>
-                Intelligent MapReduce algorithms match citizen profile criteria against complex eligibility rules across 500+ government programs.
+                {t("about_ai_desc")}
               </p>
             </div>
 
             <div style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 14, padding: "24px" }}>
               <div style={{ fontSize: "32px", marginBottom: 12 }}>🔍</div>
-              <h3 style={{ fontSize: "18px", fontWeight: 700, color: "#0f172a", marginBottom: 8 }}>Welfare Discovery</h3>
+              <h3 style={{ fontSize: "18px", fontWeight: 700, color: "#0f172a", marginBottom: 8 }}>{t("about_welfare_title")}</h3>
               <p style={{ fontSize: 14, color: "#64748b", lineHeight: 1.5, margin: 0 }}>
-                Transparent public directory helping citizens discover subsidies, insurance plans, housing grants, and pensions without middlemen.
+                {t("about_welfare_desc")}
               </p>
             </div>
 
             <div style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 14, padding: "24px" }}>
               <div style={{ fontSize: "32px", marginBottom: 12 }}>📜</div>
-              <h3 style={{ fontSize: "18px", fontWeight: 700, color: "#0f172a", marginBottom: 8 }}>Document Verification</h3>
+              <h3 style={{ fontSize: "18px", fontWeight: 700, color: "#0f172a", marginBottom: 8 }}>{t("about_doc_title")}</h3>
               <p style={{ fontSize: 14, color: "#64748b", lineHeight: 1.5, margin: 0 }}>
-                Multi-tier administrative pipeline (Section Officer &rarr; DM &rarr; Secretary &rarr; Minister) ensuring secure and verified benefit approval.
+                {t("about_doc_desc")}
               </p>
             </div>
 
             <div style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 14, padding: "24px" }}>
               <div style={{ fontSize: "32px", marginBottom: 12 }}>🎙️</div>
-              <h3 style={{ fontSize: "18px", fontWeight: 700, color: "#0f172a", marginBottom: 8 }}>Voice Assistance</h3>
+              <h3 style={{ fontSize: "18px", fontWeight: 700, color: "#0f172a", marginBottom: 8 }}>{t("about_voice_title")}</h3>
               <p style={{ fontSize: 14, color: "#64748b", lineHeight: 1.5, margin: 0 }}>
-                Voice-guided NLP interface enabling citizens to speak naturally in regional languages to fill application forms effortless.
+                {t("about_voice_desc")}
               </p>
             </div>
           </div>
@@ -388,11 +356,11 @@ export default function Home() {
       <section style={{ padding: "64px 24px", maxWidth: 1100, margin: "0 auto", position: "relative", zIndex: 1 }}>
         <div style={{ textAlign: "center", marginBottom: 40 }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(13, 148, 136, 0.1)", border: "1px solid rgba(13, 148, 136, 0.25)", padding: "4px 14px", borderRadius: 20, color: "#0d9488", fontSize: 13, fontWeight: 600, marginBottom: 12 }}>
-            🗣️ Inclusive Technology
+            {t("showcase_badge")}
           </div>
-          <h2 style={{ fontSize: "32px", fontWeight: 800, color: "#0f172a" }}>Multilingual Portal Showcase</h2>
+          <h2 style={{ fontSize: "32px", fontWeight: 800, color: "#0f172a" }}>{t("showcase_title")}</h2>
           <p style={{ fontSize: 15, color: "#64748b", marginTop: 8 }}>
-            ArthMitra AI breaks language barriers. Click any language card below to dynamically change the portal language.
+            {t("showcase_subtitle")}
           </p>
         </div>
 
@@ -415,10 +383,10 @@ export default function Home() {
               <span style={{ fontSize: 12, fontWeight: 700, background: "#e2e8f0", padding: "4px 8px", borderRadius: 6 }}>EN</span>
             </div>
             <p style={{ fontSize: 14, color: "#475569", lineHeight: 1.6, marginBottom: 16 }}>
-              Discover and apply for Indian government schemes with AI assistance. Access financial health scores and savings plans.
+              {t("showcase_en_desc")}
             </p>
             <div style={{ fontSize: 13, fontWeight: 700, color: "#138808" }}>
-              {lang === "en" ? "✓ Currently Selected" : "Click to select English →"}
+              {lang === "en" ? t("lang_selected") : t("lang_click_to_select_en")}
             </div>
           </div>
 
@@ -440,10 +408,10 @@ export default function Home() {
               <span style={{ fontSize: 12, fontWeight: 700, background: "#fed7aa", color: "#c2410c", padding: "4px 8px", borderRadius: 6 }}>HI</span>
             </div>
             <p style={{ fontSize: 14, color: "#475569", lineHeight: 1.6, marginBottom: 16 }}>
-              एआई सहायता के साथ भारतीय सरकारी योजनाओं को खोजें और आवेदन करें। वित्तीय स्वास्थ्य स्कोर और बचत योजनाओं तक पहुंच प्राप्त करें।
+              {t("showcase_hi_desc")}
             </p>
             <div style={{ fontSize: 13, fontWeight: 700, color: "#ff6b00" }}>
-              {lang === "hi" ? "✓ फिलहाल चुना गया है" : "हिन्दी चुनने के लिए क्लिक करें →"}
+              {lang === "hi" ? t("lang_selected") : t("lang_click_to_select_hi")}
             </div>
           </div>
 
@@ -465,10 +433,10 @@ export default function Home() {
               <span style={{ fontSize: 12, fontWeight: 700, background: "#bae6fd", color: "#0369a1", padding: "4px 8px", borderRadius: 6 }}>MR</span>
             </div>
             <p style={{ fontSize: 14, color: "#475569", lineHeight: 1.6, marginBottom: 16 }}>
-              एआय मदतीने भारतीय शासकीय योजना शोधा आणि अर्ज करा. तुमचे आर्थिक आरोग्य गुण आणि बचत योजना मिळवा.
+              {t("showcase_mr_desc")}
             </p>
             <div style={{ fontSize: 13, fontWeight: 700, color: "#0284c7" }}>
-              {lang === "mr" ? "✓ सध्या निवडलेले" : "मराठी निवडण्यासाठी क्लिक करा →"}
+              {lang === "mr" ? t("lang_selected") : t("lang_click_to_select_mr")}
             </div>
           </div>
         </div>
@@ -478,9 +446,9 @@ export default function Home() {
       <section style={{ background: "#0b192c", color: "#ffffff", padding: "64px 24px", position: "relative", zIndex: 1 }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 44 }}>
-            <h2 style={{ fontSize: "32px", fontWeight: 800 }}>Why Choose ArthMitra AI</h2>
+            <h2 style={{ fontSize: "32px", fontWeight: 800 }}>{t("why_choose_title")}</h2>
             <p style={{ fontSize: 15, color: "#94a3b8", marginTop: 8 }}>
-              Complete government welfare lifecycle management engineered for citizens and administrators
+              {t("why_choose_subtitle")}
             </p>
           </div>
 
@@ -496,8 +464,8 @@ export default function Home() {
                 }}
               >
                 <div style={{ fontSize: "32px", marginBottom: 12 }}>{feat.icon}</div>
-                <h3 style={{ fontSize: "17px", fontWeight: 700, marginBottom: 8, color: "#ffffff" }}>{feat.title}</h3>
-                <p style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.5, margin: 0 }}>{feat.desc}</p>
+                <h3 style={{ fontSize: "17px", fontWeight: 700, marginBottom: 8, color: "#ffffff" }}>{t(feat.titleKey)}</h3>
+                <p style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.5, margin: 0 }}>{t(feat.descKey)}</p>
               </div>
             ))}
           </div>

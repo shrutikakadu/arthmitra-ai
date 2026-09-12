@@ -2,60 +2,65 @@ import { useState, useRef, useEffect } from "react";
 import API from "../api/axios";
 import { useLanguage } from "../LanguageContext";
 
-const QUICK_QUESTIONS = {
-  en: [
-    "How long does verification take?",
-    "Am I eligible for this scheme?",
-    "What documents do I need?",
-    "How do I apply step by step?",
-    "What is the benefit amount?",
-  ],
-  hi: [
-    "सत्यापन में कितना समय लगता है?",
-    "क्या मैं इस योजना के लिए पात्र हूं?",
-    "मुझे कौन से दस्तावेज़ चाहिए?",
-    "मैं चरण-दर-चरण कैसे आवेदन करूं?",
-    "लाभ की राशि क्या है?",
-  ],
-  mr: [
-    "पडताळणीला किती वेळ लागतो?",
-    "मी या योजनेसाठी पात्र आहे का?",
-    "मला कोणती कागदपत्रे लागतात?",
-    "मी चरण-दर-चरण कसा अर्ज करू?",
-    "लाभाची रक्कम किती आहे?",
-  ],
-};
-
-const PLACEHOLDER = {
-  en: "Ask about eligibility, documents, timelines...",
-  hi: "पात्रता, दस्तावेज़, समयसीमा के बारे में पूछें...",
-  mr: "पात्रता, कागदपत्रे, वेळ याबद्दल विचारा...",
-};
-
-const THINKING = {
-  en: "Searching scheme knowledge base...",
-  hi: "योजना की जानकारी खोज रहा है...",
-  mr: "योजना माहिती शोधत आहे...",
-};
-
-const GREETING = {
-  en: "👋 Hi! I'm the ArthMitra Helper AI. Ask me anything about this scheme — eligibility, documents, timelines, or how to apply.",
-  hi: "👋 नमस्ते! मैं ArthMitra का सहायक AI हूं। इस योजना के बारे में कुछ भी पूछें — पात्रता, दस्तावेज़, समय, या आवेदन कैसे करें।",
-  mr: "👋 नमस्कार! मी ArthMitra सहाय्यक AI आहे. या योजनेबद्दल काहीही विचारा — पात्रता, कागदपत्रे, वेळ, किंवा अर्ज कसा करायचा.",
-};
+const CHAT_STORAGE_KEY = "arthmitra_chat_history";
 
 export default function SchemeChatBot({ schemeName }) {
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
   const langKey = lang === "mr" ? "mr" : lang === "hi" ? "hi" : "en";
 
+  const quickQuestions = [
+    t("chatbot_quick_1"),
+    t("chatbot_quick_2"),
+    t("chatbot_quick_3"),
+    t("chatbot_quick_4"),
+    t("chatbot_quick_5"),
+  ];
+
+  const getUserContext = () => {
+    try {
+      const u = localStorage.getItem("user");
+      return u ? JSON.parse(u) : null;
+    } catch {
+      return null;
+    }
+  };
+
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    { role: "bot", text: GREETING[langKey], time: new Date() }
-  ]);
+  const [messages, setMessages] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem(CHAT_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return [{ role: "bot", text: t("chatbot_greeting"), time: new Date().toISOString() }];
+  });
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
+
+  // Synchronize messages with sessionStorage
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages));
+    } catch (e) {
+      console.error(e);
+    }
+  }, [messages]);
+
+  // Update default greeting if language changes and only greeting is present
+  useEffect(() => {
+    setMessages(prev => {
+      if (prev.length === 1 && prev[0].role === "bot") {
+        return [{ ...prev[0], text: t("chatbot_greeting") }];
+      }
+      return prev;
+    });
+  }, [lang, t]);
 
   useEffect(() => {
     if (open) {
@@ -64,43 +69,62 @@ export default function SchemeChatBot({ schemeName }) {
         inputRef.current?.focus();
       }, 100);
     }
-  }, [open, messages]);
+  }, [open, messages, loading]);
+
+  const clearChat = () => {
+    try {
+      sessionStorage.removeItem(CHAT_STORAGE_KEY);
+    } catch (e) {
+      console.error(e);
+    }
+    setMessages([{ role: "bot", text: t("chatbot_greeting"), time: new Date().toISOString() }]);
+  };
 
   const sendMessage = async (question) => {
-    const q = question || input.trim();
-    if (!q || loading) return;
+    const q = (question || input).trim();
+    if (!q) {
+      return;
+    }
+    if (loading) return;
     setInput("");
 
-    const userMsg = { role: "user", text: q, time: new Date() };
+    const userMsg = { role: "user", text: q, time: new Date().toISOString() };
     setMessages(prev => [...prev, userMsg]);
     setLoading(true);
 
     try {
       const res = await API.post("/schemes/chat", {
-        scheme_name: schemeName,
+        scheme_name: schemeName || "",
         question: q,
         language: langKey,
+        user_context: getUserContext(),
       });
+
       const botMsg = {
         role: "bot",
-        text: res.data.answer,
+        text: res.data.answer || t("err_invalid_response"),
         confidence: res.data.confidence,
         sources: res.data.sources || [],
-        time: new Date(),
+        time: new Date().toISOString(),
       };
       setMessages(prev => [...prev, botMsg]);
-    } catch {
+    } catch (err) {
+      let errorMsg = t("err_generic");
+      if (err.code === "ECONNABORTED" || err.message?.includes("timeout")) {
+        errorMsg = t("err_timeout");
+      } else if (!err.response) {
+        errorMsg = t("err_backend_offline");
+      } else if (err.response.status === 422 || err.response.status === 500) {
+        errorMsg = t("err_invalid_response");
+      }
+
       setMessages(prev => [
         ...prev,
         {
           role: "bot",
-          text: langKey === "hi"
-            ? "माफ़ करें, कोई त्रुटि हुई। कृपया पुनः प्रयास करें।"
-            : langKey === "mr"
-            ? "माफ करा, एक त्रुटी आली. कृपया पुन्हा प्रयत्न करा."
-            : "Sorry, an error occurred. Please try again.",
+          text: errorMsg,
           confidence: "low",
-          time: new Date(),
+          time: new Date().toISOString(),
         }
       ]);
     } finally {
@@ -115,10 +139,21 @@ export default function SchemeChatBot({ schemeName }) {
     }
   };
 
-  const formatTime = (d) => d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const formatTime = (isoOrDate) => {
+    try {
+      const d = typeof isoOrDate === "string" ? new Date(isoOrDate) : isoOrDate;
+      return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    } catch {
+      return "";
+    }
+  };
 
   const confidenceBadge = (conf) => {
-    const map = { high: { color: "#16A34A", bg: "#DCFCE7", label: "✓ Verified" }, medium: { color: "#D97706", bg: "#FEF3C7", label: "~ Approximate" }, low: { color: "#9CA3AF", bg: "#F3F4F6", label: "i General" } };
+    const map = {
+      high: { color: "#16A34A", bg: "#DCFCE7", label: "✓ Verified" },
+      medium: { color: "#D97706", bg: "#FEF3C7", label: "~ Approximate" },
+      low: { color: "#9CA3AF", bg: "#F3F4F6", label: "i General" }
+    };
     const c = map[conf] || map.medium;
     return <span style={{ fontSize: 10, color: c.color, background: c.bg, padding: "1px 6px", borderRadius: 10, fontWeight: 600, marginLeft: 6 }}>{c.label}</span>;
   };
@@ -128,7 +163,7 @@ export default function SchemeChatBot({ schemeName }) {
       {/* ─── FLOATING BUTTON ─────────────────────────────────────────────── */}
       <button
         onClick={() => setOpen(o => !o)}
-        title="Helper AI — Ask about this scheme"
+        title={t("chatbot_title")}
         style={{
           position: "fixed",
           bottom: 28,
@@ -192,12 +227,34 @@ export default function SchemeChatBot({ schemeName }) {
           }}>🤖</div>
           <div style={{ flex: 1 }}>
             <div style={{ fontWeight: 700, fontSize: 14, color: "#fff" }}>
-              {langKey === "hi" ? "ArthMitra सहायक" : langKey === "mr" ? "ArthMitra सहाय्यक" : "ArthMitra Helper AI"}
+              {t("chatbot_title")}
             </div>
-            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.8)", marginTop: 1 }}>
-              {schemeName}
+            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.9)", marginTop: 1 }}>
+              {schemeName || t("chatbot_subtitle")}
             </div>
           </div>
+          <button
+            onClick={clearChat}
+            title={t("chatbot_clear_chat")}
+            style={{
+              background: "rgba(255,255,255,0.2)",
+              border: "none",
+              borderRadius: "50%",
+              width: 28,
+              height: 28,
+              color: "#fff",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 14,
+              transition: "background 0.2s",
+            }}
+            onMouseEnter={e => e.target.style.background = "rgba(255,255,255,0.35)"}
+            onMouseLeave={e => e.target.style.background = "rgba(255,255,255,0.2)"}
+          >
+            🗑️
+          </button>
           <div style={{
             width: 8, height: 8, borderRadius: "50%", background: "#4ADE80",
             boxShadow: "0 0 6px #4ADE80",
@@ -213,7 +270,7 @@ export default function SchemeChatBot({ schemeName }) {
           overflowX: "auto",
           scrollbarWidth: "none",
         }}>
-          {QUICK_QUESTIONS[langKey].map((q, i) => (
+          {quickQuestions.map((q, i) => (
             <button
               key={i}
               onClick={() => sendMessage(q)}
@@ -255,7 +312,7 @@ export default function SchemeChatBot({ schemeName }) {
               justifyContent: msg.role === "user" ? "flex-end" : "flex-start",
             }}>
               <div style={{
-                maxWidth: "82%",
+                maxWidth: "84%",
                 padding: "10px 14px",
                 borderRadius: msg.role === "user" ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
                 background: msg.role === "user"
@@ -297,7 +354,7 @@ export default function SchemeChatBot({ schemeName }) {
                     }} />
                   ))}
                 </div>
-                <span style={{ fontSize: 11, color: "#94A3B8" }}>{THINKING[langKey]}</span>
+                <span style={{ fontSize: 11, color: "#94A3B8" }}>{t("chatbot_thinking")}</span>
               </div>
             </div>
           )}
@@ -319,7 +376,7 @@ export default function SchemeChatBot({ schemeName }) {
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKey}
-            placeholder={PLACEHOLDER[langKey]}
+            placeholder={t("chatbot_placeholder")}
             disabled={loading}
             style={{
               flex: 1,
@@ -357,14 +414,12 @@ export default function SchemeChatBot({ schemeName }) {
         </div>
       </div>
 
-      {/* Bounce animation keyframes injected once */}
+      {/* Keyframe animations */}
       <style>{`
         @keyframes bounce {
           0%, 80%, 100% { transform: translateY(0); }
           40% { transform: translateY(-6px); }
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
       `}</style>
     </>
   );

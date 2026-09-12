@@ -37,6 +37,7 @@ const PUBLIC_SCHEMES = [
     target: "EWS, LIG, & Middle Income Groups",
     icon: "🏡",
     color: "#2563eb",
+    descKey: "schemes_pmay_desc",
     desc: "Provides interest subsidies and financial aid for building durable pucca houses with basic amenities like water, electricity, and sanitation."
   },
   {
@@ -46,6 +47,7 @@ const PUBLIC_SCHEMES = [
     target: "Parents of Girl Child below 10 Years",
     icon: "💎",
     color: "#ec4899",
+    descKey: "schemes_ssy_desc",
     desc: "Government-backed high-interest savings scheme designed exclusively to build higher education and marriage funds for girl children."
   },
   {
@@ -103,15 +105,15 @@ export default function Schemes() {
             fontWeight: 600,
             marginBottom: 16
           }}>
-            🏛️ Public Information Portal
+            {t("home_directory_badge") || "🏛️ Public Information Portal"}
           </div>
 
           <h1 style={{ fontSize: "40px", fontWeight: 900, marginBottom: 12, letterSpacing: "-0.5px" }}>
-            Government <span style={{ color: "#4ade80" }}>Welfare Schemes</span> Directory
+            {t("schemes_hero_title") || "Government Welfare Schemes Directory"}
           </h1>
 
           <p style={{ fontSize: "16px", color: "#94a3b8", maxWidth: 700, margin: "0 auto", lineHeight: 1.6 }}>
-            Explore flagship Central and State welfare programs designed to provide direct financial assistance, healthcare, housing, pension, and employment support.
+            {t("schemes_hero_desc") || "Explore flagship Central and State welfare programs designed to provide direct financial assistance, healthcare, housing, pension, and employment support."}
           </p>
         </div>
       </section>
@@ -172,7 +174,7 @@ export default function Schemes() {
                 </div>
 
                 <p style={{ fontSize: 14, color: "#64748b", lineHeight: 1.5, margin: 0 }}>
-                  {scheme.desc}
+                  {scheme.descKey ? t(scheme.descKey) : scheme.desc}
                 </p>
               </div>
             </div>
@@ -190,10 +192,10 @@ export default function Schemes() {
           boxShadow: "0 10px 30px rgba(0,0,0,0.15)"
         }}>
           <h2 style={{ fontSize: "28px", fontWeight: 800, marginBottom: 12 }}>
-            Want to know which schemes match your profile?
+            {t("schemes_cta_title") || "Want to know which schemes match your profile?"}
           </h2>
           <p style={{ fontSize: 16, color: "#94a3b8", maxWidth: 650, margin: "0 auto 28px auto", lineHeight: 1.6 }}>
-            Sign in or register for an account to run our AI Scheme Matcher and check your exact eligibility, financial health score, and personalized savings options.
+            {t("schemes_cta_desc") || "Sign in or register for an account to run our AI Scheme Matcher and check your exact eligibility, financial health score, and personalized savings options."}
           </p>
 
           <div style={{ display: "flex", justifyContent: "center", gap: 16, flexWrap: "wrap" }}>
@@ -210,7 +212,7 @@ export default function Schemes() {
                 boxShadow: "0 6px 20px rgba(255, 107, 0, 0.35)"
               }}
             >
-              🔒 Login to Check Your Scheme Eligibility →
+              🔒 {t("schemes_cta_btn") || "Login to Check Your Scheme Eligibility →"}
             </Link>
           </div>
         </div>

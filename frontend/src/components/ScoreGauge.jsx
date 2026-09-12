@@ -1,6 +1,9 @@
 import { ResponsiveContainer, RadialBarChart, RadialBar } from 'recharts';
+import { useLanguage } from '../LanguageContext';
 
-export default function ScoreGauge({ score = 74, grade = "B", label = "Good Standing" }) {
+export default function ScoreGauge({ score = 74, grade = "B", label = null }) {
+  const { t } = useLanguage();
+  const displayLabel = label || t("health_standing_good") || "Good Standing";
   const data = [{ name: 'Score', value: score, fill: score >= 80 ? '#138808' : score >= 65 ? '#16a34a' : score >= 50 ? '#FF6B00' : '#ef4444' }];
 
   return (
@@ -16,7 +19,7 @@ export default function ScoreGauge({ score = 74, grade = "B", label = "Good Stan
             {score}
           </div>
           <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700 }}>
-            {label} (Grade {grade})
+            {displayLabel} (Grade {grade})
           </div>
         </div>
       </div>

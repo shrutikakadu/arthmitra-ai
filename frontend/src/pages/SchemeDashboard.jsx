@@ -399,7 +399,7 @@ export default function SchemeDashboard() {
                             </span>
                         ) : currentApp.status === "CLERK_APPROVED" ? (
                             <span className="apply-btn-main" style={{ background: "#7c3aed", color: "#fff", cursor: "default" }}>
-                                ⏳ Clerk Approved — Pending District Officer (#{currentApp.id})
+                                ⏳ {t("stage_pending_dm")} (#{currentApp.id})
                             </span>
                         ) : currentApp.status === "OFFICER_APPROVED" ? (
                             <span className="apply-btn-main" style={{ background: "#9333ea", color: "#fff", cursor: "default" }}>
@@ -488,7 +488,7 @@ export default function SchemeDashboard() {
                         {/* REJECTION REASON IF ANY */}
                         {currentApp.status === "REJECTED" && currentApp.review_note && (
                             <div style={{ background: "#fee2e2", border: "1px solid #fca5a5", borderRadius: 8, padding: "10px 14px", marginBottom: 14, fontSize: 13, color: "#7f1d1d" }}>
-                                <strong>Rejection Details:</strong> {currentApp.review_note}
+                                <strong>{t("dash_rejection_reason")}:</strong> {currentApp.review_note}
                             </div>
                         )}
 

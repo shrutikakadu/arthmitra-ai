@@ -1,5 +1,7 @@
 import { useState, useRef, useCallback } from "react";
+import { useLanguage } from "../LanguageContext";
 
+// ─── Multilingual voice prompt questions (data, not UI text — kept here by design) ───
 const LANG_PROMPTS = {
   en: {
     name:        "What is your full name?",
@@ -79,6 +81,7 @@ export default function VoiceFormFiller({
   className = "",
   style = {},
 }) {
+  const { t } = useLanguage();
   const [listening, setListening] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [error, setError] = useState("");
@@ -99,13 +102,13 @@ export default function VoiceFormFiller({
 
   const startSingleField = useCallback(() => {
     if (!supported) {
-      setError("Voice not supported in this browser. Please use Chrome or Edge.");
+      setError(t("voice_not_supported"));
       return;
     }
     setError("");
     setTranscript("");
 
-    const prompt = LANG_PROMPTS[lang]?.[fieldKey];
+    const prompt = t("voice_q_" + fieldKey) || "Speak your details";
     if (prompt) speak(prompt);
 
     const rec = new SpeechRecognition();
@@ -118,13 +121,13 @@ export default function VoiceFormFiller({
     rec.onend = () => setListening(false);
     rec.onerror = (e) => { setListening(false); setError("Error: " + e.error); };
     rec.onresult = (e) => {
-      const t = e.results[0][0].transcript;
-      setTranscript(t);
-      if (onResult) onResult(t);
+      const tx = e.results[0][0].transcript;
+      setTranscript(tx);
+      if (onResult) onResult(tx);
     };
 
     rec.start();
-  }, [fieldKey, lang, onResult, speak, supported]);
+  }, [fieldKey, lang, onResult, speak, supported, t]);
 
   const stopListening = useCallback(() => {
     recognitionRef.current?.stop();
@@ -141,15 +144,13 @@ export default function VoiceFormFiller({
 
     const processField = (idx) => {
       if (idx >= fieldKeys.length) {
-        speak(lang === "hi" ? "धन्यवाद! सभी जानकारी भर दी गई है।" :
-              lang === "mr" ? "धन्यवाद! सर्व माहिती भरली गेली आहे." :
-              "Thank you! All fields have been filled.");
+        speak(t("voice_complete_msg"));
         setGuidedIdx(0);
         return;
       }
 
       const key = fieldKeys[idx];
-      const prompt = LANG_PROMPTS[lang]?.[key] || `Please provide your ${key}`;
+      const prompt = t("voice_q_" + key) || `Please provide your ${key}`;
       setGuidedIdx(idx);
 
       speak(prompt);
@@ -171,9 +172,9 @@ export default function VoiceFormFiller({
         rec.onend = () => { setListening(false); };
         rec.onerror = () => { setListening(false); processField(idx + 1); };
         rec.onresult = (e) => {
-          const t = e.results[0][0].transcript;
-          setTranscript(`${key}: ${t}`);
-          onFieldUpdate(key, t);
+          const tx = e.results[0][0].transcript;
+          setTranscript(`${key}: ${tx}`);
+          onFieldUpdate(key, tx);
           setTimeout(() => processField(idx + 1), 800);
         };
 
@@ -184,7 +185,7 @@ export default function VoiceFormFiller({
     };
 
     processField(0);
-  }, [fieldKeys, lang, onFieldUpdate, speak, supported]);
+  }, [fieldKeys, lang, onFieldUpdate, speak, supported, t]);
 
   // ─── SINGLE-FIELD MODE ────────────────────────────────────────────────────
   if (mode === "single") {
@@ -192,7 +193,7 @@ export default function VoiceFormFiller({
       <span className={className} style={{ display: "inline-flex", alignItems: "center", gap: 2, ...style }}>
         <button
           type="button"
-          title={LANG_PROMPTS[lang]?.[fieldKey] || "Click to speak"}
+          title={t("voice_q_" + fieldKey) || t("voice_click_speak")}
           onClick={listening ? stopListening : startSingleField}
           style={{
             ...VOICE_BTN_STYLE,
@@ -204,7 +205,7 @@ export default function VoiceFormFiller({
         </button>
         {transcript && (
           <span style={{ fontSize: 10, color: "#888", maxWidth: 80, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-            "{transcript.slice(0, 30)}"
+            &quot;{transcript.slice(0, 30)}&quot;
           </span>
         )}
         {error && <span style={{ fontSize: 10, color: "#EF4444" }}>⚠️</span>}
@@ -237,13 +238,7 @@ export default function VoiceFormFiller({
         <span style={{ fontSize: 20, animation: listening ? "pulse 1s infinite" : "none" }}>
           {listening ? "🛑" : "🎙️"}
         </span>
-        {listening
-          ? (lang === "hi" ? "बोलें... (रोकने के लिए क्लिक करें)" :
-             lang === "mr" ? "बोला... (थांबण्यासाठी क्लिक करा)" :
-             "Listening... (click to stop)")
-          : (lang === "hi" ? "🎙️ आवाज़ से फॉर्म भरें" :
-             lang === "mr" ? "🎙️ आवाजाने फॉर्म भरा" :
-             "🎙️ Fill Form by Voice")}
+        {listening ? t("voice_listening_stop") : t("voice_fill_form_btn")}
       </button>
 
       {listening && fieldKeys[guidedIdx] && (
@@ -258,21 +253,21 @@ export default function VoiceFormFiller({
           animation: "fadeIn 0.3s ease",
         }}>
           <span style={{ fontWeight: 600 }}>
-            {lang === "hi" ? "अभी पूछ रहा है: " : lang === "mr" ? "आत्ता विचारत आहे: " : "Now asking: "}
+            {t("voice_now_asking")}{" "}
           </span>
-          {LANG_PROMPTS[lang]?.[fieldKeys[guidedIdx]] || fieldKeys[guidedIdx]}
+          {t("voice_q_" + fieldKeys[guidedIdx]) || fieldKeys[guidedIdx]}
         </div>
       )}
 
       {transcript && (
         <div style={{ marginTop: 6, fontSize: 12, color: "#64748B", padding: "4px 8px", background: "#F8FAFC", borderRadius: 6 }}>
-          ✓ {transcript}
+          &#10003; {transcript}
         </div>
       )}
 
       {!supported && (
         <p style={{ fontSize: 12, color: "#EF4444", marginTop: 6 }}>
-          ⚠️ Voice input is not supported in this browser. Please use Chrome or Edge.
+          {t("voice_not_supported")}
         </p>
       )}
     </div>

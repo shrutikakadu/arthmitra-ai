@@ -22,10 +22,10 @@ export default function Footer() {
         <div>
           <h4 style={{ color: "#ffffff", fontSize: "14px", fontWeight: 700, margin: "0 0 12px 0" }}>{t("footer_project")}</h4>
           <div style={{ display: "flex", flexDirection: "column", gap: 6, color: "#64748b" }}>
-            <div><strong>Team:</strong> ArthMitra Core Engineering Team</div>
-            <div><strong>Lead Engineer:</strong> Tanaya &amp; Associates</div>
-            <div><strong>Project Guide:</strong> Department Faculty Advisory</div>
-            <div><strong>Domain:</strong> Distributed Systems &amp; GovTech AI</div>
+            <div><strong>{t("footer_team_label")}</strong> {t("footer_team_val")}</div>
+            <div><strong>{t("footer_engineer_label")}</strong> {t("footer_engineer_val")}</div>
+            <div><strong>{t("footer_guide_label")}</strong> {t("footer_guide_val")}</div>
+            <div><strong>{t("footer_domain_label")}</strong> {t("footer_domain_val")}</div>
           </div>
         </div>
 

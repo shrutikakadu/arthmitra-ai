@@ -81,13 +81,13 @@ export default function SchemeMatcher() {
         <div style={{ background: "linear-gradient(135deg, #0b192c 0%, #1e293b 100%)", color: "#ffffff", padding: "50px 24px", textAlign: "center" }}>
           <div style={{ maxWidth: 900, margin: "0 auto" }}>
             <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(255, 107, 0, 0.15)", border: "1px solid rgba(255, 107, 0, 0.3)", padding: "4px 14px", borderRadius: 20, color: "#ff6b00", fontSize: 13, fontWeight: 600, marginBottom: 16 }}>
-              🎯 AI Scheme Matcher Showcase
+              {t("matcher_vis_badge")}
             </div>
             <h1 style={{ fontSize: "36px", fontWeight: 900, marginBottom: 10 }}>
-              How <span style={{ color: "#ff6b00" }}>ArthMitra AI</span> Ranks Your Eligibility
+              {t("matcher_vis_title_1")}<span style={{ color: "#ff6b00" }}>{t("matcher_vis_title_hl")}</span>{t("matcher_vis_title_2")}
             </h1>
             <p style={{ fontSize: "16px", color: "#94a3b8", maxWidth: 650, margin: "0 auto", lineHeight: 1.6 }}>
-              Discover how our intelligent MapReduce decision engine evaluates 500+ government programs to recommend maximum financial and social security benefits.
+              {t("matcher_vis_subtitle")}
             </p>
           </div>
         </div>
@@ -97,33 +97,33 @@ export default function SchemeMatcher() {
           {/* SECTION 1: HOW AI WORKS (4 STEPS) */}
           <div style={{ marginBottom: 48 }}>
             <div style={{ textAlign: "center", marginBottom: 32 }}>
-              <h2 style={{ fontSize: "26px", fontWeight: 800, color: "#0f172a" }}>How AI Works</h2>
-              <p style={{ fontSize: 14, color: "#64748b", marginTop: 4 }}>4 simple automated steps to find your welfare benefits</p>
+              <h2 style={{ fontSize: "26px", fontWeight: 800, color: "#0f172a" }}>{t("matcher_vis_how_title")}</h2>
+              <p style={{ fontSize: 14, color: "#64748b", marginTop: 4 }}>{t("matcher_vis_subtitle")}</p>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20 }}>
               <div style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 14, padding: "24px", position: "relative" }}>
-                <div style={{ fontSize: 12, fontWeight: 800, color: "#ff6b00", background: "rgba(255,107,0,0.1)", padding: "4px 10px", borderRadius: 6, display: "inline-block", marginBottom: 12 }}>STEP 1</div>
-                <h3 style={{ fontSize: 16, fontWeight: 700, color: "#0f172a", marginBottom: 8 }}>User Creates Profile</h3>
-                <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.5, margin: 0 }}>Input basic details like state, age, and occupation using text or voice.</p>
+                <div style={{ fontSize: 12, fontWeight: 800, color: "#ff6b00", background: "rgba(255,107,0,0.1)", padding: "4px 10px", borderRadius: 6, display: "inline-block", marginBottom: 12 }}>{t("matcher_vis_step1_badge")}</div>
+                <h3 style={{ fontSize: 16, fontWeight: 700, color: "#0f172a", marginBottom: 8 }}>{t("matcher_vis_step1_title")}</h3>
+                <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.5, margin: 0 }}>{t("matcher_vis_step1_desc")}</p>
               </div>
 
               <div style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 14, padding: "24px" }}>
-                <div style={{ fontSize: 12, fontWeight: 800, color: "#2563eb", background: "rgba(37,99,235,0.1)", padding: "4px 10px", borderRadius: 6, display: "inline-block", marginBottom: 12 }}>STEP 2</div>
-                <h3 style={{ fontSize: 16, fontWeight: 700, color: "#0f172a", marginBottom: 8 }}>AI Analyzes Criteria</h3>
-                <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.5, margin: 0 }}>AI evaluates Age, Income, Occupation, Gender, Caste, State, and Family Size.</p>
+                <div style={{ fontSize: 12, fontWeight: 800, color: "#2563eb", background: "rgba(37,99,235,0.1)", padding: "4px 10px", borderRadius: 6, display: "inline-block", marginBottom: 12 }}>{t("matcher_vis_step2_badge")}</div>
+                <h3 style={{ fontSize: 16, fontWeight: 700, color: "#0f172a", marginBottom: 8 }}>{t("matcher_vis_step2_title")}</h3>
+                <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.5, margin: 0 }}>{t("matcher_vis_step2_desc")}</p>
               </div>
 
               <div style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 14, padding: "24px" }}>
-                <div style={{ fontSize: 12, fontWeight: 800, color: "#138808", background: "rgba(19,136,8,0.1)", padding: "4px 10px", borderRadius: 6, display: "inline-block", marginBottom: 12 }}>STEP 3</div>
-                <h3 style={{ fontSize: 16, fontWeight: 700, color: "#0f172a", marginBottom: 8 }}>AI Matches Schemes</h3>
-                <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.5, margin: 0 }}>MapReduce engine ranks schemes by match confidence and cash benefit impact.</p>
+                <div style={{ fontSize: 12, fontWeight: 800, color: "#138808", background: "rgba(19,136,8,0.1)", padding: "4px 10px", borderRadius: 6, display: "inline-block", marginBottom: 12 }}>{t("matcher_vis_step3_badge")}</div>
+                <h3 style={{ fontSize: 16, fontWeight: 700, color: "#0f172a", marginBottom: 8 }}>{t("matcher_vis_step3_title")}</h3>
+                <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.5, margin: 0 }}>{t("matcher_vis_step3_desc")}</p>
               </div>
 
               <div style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 14, padding: "24px" }}>
-                <div style={{ fontSize: 12, fontWeight: 800, color: "#8b5cf6", background: "rgba(139,92,246,0.1)", padding: "4px 10px", borderRadius: 6, display: "inline-block", marginBottom: 12 }}>STEP 4</div>
-                <h3 style={{ fontSize: 16, fontWeight: 700, color: "#0f172a", marginBottom: 8 }}>User Applies Direct</h3>
-                <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.5, margin: 0 }}>Submit application directly to Section Officer & DM verification pipeline.</p>
+                <div style={{ fontSize: 12, fontWeight: 800, color: "#8b5cf6", background: "rgba(139,92,246,0.1)", padding: "4px 10px", borderRadius: 6, display: "inline-block", marginBottom: 12 }}>{t("matcher_vis_step4_badge")}</div>
+                <h3 style={{ fontSize: 16, fontWeight: 700, color: "#0f172a", marginBottom: 8 }}>{t("matcher_vis_step4_title")}</h3>
+                <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.5, margin: 0 }}>{t("matcher_vis_step4_desc")}</p>
               </div>
             </div>
           </div>
@@ -133,9 +133,9 @@ export default function SchemeMatcher() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
               <div>
                 <span style={{ fontSize: 12, fontWeight: 700, color: "#ef4444", background: "#fef2f2", border: "1px solid #fca5a5", padding: "4px 12px", borderRadius: 20, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                  ⚠️ Sample AI Output (Demo Only)
+                  {t("matcher_vis_demo_badge")}
                 </span>
-                <h3 style={{ fontSize: "22px", fontWeight: 800, color: "#0f172a", marginTop: 8 }}>Sample Citizen Profile Analysis</h3>
+                <h3 style={{ fontSize: "22px", fontWeight: 800, color: "#0f172a", marginTop: 8 }}>{t("matcher_vis_demo_title")}</h3>
               </div>
               <div style={{ background: "#f1f5f9", border: "1px solid #e2e8f0", borderRadius: 10, padding: "10px 16px", fontSize: 13, color: "#334155" }}>
                 <strong>Farmer</strong> • Maharashtra • Income: <strong>₹60,000/yr</strong>
@@ -180,9 +180,9 @@ export default function SchemeMatcher() {
 
           {/* CTA Banner */}
           <div style={{ background: "linear-gradient(90deg, #ff6b00 0%, #138808 100%)", color: "#ffffff", padding: "36px 28px", borderRadius: 16, textAlign: "center" }}>
-            <h3 style={{ fontSize: "24px", fontWeight: 800, marginBottom: 8 }}>Ready to find your actual scheme eligibility?</h3>
+            <h3 style={{ fontSize: "24px", fontWeight: 800, marginBottom: 8 }}>{t("matcher_vis_demo_cta_title")}</h3>
             <p style={{ fontSize: 15, color: "rgba(255,255,255,0.9)", maxWidth: 600, margin: "0 auto 20px auto" }}>
-              Log in to run the real AI Scheme Matcher model against your exact family income, state, caste category, and age.
+              {t("matcher_vis_demo_cta_desc")}
             </p>
             <Link
               to="/login"

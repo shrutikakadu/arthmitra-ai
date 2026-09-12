@@ -573,7 +573,7 @@ export default function Dashboard() {
 
             {filledFields < 3 && (
               <div style={{ fontSize: 10, color: "#999", marginTop: 4, fontStyle: "italic" }}>
-                Run Scheme Matcher to see count
+                {t("dash_empty_run_matcher")}
               </div>
             )}
           </div>
@@ -640,7 +640,7 @@ export default function Dashboard() {
                 </div>
 
                 <div className="dash-card-subtitle">
-                  Based on your profile, documents, and applications
+                  {t("dash_empty_profile_analytics")}
                 </div>
               </div>
             </div>
@@ -648,8 +648,8 @@ export default function Dashboard() {
             {isProfileEmpty ? (
               <div style={{ textAlign: "center", padding: "40px 20px", color: "#94A3B8" }}>
                 <div style={{ fontSize: 36, marginBottom: 12 }}>🌱</div>
-                <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 6 }}>No data yet</div>
-                <div style={{ fontSize: 12 }}>Complete your profile to see analytics here</div>
+                <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 6 }}>{t("dash_empty_no_data")}</div>
+                <div style={{ fontSize: 12 }}>{t("dash_empty_complete_profile")}</div>
               </div>
             ) : (
               <div
@@ -880,7 +880,7 @@ export default function Dashboard() {
               ) : (
                 <div style={{ textAlign: "center", width: "100%", color: "#94A3B8", padding: "20px 0" }}>
                   <div style={{ fontSize: 32, marginBottom: 8 }}>📄</div>
-                  <div style={{ fontSize: 13 }}>Upload documents to see verification breakdown</div>
+                  <div style={{ fontSize: 13 }}>{t("dash_empty_upload_docs")}</div>
                 </div>
               )}
             </div>
@@ -2275,7 +2275,7 @@ export default function Dashboard() {
                             marginTop: 5
                           }}
                         >
-                          Category:{" "}
+                          {t("card_category")}:{" "}
                           {
                             app.category ||
                             "Welfare"
@@ -2310,7 +2310,7 @@ export default function Dashboard() {
 
                     {/* STATUS STEPPER */}
                     <div style={{ marginTop: 14 }}>
-                      <ApplicationStatusStepper status={app.status} lang={lang} />
+                      <ApplicationStatusStepper status={app.status} />
                     </div>
 
                     {/* REJECTION DETAILS */}
@@ -2351,7 +2351,7 @@ export default function Dashboard() {
                           }}
                         >
                           <strong>
-                            Rejected by:
+                            {t("dash_app_rejected_by")}
                           </strong>{" "}
                           {app.current_handler
                             ? app.current_handler.replace(
@@ -2370,7 +2370,7 @@ export default function Dashboard() {
                             }}
                           >
                             <strong>
-                              Reason:
+                              {t("dash_app_reason")}
                             </strong>{" "}
                             {rejectionReason}
                           </div>
@@ -2398,14 +2398,14 @@ export default function Dashboard() {
                       >
                         ✅{" "}
                         <strong>
-                          Application Approved
+                          {t("dash_app_approved_title")}
                         </strong>
                         <div
                           style={{
                             marginTop: 4
                           }}
                         >
-                          Your application has completed all verification stages.
+                          {t("dash_app_approved_desc")}
                         </div>
                       </div>
                     )}
@@ -2430,7 +2430,7 @@ export default function Dashboard() {
                           }}
                         >
                           <strong>
-                            Current Stage:
+                            {t("dash_app_current_stage")}
                           </strong>{" "}
                           {
                             app.current_handler
@@ -2534,7 +2534,7 @@ export default function Dashboard() {
             </div>
 
             <div className="dash-card-subtitle">
-              Personal locker documents. To apply for a scheme and verify documents, start a scheme application.
+              {t("dash_doc_locker_desc")}
             </div>
 
           </div>
@@ -3228,7 +3228,7 @@ export default function Dashboard() {
               }}
             >
               {t("currently")}:{" "}
-              {lang === "mr" ? "मराठी" : lang === "hi" ? "हिन्दी" : "English"}
+              {t("lang_name")}
             </div>
 
           </div>
@@ -3422,13 +3422,13 @@ export default function Dashboard() {
     ],
 
     savings: [
-      t("nav_savings") || "Savings Planner",
-      "Personalized savings and micro-investment projections"
+      t("nav_savings"),
+      t("dash_tab_savings_sub")
     ],
 
     health: [
-      t("nav_health_score") || "Financial Health Score",
-      "Social security readiness & action roadmap"
+      t("nav_health_score"),
+      t("dash_tab_health_sub")
     ],
 
     notifications: [
