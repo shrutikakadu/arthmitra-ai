@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
+import Schemes from "./pages/Schemes";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import SchemeMatcher from "./pages/SchemeMatcher";
@@ -19,10 +20,12 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/schemes" element={<Schemes />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/minister" element={<AdminDashboard />} />
         <Route path="/match" element={<SchemeMatcher />} />
         <Route path="/results" element={<SchemeResults />} />
         <Route path="/health" element={<FinancialHealth />} />

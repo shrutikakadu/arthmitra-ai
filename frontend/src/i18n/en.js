@@ -2,7 +2,8 @@
 export default {
   // ── Navbar & Footer ──
   nav_home: "Home",
-  nav_scheme_matcher: "Scheme Matcher",
+  nav_schemes: "Schemes",
+  nav_scheme_matcher: "AI Scheme Matcher",
   nav_health_score: "Health Score",
   nav_savings: "Savings",
   nav_voice: "Voice",

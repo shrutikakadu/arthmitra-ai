@@ -24,8 +24,10 @@ export default function Login() {
       if (res.data.status === "success" && res.data.user) {
         localStorage.setItem("user", JSON.stringify(res.data.user));
         const role = res.data.user.role;
-        if (role && role !== "user") navigate("/admin");
-        else navigate("/dashboard");
+        if (role && role !== "user") {
+          if (role === "minister") navigate("/minister");
+          else navigate("/admin");
+        } else navigate("/dashboard");
       } else {
         setError(res.data.message || t("login_error_invalid"));
       }

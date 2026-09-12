@@ -2,7 +2,8 @@
 export default {
   // ── Navbar & Footer ──
   nav_home: "होम",
-  nav_scheme_matcher: "योजना मिलान",
+  nav_schemes: "योजनाएं",
+  nav_scheme_matcher: "AI योजना मिलान",
   nav_health_score: "स्वास्थ्य स्कोर",
   nav_savings: "बचत",
   nav_voice: "वॉइस",

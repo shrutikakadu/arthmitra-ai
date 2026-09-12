@@ -21,6 +21,8 @@ import { useLanguage } from "../LanguageContext";
 import VoiceFormFiller from "../components/VoiceFormFiller";
 import ApplicationStatusStepper from "../components/ApplicationStatusStepper";
 import SchemeChatBot from "../components/SchemeChatBot";
+import SavingsPlanner from "./SavingsPlanner";
+import FinancialHealth from "./FinancialHealth";
 
 const DOC_TYPES = [
   { key: "aadhaar", label: "Aadhaar Card", icon: "🪪" },
@@ -34,14 +36,16 @@ const DOC_TYPES = [
 ];
 
 const SIDEBAR_ITEMS = [
-  { key: "overview", icon: "🏠", labelKey: "dash_overview" },
-  { key: "profile", icon: "👤", labelKey: "dash_profile" },
-  { key: "schemes", icon: "🎯", labelKey: "dash_schemes" },
-  { key: "applications", icon: "📋", labelKey: "dash_applications" },
-  { key: "documents", icon: "📄", labelKey: "dash_documents" },
-  { key: "verification", icon: "✅", labelKey: "dash_verification" },
-  { key: "notifications", icon: "🔔", labelKey: "dash_notifications" },
-  { key: "settings", icon: "⚙️", labelKey: "dash_settings" },
+  { key: "overview", icon: "🏠", labelKey: "dash_overview", section: "main" },
+  { key: "profile", icon: "👤", labelKey: "dash_profile", section: "main" },
+  { key: "schemes", icon: "🎯", labelKey: "dash_schemes", section: "main" },
+  { key: "applications", icon: "📋", labelKey: "dash_applications", section: "main" },
+  { key: "documents", icon: "📄", labelKey: "dash_documents", section: "tools" },
+  { key: "verification", icon: "✅", labelKey: "dash_verification", section: "tools" },
+  { key: "savings", icon: "🐷", labelKey: "nav_savings", section: "tools" },
+  { key: "health", icon: "📊", labelKey: "nav_health_score", section: "tools" },
+  { key: "notifications", icon: "🔔", labelKey: "dash_notifications", section: "account" },
+  { key: "settings", icon: "⚙️", labelKey: "dash_settings", section: "account" },
 ];
 
 export default function Dashboard() {
@@ -3380,6 +3384,8 @@ export default function Dashboard() {
     applications: renderApplications,
     documents: renderDocuments,
     verification: renderVerification,
+    savings: () => <SavingsPlanner embedded={true} />,
+    health: () => <FinancialHealth embedded={true} />,
     notifications: renderNotifications,
     settings: renderSettings
   };
@@ -3413,6 +3419,16 @@ export default function Dashboard() {
     verification: [
       t("dash_verification"),
       t("dash_tab_verify_sub")
+    ],
+
+    savings: [
+      t("nav_savings") || "Savings Planner",
+      "Personalized savings and micro-investment projections"
+    ],
+
+    health: [
+      t("nav_health_score") || "Financial Health Score",
+      "Social security readiness & action roadmap"
     ],
 
     notifications: [
@@ -3485,129 +3501,50 @@ export default function Dashboard() {
         </div>
 
         <nav className="sidebar-nav">
-
           <div className="sidebar-section-label">
             {t("dash_main_menu")}
           </div>
-
-          {SIDEBAR_ITEMS.slice(
-            0,
-            4
-          ).map((item) => (
-
+          {SIDEBAR_ITEMS.filter((item) => item.section === "main").map((item) => (
             <div
               key={item.key}
-              className={`sidebar-item ${activeTab ===
-                  item.key
-                  ? "active"
-                  : ""
-                }`}
-              onClick={() =>
-                setActiveTab(
-                  item.key
-                )
-              }
+              className={`sidebar-item ${activeTab === item.key ? "active" : ""}`}
+              onClick={() => setActiveTab(item.key)}
             >
-
-              <span className="sidebar-item-icon">
-                {item.icon}
-              </span>
-
-              <span className="sidebar-item-text">
-                {t(item.labelKey) || item.labelKey}
-              </span>
-
-              {item.key ===
-                "notifications" &&
-                unreadCount >
-                0 && (
-                  <span className="sidebar-badge">
-                    {unreadCount}
-                  </span>
-                )}
-
+              <span className="sidebar-item-icon">{item.icon}</span>
+              <span className="sidebar-item-text">{t(item.labelKey) || item.labelKey}</span>
             </div>
-
           ))}
 
           <div className="sidebar-section-label">
-            {t("dash_documents")}
+            AI Tools & Documents
           </div>
-
-          {SIDEBAR_ITEMS.slice(
-            4,
-            6
-          ).map((item) => (
-
+          {SIDEBAR_ITEMS.filter((item) => item.section === "tools").map((item) => (
             <div
               key={item.key}
-              className={`sidebar-item ${activeTab ===
-                  item.key
-                  ? "active"
-                  : ""
-                }`}
-              onClick={() =>
-                setActiveTab(
-                  item.key
-                )
-              }
+              className={`sidebar-item ${activeTab === item.key ? "active" : ""}`}
+              onClick={() => setActiveTab(item.key)}
             >
-
-              <span className="sidebar-item-icon">
-                {item.icon}
-              </span>
-
-              <span className="sidebar-item-text">
-                {t(item.labelKey) || item.labelKey}
-              </span>
-
+              <span className="sidebar-item-icon">{item.icon}</span>
+              <span className="sidebar-item-text">{t(item.labelKey) || item.labelKey}</span>
             </div>
-
           ))}
 
           <div className="sidebar-section-label">
             {t("dash_account")}
           </div>
-
-          {SIDEBAR_ITEMS.slice(
-            6
-          ).map((item) => (
-
+          {SIDEBAR_ITEMS.filter((item) => item.section === "account").map((item) => (
             <div
               key={item.key}
-              className={`sidebar-item ${activeTab ===
-                  item.key
-                  ? "active"
-                  : ""
-                }`}
-              onClick={() =>
-                setActiveTab(
-                  item.key
-                )
-              }
+              className={`sidebar-item ${activeTab === item.key ? "active" : ""}`}
+              onClick={() => setActiveTab(item.key)}
             >
-
-              <span className="sidebar-item-icon">
-                {item.icon}
-              </span>
-
-              <span className="sidebar-item-text">
-                {t(item.labelKey) || item.labelKey}
-              </span>
-
-              {item.key ===
-                "notifications" &&
-                unreadCount >
-                0 && (
-                  <span className="sidebar-badge">
-                    {unreadCount}
-                  </span>
-                )}
-
+              <span className="sidebar-item-icon">{item.icon}</span>
+              <span className="sidebar-item-text">{t(item.labelKey) || item.labelKey}</span>
+              {item.key === "notifications" && unreadCount > 0 && (
+                <span className="sidebar-badge">{unreadCount}</span>
+              )}
             </div>
-
           ))}
-
         </nav>
 
         <div
